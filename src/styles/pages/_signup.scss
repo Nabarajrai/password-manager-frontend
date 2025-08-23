@@ -7,11 +7,14 @@
   width: 100%;
   background: $background-color;
   height: 100dvh;
-  overflow: auto;
+}
+.signup-page-wrapper {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
 }
 .signup-page-header {
   text-align: center;
-  margin-top: 40dvh;
   .icon {
     @include flex(center);
     width: 60px;
