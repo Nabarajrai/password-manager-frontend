@@ -1,0 +1,57 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.btn-group {
+  @include flex(center);
+  width: 100%;
+  margin: 1rem auto;
+  border-radius: 10px;
+  &.btn-group__primary {
+    background: linear-gradient(to left, #1e3a8a, #2d6acb);
+    box-shadow: #3b82f6 0px 0px 0px 1px;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      background: linear-gradient(to left, #102663, #2c6fdb);
+    }
+  }
+  &.btn-group__secondary {
+    background: linear-gradient(to left, $button-bg-color-primary, #10b981);
+    box-shadow: $button-bg-color-primary 0px 0px 0px 1px;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      background: linear-gradient(to left, $button-bg-color-primary, #12c98c);
+    }
+  }
+  &.btn-group__tertiary {
+    background: rgba($button-bg-color-secondary, 0.3);
+    box-shadow: $border-color 0px 0px 0px 1px;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      background: rgba($button-bg-color-secondary, 0.7);
+    }
+    .btn {
+      color: rgb(26, 25, 25);
+    }
+  }
+  &.btn-group__lg {
+    width: inherit;
+    margin: 0 auto;
+  }
+  &.btn-group__md {
+    width: 80%;
+    margin: 0 auto;
+  }
+  &.btn-group__sm {
+    width: 60%;
+    margin: 0 auto;
+  }
+
+  .btn {
+    width: 100%;
+    height: auto;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.7rem 0.8rem;
+    cursor: pointer;
+  }
+}

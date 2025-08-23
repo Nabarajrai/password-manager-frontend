@@ -1,0 +1,13 @@
+@use "sass:color";
+$primary-color: #312e81;
+$secondary-color: rgb(34 197 94);
+$text-color-primary: #ffff;
+$text-color: rgb(189 217 251);
+$button-bg-color-primary: #059669;
+$button-bg-color-secondary: rgb(243 244 246);
+$button-bg-color-primary-frist: #4f46e5;
+$progess-bar-bg-color: linear-gradient(135deg, #1e3c72 0.5%, #1e5fce);
+$checkbox-bg-color: $progess-bar-bg-color;
+$background-color: linear-gradient(to bottom, #1e3a8a, #3b82f6);
+$background-color-secondary: #ffffff1a;
+$border-color: #ffffff33;

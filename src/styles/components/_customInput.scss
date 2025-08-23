@@ -1,0 +1,61 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.input-container {
+  width: 100%;
+  margin: 0 auto;
+  &.input-container__lg {
+    width: inherit;
+    margin: 0 auto;
+  }
+  &.input-container__md {
+    width: 80%;
+    margin: 0 auto;
+  }
+  &.input-container__sm {
+    width: 60%;
+    margin: 0 auto;
+  }
+}
+.input-lebal {
+  display: block;
+  margin-bottom: 0.4rem;
+  .lebal-text {
+    color: $text-color;
+    font-size: 0.9rem;
+  }
+}
+.input-group {
+  @include flex(flex-start);
+  padding: 0.7rem 0.8rem;
+  border: 1px solid $border-color;
+  background-color: $background-color-secondary;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+  &:focus-within {
+    border-color: $text-color;
+  }
+  .input-field::placeholder {
+    color: $text-color;
+    font-size: 0.9rem;
+  }
+  .icon {
+    @include flex(center);
+    padding-right: 0.5rem;
+    svg {
+      height: 1rem;
+      width: 1rem;
+      stroke: $text-color;
+    }
+  }
+  .eye-icon {
+    @include flex(flex-end);
+    margin-left: auto;
+    cursor: pointer;
+    svg {
+      height: 1rem;
+      width: 1rem;
+      stroke: $text-color;
+    }
+  }
+}

@@ -1,0 +1,80 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.login-page-container {
+  @include flex(center);
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: $background-color;
+}
+.login-page-header {
+  text-align: center;
+  .icon {
+    @include flex(center);
+    width: 60px;
+    height: 60px;
+    margin: 1.3rem auto;
+    background-color: $background-color-secondary;
+    border-radius: 10px;
+    svg {
+      width: 2rem;
+      height: 5rem;
+    }
+  }
+  h3 {
+    font-size: 1.8rem;
+    margin: 0.5rem 0;
+  }
+  p {
+    font-size: 1rem;
+    color: $text-color;
+  }
+}
+.login-top-section {
+  @include flex(flex-start);
+  flex-direction: column;
+  align-items: flex-start;
+  .login-top-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .login-top-des {
+    font-size: 0.9rem;
+    color: $text-color;
+    margin: 0.5rem 0;
+  }
+}
+.login-form-section {
+  max-width: 450px;
+  width: 100%;
+  margin: 2.8rem auto;
+  background-color: $background-color-secondary;
+  padding: 2.2rem 2rem;
+  backdrop-filter: blur(10px);
+  box-shadow: $border-color 0px 0px 0px 1px;
+  border-radius: 15px;
+  .input-section {
+    margin: 1rem 0;
+  }
+}
+
+.login-footer-section {
+  @include flex(center);
+  margin-top: 1.5rem;
+  .login-footer-text {
+    font-size: 0.9rem;
+    color: $text-color;
+    margin-right: 0.3rem;
+    .signup-text {
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 1.3s ease;
+      &:hover {
+        text-decoration: underline solid 2px;
+      }
+    }
+  }
+}
