@@ -4,7 +4,7 @@
 .login-page-container {
   @include flex(center);
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   background: $background-color;
 }
@@ -38,7 +38,7 @@
   .login-top-title {
     font-size: 1.4rem;
     font-weight: 600;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.1rem;
   }
   .login-top-des {
     font-size: 0.9rem;
@@ -47,9 +47,9 @@
   }
 }
 .login-form-section {
-  max-width: 450px;
+  max-width: 430px;
   width: 100%;
-  margin: 2.8rem auto;
+  margin: 2.4rem auto;
   background-color: $background-color-secondary;
   padding: 2.2rem 2rem;
   backdrop-filter: blur(10px);

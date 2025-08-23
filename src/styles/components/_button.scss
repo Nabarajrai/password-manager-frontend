@@ -7,11 +7,11 @@
   margin: 1rem auto;
   border-radius: 10px;
   &.btn-group__primary {
-    background: linear-gradient(to left, #1e3a8a, #2d6acb);
-    box-shadow: #3b82f6 0px 0px 0px 1px;
+    background: linear-gradient(to left, #102766, #1c53aa);
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     transition: all 0.3s ease-in-out;
     &:hover {
-      background: linear-gradient(to left, #102663, #2c6fdb);
+      background: linear-gradient(to left, #09173d, #1057c9);
     }
   }
   &.btn-group__secondary {
