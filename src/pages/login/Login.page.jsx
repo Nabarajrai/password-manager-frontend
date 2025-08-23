@@ -4,6 +4,9 @@ import { SecureIcon, EmailIcon, PasswordIcon } from "../../helpers/Icon.helper";
 import CustomInput from "../../components/customInput/CustomInput";
 import ButtonComponent from "../../components/button/Button.component";
 
+//route router
+import { Link } from "react-router";
+
 const LoginPage = () => {
   return (
     <div className="login-page-container">
@@ -41,7 +44,10 @@ const LoginPage = () => {
         </form>
         <div className="login-footer-section">
           <p className="login-footer-text">
-            Don't have an account? <span className="signup-text">Sign Up</span>
+            Don't have an account?{" "}
+            <span className="signup-text">
+              <Link to="/signup">Sign Up</Link>
+            </span>
           </p>
         </div>
       </div>
