@@ -1,15 +1,17 @@
 @use "../helpers/variables" as *;
 @use "../helpers/mixin" as *;
 
-.login-page-container {
+.signup-page-container {
   @include flex(center);
   flex-direction: column;
-  height: 100dvh;
   width: 100%;
   background: $background-color;
+  height: 100dvh;
+  overflow: auto;
 }
-.login-page-header {
+.signup-page-header {
   text-align: center;
+  margin-top: 40dvh;
   .icon {
     @include flex(center);
     width: 60px;
@@ -31,22 +33,22 @@
     color: $text-color;
   }
 }
-.login-top-section {
+.signup-top-section {
   @include flex(flex-start);
   flex-direction: column;
   align-items: flex-start;
-  .login-top-title {
+  .signup-top-title {
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 0.1rem;
   }
-  .login-top-des {
+  .signup-top-des {
     font-size: 0.9rem;
     color: $text-color;
     margin: 0.5rem 0;
   }
 }
-.login-form-section {
+.signup-form-section {
   max-width: 430px;
   width: 100%;
   margin: 2.4rem auto;
@@ -55,19 +57,19 @@
   backdrop-filter: blur(10px);
   box-shadow: $border-color 0px 0px 0px 1px;
   border-radius: 15px;
+
   .input-section {
     margin: 1rem 0;
   }
 }
-
-.login-footer-section {
+.signup-footer-section {
   @include flex(center);
   margin-top: 1.5rem;
-  .login-footer-text {
+  .signup-footer-text {
     font-size: 0.9rem;
     color: $text-color;
     margin-right: 0.3rem;
-    .signup-text {
+    .login-text {
       color: white;
       font-weight: 600;
       cursor: pointer;

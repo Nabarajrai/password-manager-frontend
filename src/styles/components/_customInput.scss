@@ -35,6 +35,14 @@
   &:focus-within {
     border-color: $text-color;
   }
+  .input-field {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: $text-color;
+    font-size: 0.9rem;
+  }
   .input-field::placeholder {
     color: $text-color;
     font-size: 0.9rem;
