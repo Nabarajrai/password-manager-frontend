@@ -32,7 +32,6 @@ const CustomInput = ({
         {icon && <div className="icon">{icon}</div>}
 
         <input
-          id="input"
           type={type === "password" ? (show ? "text" : "password") : type}
           className="input-field"
           placeholder={placeholder}
