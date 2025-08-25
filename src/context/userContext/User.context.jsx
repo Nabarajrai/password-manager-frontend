@@ -5,7 +5,9 @@ export const UserContext = createContext({
   setUser: () => {},
 });
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Replace null with actual user state management logic
+  const [user, setUser] = useState({
+    name: "John Doe",
+  }); // Replace null with actual user state management logic
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}

@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 //helpers
-import { useUser } from "../helpers/user.helper.jsx";
+import { useUser } from "../hooks/user/useUser.jsx";
 export const PublicRoute = () => {
   const user = useUser();
   console.log("PublicRoute user:", user);
