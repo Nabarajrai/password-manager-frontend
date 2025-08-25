@@ -3,7 +3,9 @@
 //pages
 @use "./pages/login" as *;
 @use "./pages/signup" as *;
+@use "./pages/dashboard" as *;
 
 //components
 @use "./components/customInput" as *;
 @use "./components/button" as *;
+@use "./components/header" as *;

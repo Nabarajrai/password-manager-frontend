@@ -1,7 +1,12 @@
-import React from "react";
-
+import HeaderComponent from "../../components/header/Header.component";
 const DashboardPage = () => {
-  return <div>dashboard</div>;
+  return (
+    <div className="dashboard-container">
+      <div className="header-section">
+        <HeaderComponent />
+      </div>
+    </div>
+  );
 };
 
 export default DashboardPage;
