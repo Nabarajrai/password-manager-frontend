@@ -1,5 +1,5 @@
 import { SecureIcon } from "../../helpers/Icon.helper";
-import { UserIcon } from "../../helpers/Icon.helper";
+import { UserIcon, AdminIcon, LogoutIcon } from "../../helpers/Icon.helper";
 
 const HeaderComponent = () => {
   return (
@@ -25,6 +25,18 @@ const HeaderComponent = () => {
                   Nabaraj Rai <span>(Admin)</span>
                 </p>
               </div>
+            </div>
+            <div className="admin-profile">
+              <div className="icon">
+                <AdminIcon />
+              </div>
+              <div className="name">Admin</div>
+            </div>
+            <div className="logout">
+              <div className="icon">
+                <LogoutIcon />
+              </div>
+              <div className="name">Logout</div>
             </div>
           </div>
         </div>
