@@ -35,21 +35,93 @@
     }
 }
 .header-left{
+    @include flex(flex-start);
+    gap:2.5rem;
     margin-left: auto;
     .user-profile{
+        @include flex(flex-start);
+        gap: 0.4rem;
         .icon {
                 @include flex(center);
-                width: 40px;
-                height: 40px;
+                width: 25px;
+                height: 25px;
                 svg {
-                    width: 1rem;
+                    width: 0.9rem;
                     height: 2rem;
                     stroke: $text-color;
                 }
             }
         .name p{
                 color: $text-color;
-                font-size: 0.8rem;
+                font-size: 0.9rem;
+                span{
+                    color: $text-color;
+                }
         }
+    }
+    .admin-profile{
+        @include flex(flex-start);
+        gap: 0.4rem;
+        cursor: pointer;
+        &:hover .icon{
+            svg{
+                stroke: $icon-hover-color;
+            }
+        
+        }
+        &:hover .name{
+            color: $icon-hover-color;
+        }
+            .icon {
+                    @include flex(center);
+                    width: 25px;
+                    height: 25px;
+                    svg {
+                        width: 0.9rem;
+                        height: 2rem;
+                        stroke: $text-color;
+                        transition: all 0.3s ease;
+                    }
+                }
+        .name{
+                color: $text-color;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+        }
+
+    }
+    .logout{
+        @include flex(flex-start);
+        gap: 0.4rem;
+        cursor: pointer;
+        &:hover .icon {
+                svg {
+                    stroke: $icon-hover-color;
+                }
+        
+            }
+        
+        &:hover .name {
+                color: $icon-hover-color;
+            }
+            .icon {
+                    @include flex(center);
+                    width: 25px;
+                    height: 25px;
+            
+                    svg {
+                        width: 0.9rem;
+                        height: 2rem;
+                        stroke: $text-color;
+                        transition: all 0.3s ease;
+                    }
+                }
+        .name{
+                color: $text-color;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+                
+        }
+       
     }
 }
