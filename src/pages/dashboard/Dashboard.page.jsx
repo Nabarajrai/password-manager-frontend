@@ -1,5 +1,6 @@
 import HeaderComponent from "../../components/header/Header.component";
 import CardComponent from "../../components/card/Card.component";
+import SearchInputComponent from "../../components/searchInput/SearchInput.component";
 //icons
 import { KeyIcon, CategoryIcon, SecureIcon } from "../../helpers/Icon.helper";
 const DashboardPage = () => {
@@ -35,6 +36,12 @@ const DashboardPage = () => {
                 iconColor="green"
               />
             </div>
+          </div>
+          <div className="dashboard-actions">
+            <div className="search-action">
+              <SearchInputComponent placeholder="Search Passwords..." />
+            </div>
+            {/* <div className="category-action">helow</div> */}
           </div>
         </div>
       </div>
