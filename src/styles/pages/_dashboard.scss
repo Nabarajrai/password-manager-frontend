@@ -1,4 +1,16 @@
 @use "../helpers/variables" as *;
 @use "../helpers/mixin" as *;
 
-
+.dashboard-container {
+  background: linear-gradient(to bottom, #eef2ff, #fff);
+  height: 100%;
+}
+.dashboard-display-card {
+  @include flex(center);
+  gap: 0.5rem;
+  width: 100%;
+  margin: 2rem 0px;
+  .card-list-section {
+    flex: 1;
+  }
+}
