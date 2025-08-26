@@ -30,3 +30,27 @@
     gap: 1rem;
   }
 }
+
+.not-found {
+  @include flex(center);
+  flex-direction: column;
+  text-align: center;
+  padding: 6rem;
+  .icon {
+    svg {
+      width: 3rem;
+      height: 3rem;
+      stroke: rgba($text-color, $alpha: 0.6);
+      stroke-width: 2px;
+    }
+  }
+  .title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: $icon-hover-color;
+  }
+  .description {
+    font-size: 0.9rem;
+    color: $text-color;
+  }
+}

@@ -71,6 +71,15 @@ const DashboardPage = () => {
               </div>
             </div>
           </div>
+          <div className="not-found">
+            <div className="icon">
+              <KeyIcon />
+            </div>
+            <div className="title">No Passwords Found</div>
+            <div className="description">
+              Try adding some passwords to get started.
+            </div>
+          </div>
         </div>
       </div>
     </div>
