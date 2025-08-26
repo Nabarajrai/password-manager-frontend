@@ -1,0 +1,22 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.select-option-group {
+  @include flex(center);
+  border: 1px solid $border-color;
+  border-radius: 5px;
+  background: $text-color-primary;
+  box-shadow: rgb(229 231 235) 0px 0px 0px 1px;
+  height: auto;
+  transition: all 0.3s ease-in-out;
+  &:hover,
+  &:focus-within {
+    border-color: $button-bg-color-primary-frist;
+  }
+  .select-option {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    height: 100%;
+    color: $text-color;
+  }
+}

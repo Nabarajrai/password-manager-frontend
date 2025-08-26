@@ -2,7 +2,15 @@ import HeaderComponent from "../../components/header/Header.component";
 import CardComponent from "../../components/card/Card.component";
 import SearchInputComponent from "../../components/searchInput/SearchInput.component";
 //icons
-import { KeyIcon, CategoryIcon, SecureIcon } from "../../helpers/Icon.helper";
+import {
+  KeyIcon,
+  CategoryIcon,
+  SecureIcon,
+  GenerateIcon,
+  AddIcon,
+} from "../../helpers/Icon.helper";
+import SelectOptionComponent from "../../components/selectOption/SelectOption.component";
+import ButtonComponent from "../../components/button/Button.component";
 const DashboardPage = () => {
   return (
     <div className="dashboard-container">
@@ -41,7 +49,27 @@ const DashboardPage = () => {
             <div className="search-action">
               <SearchInputComponent placeholder="Search Passwords..." />
             </div>
-            {/* <div className="category-action">helow</div> */}
+            <div className="category-action">
+              <SelectOptionComponent />
+            </div>
+            <div className="modal-actions">
+              <div className="generate-action">
+                <ButtonComponent>
+                  <div className="icon">
+                    <GenerateIcon />
+                  </div>
+                  <div className="title">Generate Password</div>
+                </ButtonComponent>
+              </div>
+              <div className="addPassword-action">
+                <ButtonComponent varient="secondary">
+                  <div className="icon">
+                    <AddIcon />
+                  </div>
+                  <div className="title">Add Password</div>
+                </ButtonComponent>
+              </div>
+            </div>
           </div>
         </div>
       </div>

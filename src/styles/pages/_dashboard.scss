@@ -14,3 +14,19 @@
     flex: 1;
   }
 }
+.dashboard-actions {
+  @include flex(center);
+  gap: 1rem;
+  margin-left: auto;
+  .search-action {
+    flex-basis: 55%;
+  }
+  .category-action {
+    flex-basis: 20%;
+  }
+  .modal-actions {
+    @include flex(center);
+    flex-basis: 35%;
+    gap: 1rem;
+  }
+}
