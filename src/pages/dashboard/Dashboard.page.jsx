@@ -11,6 +11,7 @@ import {
 } from "../../helpers/Icon.helper";
 import SelectOptionComponent from "../../components/selectOption/SelectOption.component";
 import ButtonComponent from "../../components/button/Button.component";
+import PasswordCardComponent from "../../components/passwordCard/PasswordCard.component";
 const DashboardPage = () => {
   return (
     <div className="dashboard-container">
@@ -71,13 +72,47 @@ const DashboardPage = () => {
               </div>
             </div>
           </div>
-          <div className="not-found">
+          {/* <div className="not-found">
             <div className="icon">
               <KeyIcon />
             </div>
             <div className="title">No Passwords Found</div>
             <div className="description">
               Try adding some passwords to get started.
+            </div>
+          </div> */}
+
+          <div className="password-card-lists">
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
             </div>
           </div>
         </div>

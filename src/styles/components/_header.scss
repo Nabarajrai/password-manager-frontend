@@ -2,10 +2,15 @@
 @use "../helpers/mixin" as *;
 
 .header-container{
+    position: fixed;
+    top: 0;
+    z-index: 100;
     background-color: $header-background-color;
     width: 100%;
     padding: 0.7rem 1rem;
+    background-color: $header-background-color;
     box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+    backdrop-filter: blur(10px);
 }
 .header-section{
     @include flex(flex-start);
