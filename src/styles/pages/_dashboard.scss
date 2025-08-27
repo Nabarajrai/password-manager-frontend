@@ -4,6 +4,10 @@
 .dashboard-container {
   background: linear-gradient(to bottom, #eef2ff, #fff);
   height: 100%;
+  height: auto;
+}
+.dashboard-main-section{
+  margin: 6.3rem 0
 }
 .dashboard-display-card {
   @include flex(center);
@@ -53,4 +57,10 @@
     font-size: 0.9rem;
     color: $text-color;
   }
+}
+.password-card-lists{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+  padding: 2rem 0;
 }

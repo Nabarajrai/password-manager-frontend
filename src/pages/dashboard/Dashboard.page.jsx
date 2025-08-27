@@ -86,6 +86,34 @@ const DashboardPage = () => {
             <div className="password-card-item">
               <PasswordCardComponent />
             </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
+            <div className="password-card-item">
+              <PasswordCardComponent />
+            </div>
           </div>
         </div>
       </div>
