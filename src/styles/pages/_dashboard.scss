@@ -103,3 +103,32 @@
     }
   }
 }
+.dashboard-add-section{
+  padding: 0.6rem 0;
+}
+.dashboard-addPassword-footer{
+  @include flex(flex-start);
+  gap: 0.7rem;
+  width: 100%;
+  margin-top: 1.4rem;
+  margin-bottom: 1.3rem;
+  .save-action{
+    flex-basis: 70%;
+  }
+  .cancel-action{
+    flex-basis: 30%;
+    .title{
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: $icon-hover-color;
+    }
+    .icon{
+      svg{
+        width: 1.2rem;
+        height: 1.2rem;
+        stroke: rgba($text-color, 0.6);
+        stroke-width: 2px;
+      }
+    }
+  }
+}

@@ -1,15 +1,25 @@
-import React from "react";
+import classnames from "classnames";
+import { useMemo } from "react";
+const SelectOptionComponent = ({ type, category }) => {
+  const selectClass = useMemo(() => {
+    return type && `select-option-group-${type}`;
+  });
+  const combinedClass = useMemo(() => {
+    return classnames("select-option-group", selectClass);
+  }, [selectClass]);
 
-const SelectOptionComponent = () => {
   return (
-    <div className="select-option-group">
-      <select className="select-option">
-        <option value="all">All</option>
-        <option value="cbs">CBS</option>
-        <option value="nchl">NCHL</option>
-        <option value="outlook">Outlook</option>
-        <option value="gmail">Gmail</option>
-      </select>
+    <div className="select-option-component">
+      {category && <label className="select-label">{category}</label>}
+      <div className={combinedClass}>
+        <select className="select-option">
+          <option value="all">All</option>
+          <option value="cbs">CBS</option>
+          <option value="nchl">NCHL</option>
+          <option value="outlook">Outlook</option>
+          <option value="gmail">Gmail</option>
+        </select>
+      </div>
     </div>
   );
 };
