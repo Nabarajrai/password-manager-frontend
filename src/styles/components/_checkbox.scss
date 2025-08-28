@@ -5,6 +5,11 @@
   @include flex(flex-start);
   width: 100%;
   cursor: pointer;
+  .checkbox-input{
+    &:checked {
+      accent-color: $button-bg-color-primary;
+    }
+  }
   .checkbox-label {
     @include flex(flex-start);
     padding-left: 0.5rem;

@@ -29,7 +29,8 @@ const DashboardPage = () => {
       <ModalComponent
         title="Password Generator"
         isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}>
+        setIsModalOpen={setIsModalOpen}
+      >
         <div className="generate-newpass-input">
           <ReadOnlyInput />
         </div>
@@ -58,7 +59,7 @@ const DashboardPage = () => {
         </div>
         <div className="dashboard-modal-footer">
           <div className="generate-action">
-            <ButtonComponent varient="secondary">
+            <ButtonComponent varient="secondary" style="generator">
               <div className="icon">
                 <GenerateIcon />
               </div>
@@ -66,7 +67,7 @@ const DashboardPage = () => {
             </ButtonComponent>
           </div>
           <div className="copy-action">
-            <ButtonComponent varient="tertiary">
+            <ButtonComponent varient="copy" style="generator">
               <div className="icon">
                 <CopyIcon />
               </div>
