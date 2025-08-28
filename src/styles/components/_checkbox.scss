@@ -1,0 +1,14 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.checkbox-input-group {
+  @include flex(flex-start);
+  width: 100%;
+  cursor: pointer;
+  .checkbox-label {
+    @include flex(flex-start);
+    padding-left: 0.5rem;
+    font-size: 0.9rem;
+    color: $text-color;
+  }
+}

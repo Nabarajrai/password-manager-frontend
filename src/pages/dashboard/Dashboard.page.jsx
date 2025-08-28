@@ -18,6 +18,7 @@ import ModalComponent from "../../components/modal/Modal.component";
 import ReadOnlyInput from "../../components/readOnlyInput/ReadOnlyInput";
 import ProgressBar from "../../components/progressbar/ProgressBar";
 import RangeInput from "../../components/rangeInput/RangeInput";
+import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = useCallback(() => {
@@ -37,6 +38,41 @@ const DashboardPage = () => {
         </div>
         <div className="dashboard-range-input-section">
           <RangeInput />
+        </div>
+        <div className="dashboard-password-generator">
+          <div className="char">Character Types</div>
+          <div className="char-types">
+            <div className="char-types__type">
+              <CheckboxInput title="Uppercase Letters (A_Z)" />
+            </div>
+            <div className="char-types__type">
+              <CheckboxInput title="Lowercase Letters" />
+            </div>
+            <div className="char-types__type">
+              <CheckboxInput title="Numbers (0-9)" />
+            </div>
+            <div className="char-types__type">
+              <CheckboxInput title="Symbols (!@#$...)" />
+            </div>
+          </div>
+        </div>
+        <div className="dashboard-modal-footer">
+          <div className="generate-action">
+            <ButtonComponent varient="secondary">
+              <div className="icon">
+                <GenerateIcon />
+              </div>
+              <div className="title">Generate Password</div>
+            </ButtonComponent>
+          </div>
+          <div className="copy-action">
+            <ButtonComponent varient="tertiary">
+              <div className="icon">
+                <CopyIcon />
+              </div>
+              <div className="title">Copy</div>
+            </ButtonComponent>
+          </div>
         </div>
       </ModalComponent>
       <div className="dashboard-container">
