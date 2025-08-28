@@ -1,0 +1,40 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.progress-bar-container {
+  @include flex(flex-start);
+  width: 100%;
+  padding: 0.4rem 0;
+}
+.progress-bar {
+  @include flex(flex-start);
+  flex-direction: column;
+  width: 100%;
+  &__label {
+    @include flex(flex-start);
+    width: 100%;
+    padding: 0.3rem 0;
+    &--left {
+      font-size: 0.8rem;
+      color: $text-color;
+    }
+    &--right {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: $text-color;
+    }
+  }
+  &__fill {
+    background-color: rgba($text-color, 0.3);
+    height: 8px;
+    width: 100%;
+    border-radius: 10px;
+    &--child {
+      background-color: $secondary-color;
+      height: 100%;
+      border-radius: 10px;
+      width: 89%;
+      transition: all 0.3s ease;
+    }
+  }
+}

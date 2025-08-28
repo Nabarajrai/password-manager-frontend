@@ -15,8 +15,8 @@ import SelectOptionComponent from "../../components/selectOption/SelectOption.co
 import ButtonComponent from "../../components/button/Button.component";
 import PasswordCardComponent from "../../components/passwordCard/PasswordCard.component";
 import ModalComponent from "../../components/modal/Modal.component";
-import CustomInput from "../../components/customInput/CustomInput";
 import ReadOnlyInput from "../../components/readOnlyInput/ReadOnlyInput";
+import ProgressBar from "../../components/progressbar/ProgressBar";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = useCallback(() => {
@@ -30,6 +30,9 @@ const DashboardPage = () => {
         setIsModalOpen={setIsModalOpen}>
         <div className="generate-newpass-input">
           <ReadOnlyInput />
+        </div>
+        <div className="dashboard-progress-bar-section">
+          <ProgressBar />
         </div>
       </ModalComponent>
       <div className="dashboard-container">
