@@ -9,11 +9,14 @@ import {
   SecureIcon,
   GenerateIcon,
   AddIcon,
+  CopyIcon,
 } from "../../helpers/Icon.helper";
 import SelectOptionComponent from "../../components/selectOption/SelectOption.component";
 import ButtonComponent from "../../components/button/Button.component";
 import PasswordCardComponent from "../../components/passwordCard/PasswordCard.component";
 import ModalComponent from "../../components/modal/Modal.component";
+import CustomInput from "../../components/customInput/CustomInput";
+import ReadOnlyInput from "../../components/readOnlyInput/ReadOnlyInput";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = useCallback(() => {
@@ -25,7 +28,9 @@ const DashboardPage = () => {
         title="Password Generator"
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}>
-        <h1>Hellow I am modal</h1>
+        <div className="generate-newpass-input">
+          <ReadOnlyInput />
+        </div>
       </ModalComponent>
       <div className="dashboard-container">
         <div className="header-section">
