@@ -10,6 +10,8 @@ import {
   GenerateIcon,
   AddIcon,
   CopyIcon,
+  PasswordIcon,
+  EyeIcon,
 } from "../../helpers/Icon.helper";
 import SelectOptionComponent from "../../components/selectOption/SelectOption.component";
 import ButtonComponent from "../../components/button/Button.component";
@@ -18,18 +20,24 @@ import ModalComponent from "../../components/modal/Modal.component";
 import ReadOnlyInput from "../../components/readOnlyInput/ReadOnlyInput";
 import ProgressBar from "../../components/progressbar/ProgressBar";
 import RangeInput from "../../components/rangeInput/RangeInput";
+import AddPasswordInput from "../../components/addInput/AddPasswordInput";
 import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
+  }, []);
+  const handleAddModalOpen = useCallback(() => {
+    setIsAddModalOpen(true);
   }, []);
   return (
     <>
       <ModalComponent
         title="Password Generator"
         isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}>
+        setIsModalOpen={setIsModalOpen}
+      >
         <div className="generate-newpass-input">
           <ReadOnlyInput />
         </div>
@@ -58,7 +66,7 @@ const DashboardPage = () => {
         </div>
         <div className="dashboard-modal-footer">
           <div className="generate-action">
-            <ButtonComponent varient="secondary">
+            <ButtonComponent varient="secondary" style="generator">
               <div className="icon">
                 <GenerateIcon />
               </div>
@@ -66,11 +74,57 @@ const DashboardPage = () => {
             </ButtonComponent>
           </div>
           <div className="copy-action">
-            <ButtonComponent varient="tertiary">
+            <ButtonComponent varient="copy" style="generator">
               <div className="icon">
                 <CopyIcon />
               </div>
               <div className="title">Copy</div>
+            </ButtonComponent>
+          </div>
+        </div>
+      </ModalComponent>
+      <ModalComponent
+        title="Add New Password"
+        isModalOpen={isAddModalOpen}
+        setIsModalOpen={setIsAddModalOpen}
+      >
+        <div className="dashboard-add-password">
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="Title *"
+              placeholder="E.g: Google Account"
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="Username/Email"
+              placeholder="E.g: nabaraj2055@gmail.com"
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="Password *"
+              placeholder="Enter Password"
+              icon={<EyeIcon />}
+              copy={<CopyIcon />}
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <SelectOptionComponent type="forPass" category="category" />
+          </div>
+        </div>
+        <div className="dashboard-addPassword-footer">
+          <div className="save-action">
+            <ButtonComponent varient="secondary" style="generator">
+              <div className="title">Save Password</div>
+            </ButtonComponent>
+          </div>
+          <div className="cancel-action" onClick={handleAddModalOpen}>
+            <ButtonComponent varient="copy" style="generator">
+              <div className="icon">
+                <CopyIcon />
+              </div>
+              <div className="title">Cancel</div>
             </ButtonComponent>
           </div>
         </div>
@@ -123,7 +177,10 @@ const DashboardPage = () => {
                     <div className="title">Generate Password</div>
                   </ButtonComponent>
                 </div>
-                <div className="addPassword-action">
+                <div
+                  className="addPassword-action"
+                  onClick={handleAddModalOpen}
+                >
                   <ButtonComponent varient="secondary">
                     <div className="icon">
                       <AddIcon />

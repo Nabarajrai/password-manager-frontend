@@ -4,6 +4,7 @@ const ButtonComponent = ({
   children,
   size = "lg",
   varient = "primary",
+  style,
   ...rest
 }) => {
   const sizeClassName = useMemo(() => {
@@ -15,9 +16,17 @@ const ButtonComponent = ({
   const combinedClassName = useMemo(() => {
     return classnames("btn-group", varientClassName, sizeClassName);
   }, [sizeClassName, varientClassName]);
+
+  const varientStyles = useMemo(() => {
+    return style && ` btn-${style}`;
+  });
+  console.log(varientStyles);
+  const combinedStyle = useMemo(() => {
+    return classnames("btn", varientStyles);
+  }, [varientStyles]);
   return (
     <div className={combinedClassName}>
-      <button className="btn" {...rest}>
+      <button className={combinedStyle} {...rest}>
         {children}
       </button>
     </div>

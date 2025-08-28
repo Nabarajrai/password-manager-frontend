@@ -23,9 +23,26 @@
 }
 .range-input {
   width: 100%;
-
+  
   &__input {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 10px;
     height: 8px;
+    background: rgba($text-color, 0.3);
     width: inherit;
+    &::-webkit-slider-thumb{
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: $button-bg-color-primary;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      &:hover {
+        background: rgba($button-bg-color-primary, 0.9);
+      }
+    }
   }
 }
