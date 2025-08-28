@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import HeaderComponent from "../../components/header/Header.component";
 import CardComponent from "../../components/card/Card.component";
 import SearchInputComponent from "../../components/searchInput/SearchInput.component";
@@ -8,71 +9,131 @@ import {
   SecureIcon,
   GenerateIcon,
   AddIcon,
+  CopyIcon,
 } from "../../helpers/Icon.helper";
 import SelectOptionComponent from "../../components/selectOption/SelectOption.component";
 import ButtonComponent from "../../components/button/Button.component";
 import PasswordCardComponent from "../../components/passwordCard/PasswordCard.component";
+import ModalComponent from "../../components/modal/Modal.component";
+import ReadOnlyInput from "../../components/readOnlyInput/ReadOnlyInput";
+import ProgressBar from "../../components/progressbar/ProgressBar";
+import RangeInput from "../../components/rangeInput/RangeInput";
+import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 const DashboardPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleOpenModal = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
   return (
-    <div className="dashboard-container">
-      <div className="header-section">
-        <HeaderComponent />
-      </div>
-      <div className="dashboard-main-section">
-        <div className="wrapper">
-          <div className="dashboard-display-card">
-            <div className="card-list-section">
-              <CardComponent
-                title="Total Passwords"
-                number="0"
-                icon={<KeyIcon />}
-                iconColor="purple"
-              />
+    <>
+      <ModalComponent
+        title="Password Generator"
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}>
+        <div className="generate-newpass-input">
+          <ReadOnlyInput />
+        </div>
+        <div className="dashboard-progress-bar-section">
+          <ProgressBar />
+        </div>
+        <div className="dashboard-range-input-section">
+          <RangeInput />
+        </div>
+        <div className="dashboard-password-generator">
+          <div className="char">Character Types</div>
+          <div className="char-types">
+            <div className="char-types__type">
+              <CheckboxInput title="Uppercase Letters (A_Z)" />
             </div>
-            <div className="card-list-section">
-              <CardComponent
-                title="Categories"
-                number="7"
-                icon={<CategoryIcon />}
-                iconColor="green"
-              />
+            <div className="char-types__type">
+              <CheckboxInput title="Lowercase Letters" />
             </div>
-            <div className="card-list-section">
-              <CardComponent
-                title="Security Score"
-                number="Good"
-                icon={<SecureIcon />}
-                iconColor="green"
-              />
+            <div className="char-types__type">
+              <CheckboxInput title="Numbers (0-9)" />
+            </div>
+            <div className="char-types__type">
+              <CheckboxInput title="Symbols (!@#$...)" />
             </div>
           </div>
-          <div className="dashboard-actions">
-            <div className="search-action">
-              <SearchInputComponent placeholder="Search Passwords..." />
-            </div>
-            <div className="category-action">
-              <SelectOptionComponent />
-            </div>
-            <div className="modal-actions">
-              <div className="generate-action">
-                <ButtonComponent>
-                  <div className="icon">
-                    <GenerateIcon />
-                  </div>
-                  <div className="title">Generate Password</div>
-                </ButtonComponent>
+        </div>
+        <div className="dashboard-modal-footer">
+          <div className="generate-action">
+            <ButtonComponent varient="secondary">
+              <div className="icon">
+                <GenerateIcon />
               </div>
-              <div className="addPassword-action">
-                <ButtonComponent varient="secondary">
-                  <div className="icon">
-                    <AddIcon />
-                  </div>
-                  <div className="title">Add Password</div>
-                </ButtonComponent>
-              </div>
-            </div>
+              <div className="title">Generate Password</div>
+            </ButtonComponent>
           </div>
-          {/* <div className="not-found">
+          <div className="copy-action">
+            <ButtonComponent varient="tertiary">
+              <div className="icon">
+                <CopyIcon />
+              </div>
+              <div className="title">Copy</div>
+            </ButtonComponent>
+          </div>
+        </div>
+      </ModalComponent>
+      <div className="dashboard-container">
+        <div className="header-section">
+          <HeaderComponent />
+        </div>
+        <div className="dashboard-main-section">
+          <div className="wrapper">
+            <div className="dashboard-display-card">
+              <div className="card-list-section">
+                <CardComponent
+                  title="Total Passwords"
+                  number="0"
+                  icon={<KeyIcon />}
+                  iconColor="purple"
+                />
+              </div>
+              <div className="card-list-section">
+                <CardComponent
+                  title="Categories"
+                  number="7"
+                  icon={<CategoryIcon />}
+                  iconColor="green"
+                />
+              </div>
+              <div className="card-list-section">
+                <CardComponent
+                  title="Security Score"
+                  number="Good"
+                  icon={<SecureIcon />}
+                  iconColor="green"
+                />
+              </div>
+            </div>
+            <div className="dashboard-actions">
+              <div className="search-action">
+                <SearchInputComponent placeholder="Search Passwords..." />
+              </div>
+              <div className="category-action">
+                <SelectOptionComponent />
+              </div>
+              <div className="modal-actions">
+                <div className="generate-action" onClick={handleOpenModal}>
+                  <ButtonComponent>
+                    <div className="icon">
+                      <GenerateIcon />
+                    </div>
+                    <div className="title">Generate Password</div>
+                  </ButtonComponent>
+                </div>
+                <div className="addPassword-action">
+                  <ButtonComponent varient="secondary">
+                    <div className="icon">
+                      <AddIcon />
+                    </div>
+                    <div className="title">Add Password</div>
+                  </ButtonComponent>
+                </div>
+              </div>
+            </div>
+            {/* <div className="not-found">
             <div className="icon">
               <KeyIcon />
             </div>
@@ -82,42 +143,43 @@ const DashboardPage = () => {
             </div>
           </div> */}
 
-          <div className="password-card-lists">
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
+            <div className="password-card-lists">
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
 
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
-            </div>
-            <div className="password-card-item">
-              <PasswordCardComponent />
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

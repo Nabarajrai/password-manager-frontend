@@ -21,7 +21,7 @@
   display: block;
   margin-bottom: 0.4rem;
   .lebal-text {
-    color: $text-color;
+    color: $text-color-tertiary;
     font-size: 0.9rem;
   }
 }
@@ -33,18 +33,18 @@
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
   &:focus-within {
-    border-color: $text-color;
+    border-color: $text-color-tertiary;
   }
   .input-field {
     width: 100%;
     background: transparent;
     border: none;
     outline: none;
-    color: $text-color;
+    color: $text-color-tertiary;
     font-size: 0.9rem;
   }
   .input-field::placeholder {
-    color: $text-color;
+    color: $text-color-tertiary;
     font-size: 0.9rem;
   }
   .icon {
@@ -53,7 +53,7 @@
     svg {
       height: 1rem;
       width: 1rem;
-      stroke: $text-color;
+      stroke: $text-color-tertiary;
     }
   }
   .eye-icon {
@@ -63,7 +63,7 @@
     svg {
       height: 1rem;
       width: 1rem;
-      stroke: $text-color;
+      stroke: $text-color-tertiary;
     }
   }
 }

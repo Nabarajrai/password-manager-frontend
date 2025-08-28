@@ -1,0 +1,81 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.modal-container {
+  @include flex(center);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100dvh;
+  width: 100%;
+  z-index: 2;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  &.active {
+    pointer-events: auto;
+    transform: scale(1);
+    .overlayout {
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+    .modal-main-content {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+.overlayout {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  height: 100%;
+  width: 100%;
+  backdrop-filter: blur(0px);
+  transition: all 0.3s ease;
+}
+.modal-main-content {
+  position: relative;
+  max-width: 28rem;
+  width: 100%;
+  z-index: 4;
+  background: $category-bg-color;
+  border-radius: 10px;
+  // padding: 1.5rem 1.4rem;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.3s ease;
+  .modal-header {
+    @include flex(flex-start);
+    width: 100%;
+    border-bottom: 1px solid rgba($text-color, 0.1);
+    padding: 1.5rem 1.4rem;
+    .modal-header-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: $text-color-secondary;
+    }
+    .close-modal {
+      margin-left: auto;
+      cursor: pointer;
+      &:hover {
+        svg {
+          stroke: $text-color;
+        }
+      }
+      svg {
+        width: 1rem;
+        height: 1rem;
+        stroke: rgba($text-color, 0.6);
+        transition: all 0.3s ease;
+      }
+    }
+  }
+  .modal-des {
+    padding: 1.2rem 1.4rem;
+  }
+}

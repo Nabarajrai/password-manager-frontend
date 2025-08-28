@@ -48,8 +48,19 @@
       color: rgb(26, 25, 25);
     }
   }
+  &.btn-group__copy {
+    background: rgba($text-color, 1);
+    box-shadow: $border-color 0px 0px 0px 1px;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      background: rgba($button-bg-color-secondary, 0.7);
+    }
+    .btn {
+      color: rgb(26, 25, 25);
+    }
+  }
   &.btn-group__lg {
-    width: inherit;
+    width: 100%;
     margin: 0 auto;
   }
   &.btn-group__md {
