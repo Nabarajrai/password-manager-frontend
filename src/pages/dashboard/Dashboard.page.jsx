@@ -17,6 +17,7 @@ import PasswordCardComponent from "../../components/passwordCard/PasswordCard.co
 import ModalComponent from "../../components/modal/Modal.component";
 import ReadOnlyInput from "../../components/readOnlyInput/ReadOnlyInput";
 import ProgressBar from "../../components/progressbar/ProgressBar";
+import RangeInput from "../../components/rangeInput/RangeInput";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = useCallback(() => {
@@ -33,6 +34,9 @@ const DashboardPage = () => {
         </div>
         <div className="dashboard-progress-bar-section">
           <ProgressBar />
+        </div>
+        <div className="dashboard-range-input-section">
+          <RangeInput />
         </div>
       </ModalComponent>
       <div className="dashboard-container">

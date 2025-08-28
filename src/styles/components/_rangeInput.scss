@@ -1,0 +1,31 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.range-input-group {
+  @include flex(flex-start);
+  flex-direction: column;
+  width: 100%;
+  padding: 0.7rem 0;
+}
+.range-input-label {
+  @include flex(flex-start);
+  width: 100%;
+  padding: 0.1rem 0;
+  &__length {
+    font-size: 0.8rem;
+    color: $text-color;
+  }
+  &__char {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: $text-color;
+  }
+}
+.range-input {
+  width: 100%;
+
+  &__input {
+    height: 8px;
+    width: inherit;
+  }
+}
