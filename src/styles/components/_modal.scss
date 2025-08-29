@@ -13,6 +13,11 @@
   z-index: 2;
   pointer-events: none;
   transition: all 0.3s ease;
+  &.modal-container-admin {
+    .modal-main-content {
+      max-width: 56rem;
+    }
+  }
   &.active {
     pointer-events: auto;
     transform: scale(1);
