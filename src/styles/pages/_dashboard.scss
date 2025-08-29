@@ -6,8 +6,8 @@
   height: 100%;
   height: auto;
 }
-.dashboard-main-section{
-  margin: 6.3rem 0
+.dashboard-main-section {
+  margin: 6.3rem 0;
 }
 .dashboard-display-card {
   @include flex(center);
@@ -58,72 +58,71 @@
     color: $text-color;
   }
 }
-.password-card-lists{
+.password-card-lists {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1rem;
   padding: 2rem 0;
 }
-.dashboard-modal-footer{
+.dashboard-modal-footer {
   @include flex(center);
   width: 100%;
   gap: 1rem;
   padding-top: 1rem;
-  .generate-action{
+  .generate-action {
     flex-basis: 70%;
   }
-.copy-action{
-  flex-basis: 30%;
-  .title{
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: $icon-hover-color;
-  }
-  .icon{
-    svg{
-      width: 1.2rem;
-      height: 1.2rem;
-      stroke: rgba($text-color, 0.6);
-      stroke-width: 2px;
+  .copy-action {
+    flex-basis: 30%;
+    .title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: $icon-hover-color;
+    }
+    .icon {
+      svg {
+        width: 1.2rem;
+        height: 1.2rem;
+        stroke: rgba($text-color, 0.6);
+        stroke-width: 2px;
+      }
     }
   }
 }
-}
-.dashboard-password-generator{
-  .char{
+.dashboard-password-generator {
+  .char {
     font-size: 0.9rem;
     font-weight: 500;
     color: $icon-hover-color;
     padding: 0.5rem 0;
   }
-  .char-types{
-    &__type{
-          margin: 0.5rem 0;
-
+  .char-types {
+    &__type {
+      margin: 0.5rem 0;
     }
   }
 }
-.dashboard-add-section{
+.dashboard-add-section {
   padding: 0.6rem 0;
 }
-.dashboard-addPassword-footer{
+.dashboard-addPassword-footer {
   @include flex(flex-start);
   gap: 0.7rem;
   width: 100%;
   margin-top: 1.4rem;
   margin-bottom: 1.3rem;
-  .save-action{
+  .save-action {
     flex-basis: 70%;
   }
-  .cancel-action{
+  .cancel-action {
     flex-basis: 30%;
-    .title{
+    .title {
       font-size: 0.9rem;
       font-weight: 500;
       color: $icon-hover-color;
     }
-    .icon{
-      svg{
+    .icon {
+      svg {
         width: 1.2rem;
         height: 1.2rem;
         stroke: rgba($text-color, 0.6);

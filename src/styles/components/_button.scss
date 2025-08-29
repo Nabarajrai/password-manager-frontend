@@ -53,7 +53,7 @@
     box-shadow: $border-color 0px 0px 0px 1px;
     transition: all 0.3s ease-in-out;
     &:hover {
-    background: rgba($text-color, 0.3);
+      background: rgba($text-color, 0.3);
     }
     .btn {
       color: rgb(26, 25, 25);
@@ -80,8 +80,8 @@
     padding: 0.7rem 0.8rem;
     text-wrap: nowrap;
     cursor: pointer;
-    &.btn-generator{
-          padding: 0.4rem 0.8rem;
+    &.btn-generator {
+      padding: 0.6rem 0.8rem;
     }
   }
 }

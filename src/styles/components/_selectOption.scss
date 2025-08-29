@@ -9,36 +9,37 @@
   box-shadow: rgb(229 231 235) 0px 0px 0px 1px;
   height: auto;
   transition: all 0.3s ease-in-out;
-    &:hover,
+  &:hover,
   &:focus-within {
     border-color: $button-bg-color-primary-frist;
   }
-  &.select-option-group-forPass{
-  @include flex(center);
-  border: 1px solid rgba($text-color, 0.2);
-  background-color: transparent;
-  border-radius: 5px;
-  transition: all 0.3s ease-in-out;
-  &:focus-within {
-    border-color: $text-color;
-  }
-  .select-option{
-    width: 100%;
-    padding: 0.5rem 0.8rem;
-    height: 100%;
-    color: $text-color;
+  &.select-option-group-forPass {
+    @include flex(center);
+    border: 1px solid rgba($text-color, 0.2);
     background-color: transparent;
-    option{
-      color: $text-color;
-      background-color: $text-color-primary;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease-in-out;
+    &:focus-within {
+      border-color: $text-color;
     }
-  }
-  .select-label{
-    padding: 0.5rem;
-    color: $text-color;
-    font-size: 0.9rem;
-    font-weight: 500;
-  }
+    .select-option {
+      width: 100%;
+      padding: 0.7rem 0.8rem;
+      height: 100%;
+      color: $text-color;
+      background-color: transparent;
+      option {
+        color: $text-color;
+        background-color: $text-color-primary;
+      }
+    }
+    .select-label {
+      padding: 0.5rem;
+      color: $text-color;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
   }
 
   .select-option {
@@ -46,18 +47,17 @@
     padding: 0.7rem 0.8rem;
     height: 100%;
     color: $text-color;
-    option{
+    option {
       color: $text-color;
     }
   }
 }
 
-.select-option-component{
-  .select-label{
+.select-option-component {
+  .select-label {
     color: $text-color-secondary;
     font-size: 0.9rem;
     text-transform: capitalize;
     margin-bottom: 0.4rem;
-
   }
 }

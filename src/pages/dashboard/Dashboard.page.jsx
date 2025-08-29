@@ -28,16 +28,15 @@ const DashboardPage = () => {
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
-  const handleAddModalOpen = useCallback(() => {
-    setIsAddModalOpen(true);
+  const handleAddModalClose = useCallback(() => {
+    setIsAddModalOpen(false);
   }, []);
   return (
     <>
       <ModalComponent
         title="Password Generator"
         isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-      >
+        setIsModalOpen={setIsModalOpen}>
         <div className="generate-newpass-input">
           <ReadOnlyInput />
         </div>
@@ -86,8 +85,7 @@ const DashboardPage = () => {
       <ModalComponent
         title="Add New Password"
         isModalOpen={isAddModalOpen}
-        setIsModalOpen={setIsAddModalOpen}
-      >
+        setIsModalOpen={setIsAddModalOpen}>
         <div className="dashboard-add-password">
           <div className="dashboard-add-section">
             <AddPasswordInput
@@ -119,7 +117,7 @@ const DashboardPage = () => {
               <div className="title">Save Password</div>
             </ButtonComponent>
           </div>
-          <div className="cancel-action" onClick={handleAddModalOpen}>
+          <div className="cancel-action" onClick={handleAddModalClose}>
             <ButtonComponent varient="copy" style="generator">
               <div className="icon">
                 <CopyIcon />
@@ -177,10 +175,7 @@ const DashboardPage = () => {
                     <div className="title">Generate Password</div>
                   </ButtonComponent>
                 </div>
-                <div
-                  className="addPassword-action"
-                  onClick={handleAddModalOpen}
-                >
+                <div className="addPassword-action">
                   <ButtonComponent varient="secondary">
                     <div className="icon">
                       <AddIcon />
