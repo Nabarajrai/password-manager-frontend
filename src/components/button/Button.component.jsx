@@ -19,8 +19,7 @@ const ButtonComponent = ({
 
   const varientStyles = useMemo(() => {
     return style && ` btn-${style}`;
-  });
-  console.log(varientStyles);
+  }, [style]);
   const combinedStyle = useMemo(() => {
     return classnames("btn", varientStyles);
   }, [varientStyles]);

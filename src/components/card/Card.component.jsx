@@ -3,7 +3,6 @@ import classnames from "classnames";
 
 const CardComponent = ({ title, number, icon, iconColor }) => {
   const iconClass = classnames("icon", `icon-${iconColor}`);
-  console.log("join", iconClass);
   return (
     <div className="card-container">
       <div className="card-des">

@@ -5,7 +5,7 @@ import {
   CopyIcon,
   EyeIcon,
 } from "../../helpers/Icon.helper";
-const PasswordCardComponent = () => {
+const PasswordCardComponent = ({ handleAddModalOpen }) => {
   return (
     <div className="password-card-group">
       <div className="password-card-header">
@@ -14,7 +14,7 @@ const PasswordCardComponent = () => {
           <span className="category">General</span>
         </div>
         <div className="password-card-action">
-          <div className="icon">
+          <div className="icon" onClick={handleAddModalOpen}>
             <EditIcon />
           </div>
           <div className="icon-d">
