@@ -1,12 +1,12 @@
 import React from "react";
 
-const AddPasswordInput = ({ label, placeholder, icon, copy }) => {
+const AddPasswordInput = ({ label, placeholder, icon, copy, type }) => {
   return (
     <div className="addPassword-group">
       <div className="addPassword-label">{label}</div>
       <div className="addPassword-input-group">
         <input
-          type="text"
+          type={type}
           className="addPassword-input-field"
           placeholder={placeholder}
         />

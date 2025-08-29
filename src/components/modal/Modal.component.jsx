@@ -1,7 +1,13 @@
 import { useCallback, memo, useMemo } from "react";
 import { CloseIcon } from "../../helpers/Icon.helper";
 import classnames from "classnames";
-const ModalComponent = ({ isModalOpen, setIsModalOpen, title, children }) => {
+const ModalComponent = ({
+  isModalOpen,
+  setIsModalOpen,
+  modalFor,
+  title,
+  children,
+}) => {
   const handleClose = useCallback(() => {
     console.log("close");
     setIsModalOpen(false);
@@ -9,7 +15,8 @@ const ModalComponent = ({ isModalOpen, setIsModalOpen, title, children }) => {
 
   const joinClassName = useMemo(() => {
     const activeClass = isModalOpen ? "active" : "";
-    return classnames("modal-container", activeClass);
+    const modalClass = modalFor ? `modal-container-${modalFor}` : "";
+    return classnames("modal-container", activeClass, modalClass);
   }, [isModalOpen]);
 
   return (
