@@ -70,7 +70,7 @@ const HeaderComponent = () => {
                 <AddPasswordInput type="password" placeholder="Password" />
               </div>
               <div className="useradd-form-input-section">
-                <AddPasswordInput type="number" placeholder="4 Digit Pin" />
+                <AddPasswordInput type="password" placeholder="4 Digit Pin" />
               </div>
               <div className="useradd-form-input-section">
                 <SelectOptionComponent type="forPass" />
