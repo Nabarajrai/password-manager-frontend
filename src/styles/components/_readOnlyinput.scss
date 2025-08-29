@@ -13,7 +13,7 @@
   }
 }
 
-.input-section {
+.input-section-readonly {
   @include flex(center);
   width: 100%;
   border: 1px solid rgba($text-color, 0.3);

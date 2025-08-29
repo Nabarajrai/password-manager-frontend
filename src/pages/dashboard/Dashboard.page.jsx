@@ -31,6 +31,9 @@ const DashboardPage = () => {
   const handleAddModalClose = useCallback(() => {
     setIsAddModalOpen(false);
   }, []);
+  const handleAddModalOpen = useCallback(() => {
+    setIsAddModalOpen(true);
+  }, []);
   return (
     <>
       <ModalComponent
@@ -175,7 +178,9 @@ const DashboardPage = () => {
                     <div className="title">Generate Password</div>
                   </ButtonComponent>
                 </div>
-                <div className="addPassword-action">
+                <div
+                  className="addPassword-action"
+                  onClick={handleAddModalOpen}>
                   <ButtonComponent varient="secondary">
                     <div className="icon">
                       <AddIcon />
@@ -197,35 +202,86 @@ const DashboardPage = () => {
 
             <div className="password-card-lists">
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
 
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
+              </div>
+
+              <div className="password-card-item">
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
               <div className="password-card-item">
-                <PasswordCardComponent />
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
+              </div>
+              <div className="password-card-item">
+                <PasswordCardComponent
+                  handleAddModalOpen={handleAddModalOpen}
+                />
               </div>
             </div>
           </div>

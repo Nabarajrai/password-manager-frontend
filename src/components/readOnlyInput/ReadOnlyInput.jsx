@@ -5,7 +5,7 @@ const ReadOnlyInput = () => {
       <label htmlFor="readonly-input" className="input-label">
         Password Generator
       </label>
-      <div className="input-section">
+      <div className="input-section-readonly">
         <input
           type="text"
           className="readonly-input"
