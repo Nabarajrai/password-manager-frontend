@@ -129,6 +129,8 @@
 .admin-panel-container{
   width: 100%;
   padding: 0.5rem 0;
+  max-height: 90dvh;
+  overflow-y: auto;
   .admin-panel-dash{
     @include flex(flex-start);
     gap: 1rem;
