@@ -100,6 +100,41 @@ const HeaderComponent = () => {
               </div>
             </div>
           </div>
+          <div className="admin-panel-table-section">
+            <div className="admin-panel-table-section__head">
+              User Management
+            </div>
+            <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Rol</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Nabaraj Rai</td>
+                    <td>Admin</td>
+                    <td>2024-06-10</td>
+                    <td>
+                      <button>X</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>Regular User</td>
+                    <td>2024-06-11</td>
+                    <td>
+                      <button>x</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </ModalComponent>
       <div className="header-container">
