@@ -1,19 +1,29 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { AddUserIcon, PeopleIcon, SecureIcon } from "../../helpers/Icon.helper";
 import { UserIcon, AdminIcon, LogoutIcon } from "../../helpers/Icon.helper";
 import ModalComponent from "../modal/Modal.component";
 import CardComponent from "../card/Card.component";
 import ButtonComponent from "../button/Button.component";
 import AddPasswordInput from "../addInput/AddPasswordInput";
-import ReadOnlyInput from "../readOnlyInput/ReadOnlyInput";
 import SelectOptionComponent from "../selectOption/SelectOption.component";
+import classnames from "classnames";
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [addUserSection, setAddUserSection] = useState(false);
 
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
   }, []);
-
+  const handleAdduser = useCallback(() => {
+    setAddUserSection(true);
+  }, []);
+  const handleAdduserClose = useCallback(() => {
+    setAddUserSection(false);
+  }, []);
+  const handleAdduserSection = useMemo(() => {
+    const activeClass = addUserSection && "active";
+    return classnames("admin-panel-useradd-form", activeClass);
+  }, [addUserSection]);
   return (
     <>
       <ModalComponent
@@ -49,7 +59,7 @@ const HeaderComponent = () => {
               />
             </div>
           </div>
-          <div className="admin-panel-action">
+          <div className="admin-panel-action" onClick={handleAdduser}>
             <ButtonComponent variant="primary">
               <div className="icon">
                 <AddUserIcon />
@@ -57,7 +67,7 @@ const HeaderComponent = () => {
               <div className="title">Add New User</div>
             </ButtonComponent>
           </div>
-          <div className="admin-panel-useradd-form">
+          <div className={handleAdduserSection}>
             <h3>Add New User</h3>
             <div className="useradd-form-group">
               <div className="useradd-form-input-section">
@@ -81,7 +91,10 @@ const HeaderComponent = () => {
                     Add User
                   </ButtonComponent>
                 </div>
-                <div className="user-from-action-section__cancel">
+                <div
+                  className="user-from-action-section__cancel"
+                  onClick={handleAdduserClose}
+                >
                   <ButtonComponent varient="copy">Cancel</ButtonComponent>
                 </div>
               </div>

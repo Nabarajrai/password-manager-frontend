@@ -147,6 +147,11 @@
   padding: 1.5rem;
   border-radius: 10px;
   width: 100%;
+  display: none;
+  transition: all 0.3s ease;
+  &.active{
+    display: block;
+  }
   h3{
     color: $text-color-secondary;
     font-size: 1rem;
