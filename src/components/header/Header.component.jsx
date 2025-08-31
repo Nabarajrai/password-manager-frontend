@@ -7,6 +7,11 @@ import ButtonComponent from "../button/Button.component";
 import AddPasswordInput from "../addInput/AddPasswordInput";
 import SelectOptionComponent from "../selectOption/SelectOption.component";
 import classnames from "classnames";
+import {
+  ResetKeyIcon,
+  ResetPinIcon,
+  DeleteIcon,
+} from "../../helpers/Icon.helper";
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
@@ -116,19 +121,49 @@ const HeaderComponent = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Nabaraj Rai</td>
+                    <td className="admin-user">
+                      <div className="admin-user__name">
+                        Nabaraj Rai <span>(You)</span>
+                      </div>
+                      <div className="admin-user__email">
+                        nabaraj2055@gmail.com
+                      </div>
+                    </td>
                     <td>Admin</td>
                     <td>2024-06-10</td>
-                    <td>
-                      <button>X</button>
+                    <td className="action-btns">
+                      <button className="reset-key" title="Reset Password">
+                        <ResetKeyIcon />
+                      </button>
+                      <button className="reset-pin" title="Reset Pin">
+                        <ResetPinIcon />
+                      </button>
+                      <button className="delete-user" title="Delete User">
+                        <DeleteIcon />
+                      </button>
                     </td>
                   </tr>
                   <tr>
-                    <td>John Doe</td>
+                    <td className="admin-user">
+                      <div className="admin-user__name">
+                        Nabaraj Rai <span>(You)</span>
+                      </div>
+                      <div className="admin-user__email">
+                        nabaraj2055@gmail.com
+                      </div>
+                    </td>
                     <td>Regular User</td>
                     <td>2024-06-11</td>
-                    <td>
-                      <button>x</button>
+                    <td className="action-btns">
+                      <button className="reset-key" title="Reset Password">
+                        <ResetKeyIcon />
+                      </button>
+                      <button className="reset-pin" title="Reset Pin">
+                        <ResetPinIcon />
+                      </button>
+                      <button className="delete-user" title="Delete User">
+                        <DeleteIcon />
+                      </button>
                     </td>
                   </tr>
                 </tbody>

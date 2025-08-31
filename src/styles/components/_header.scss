@@ -224,12 +224,9 @@
     tr {
       transition: all 0.3s ease;
       &:last-child {
-        td:first-child {
-          border-bottom-left-radius: 10px;
-        }
-        td:last-child {
-          border-bottom: none;
-        }
+   td{
+        border-bottom: none;
+   }
       }
     }
     td{
@@ -239,12 +236,9 @@
 
   td {
     text-align: left;
-    padding: 1.2rem 12.75px;
+    padding: 0.5rem 12.75px;
     color: $text-color-secondary;
     font-size: 0.9rem;
-    button {
-      color: $text-color-secondary;
-    }
   }
 
   th {
@@ -254,5 +248,68 @@
 
   tr:hover {
     background-color: rgba($text-color, 0.1);
+  }
+  .admin-user{
+    &__name{
+      width: 100% ;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: $text-color-secondary;
+      span{
+        font-size: 0.9rem;
+        color:$text-color;
+        font-weight: 500;
+      }
+    }
+    &__email{
+      width: 100% ;
+      font-size: 0.75rem;
+      color: $text-color;
+    }
+  }
+  .action-btns{
+    @include flex(flex-start);
+    gap: 0.5rem;
+    button{
+      @include flex(flex-start);
+      cursor: pointer;
+      padding: 1.5rem 1.75px; 
+      transition: all 0.3s ease;
+     svg{
+        width: 1.05rem;
+        height: 1.05rem;
+        transition: all 0.3s ease;
+      }
+      &.reset-key{
+        &:hover{
+          svg{
+            stroke: rgba($primary-color, 1);
+          }
+        }
+        svg{
+          stroke: rgba($primary-color, 0.8);
+        }
+      }
+     &.reset-pin{
+        &:hover{
+          svg{
+            stroke: rgba($secondary-color, 1);
+          }
+        }
+        svg{
+          stroke: rgba($secondary-color, 0.4);
+        }
+      }
+       &.delete-user{
+        &:hover{
+          svg{
+            stroke: rgba($red-primary, 1);
+          }
+        }
+        svg{
+          stroke: rgba($red-primary, 0.7);
+        }
+      }
+    }
   }
 }
