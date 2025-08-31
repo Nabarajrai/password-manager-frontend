@@ -129,7 +129,9 @@ const HeaderComponent = () => {
                         nabaraj2055@gmail.com
                       </div>
                     </td>
-                    <td>Admin</td>
+                    <td>
+                      <span className="admin-user-admin">Admin</span>
+                    </td>
                     <td>2024-06-10</td>
                     <td className="action-btns">
                       <button className="reset-key" title="Reset Password">
@@ -152,7 +154,9 @@ const HeaderComponent = () => {
                         nabaraj2055@gmail.com
                       </div>
                     </td>
-                    <td>Regular User</td>
+                    <td>
+                      <span className="admin-user-regular">Regular User</span>
+                    </td>
                     <td>2024-06-11</td>
                     <td className="action-btns">
                       <button className="reset-key" title="Reset Password">

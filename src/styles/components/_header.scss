@@ -249,6 +249,22 @@
   tr:hover {
     background-color: rgba($text-color, 0.1);
   }
+  .admin-user-admin{
+    font-size: 0.8rem;
+    color: $primary-color;
+    text-transform: capitalize;
+    background-color: rgba($primary-color,0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+  }
+  .admin-user-regular{
+    font-size: 0.8rem;
+    color: $secondary-color;
+    text-transform: capitalize;
+    background-color: rgba($secondary-color,0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+  }
   .admin-user{
     &__name{
       width: 100% ;
