@@ -1,4 +1,4 @@
-import { useCallback, memo, useMemo } from "react";
+import { useCallback, memo, useMemo, useEffect } from "react";
 import { CloseIcon } from "../../helpers/Icon.helper";
 import classnames from "classnames";
 const ModalComponent = ({
@@ -19,6 +19,16 @@ const ModalComponent = ({
     return classnames("modal-container", activeClass, modalClass);
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
   return (
     <div className={joinClassName}>
       <div className="overlayout"></div>
