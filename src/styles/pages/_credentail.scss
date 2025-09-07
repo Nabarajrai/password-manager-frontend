@@ -1,0 +1,59 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.password-page-container {
+  @include flex(center);
+  flex-direction: column;
+  height: 100dvh;
+  width: 100%;
+  background: $background-color;
+}
+.password-page-header {
+  text-align: center;
+  .icon {
+    @include flex(center);
+    width: 60px;
+    height: 60px;
+    margin: 1.3rem auto;
+    background-color: $background-color-secondary;
+    border-radius: 10px;
+    svg {
+      width: 2rem;
+      height: 5rem;
+    }
+  }
+  h3 {
+    font-size: 1.8rem;
+    margin: 0.5rem 0;
+  }
+  p {
+    font-size: 1rem;
+    color: $text-color-tertiary;
+  }
+}
+.password-top-section {
+  @include flex(flex-start);
+  flex-direction: column;
+  align-items: flex-start;
+  .password-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.1rem;
+  }
+}
+.password-form-section {
+  max-width: 430px;
+  width: 100%;
+  margin: 2.4rem auto;
+  background-color: $background-color-secondary;
+  padding: 2.2rem 2rem;
+  backdrop-filter: blur(10px);
+  box-shadow: $border-color 0px 0px 0px 1px;
+  border-radius: 15px;
+  .input-section {
+    margin: 1rem 0;
+  }
+  .password-button {
+    margin-top: 1.3rem;
+  }
+}
