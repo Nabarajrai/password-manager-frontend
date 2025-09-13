@@ -12,9 +12,13 @@ import {
   ResetPinIcon,
   DeleteIcon,
 } from "../../helpers/Icon.helper";
+//helpers
+import { useAuth } from "../../hooks/user/useAuth.js";
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
+
+  const { logout } = useAuth();
 
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
@@ -35,8 +39,7 @@ const HeaderComponent = () => {
         title="Admin Panel"
         isModalOpen={modalOpen}
         setIsModalOpen={setModalOpen}
-        modalFor="admin"
-      >
+        modalFor="admin">
         <div className="admin-panel-container">
           <div className="admin-panel-dash">
             <div className="admin-panel-card">
@@ -98,8 +101,7 @@ const HeaderComponent = () => {
                 </div>
                 <div
                   className="user-from-action-section__cancel"
-                  onClick={handleAdduserClose}
-                >
+                  onClick={handleAdduserClose}>
                   <ButtonComponent varient="copy">Cancel</ButtonComponent>
                 </div>
               </div>
@@ -205,7 +207,7 @@ const HeaderComponent = () => {
                 </div>
                 <div className="name">Admin</div>
               </div>
-              <div className="logout">
+              <div className="logout" onClick={logout}>
                 <div className="icon">
                   <LogoutIcon />
                 </div>

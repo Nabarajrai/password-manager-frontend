@@ -14,7 +14,6 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
-
   const { login, error, loading } = useAuth();
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -27,12 +26,11 @@ const LoginPage = () => {
     async (e) => {
       e.preventDefault();
       if (loading) return;
-      const response = await login(loginFormValues);
-      // console.log("Login form submit response:", response);
+      await login(loginFormValues);
     },
     [login, loginFormValues, loading]
   );
-
+  // console.log("LoginPage render, loading:", loading, "error:", error);
   return (
     <div className="login-page-container">
       <div className="login-page-header">
