@@ -58,7 +58,6 @@ export const useAuth = () => {
   }, []);
 
   const logout = useCallback(async () => {
-    console.log("Logout function called");
     setLoading(true);
     setAuthError("");
     try {
