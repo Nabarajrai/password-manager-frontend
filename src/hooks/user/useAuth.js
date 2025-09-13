@@ -8,12 +8,14 @@ import {
 } from "../../helpers/LocalStroage.helper.js";
 //hooks
 import { useUser } from "../user/useUser.jsx";
+import { useToast } from "../toast/useToast.js";
 export const useAuth = () => {
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { setUser } = useUser();
+  const { showSuccessToast } = useToast();
 
   const login = useCallback(
     async (credentials) => {
@@ -22,12 +24,9 @@ export const useAuth = () => {
       try {
         const response = await api(APIS_PAYLOAD.LOGIN, "POST", credentials);
         if (response?.status === "success") {
-          try {
-            setLocalStorage("user", response?.data);
-          } catch (e) {
-            console.error("Failed to save user:", e);
-          }
+          setLocalStorage("user", response?.data);
           setUser(response?.data);
+          showSuccessToast(response?.message);
           navigate("/", { replace: true });
         } else {
           setAuthError(response?.message);
@@ -38,7 +37,7 @@ export const useAuth = () => {
         setLoading(false);
       }
     },
-    [navigate, setUser]
+    [navigate, setUser, showSuccessToast]
   );
 
   const signup = useCallback(async (userInfo) => {
@@ -65,6 +64,7 @@ export const useAuth = () => {
       if (response?.status === "success") {
         clearLocalStorage("user");
         setUser(null);
+        showSuccessToast(response?.message);
         navigate("/login");
       }
       setLoading(false);
@@ -74,7 +74,7 @@ export const useAuth = () => {
       setAuthError(error?.message || "Logout failed. Please try again.");
       return null;
     }
-  }, [navigate, setUser]);
+  }, [navigate, setUser, showSuccessToast]);
 
-  return { login, error: authError, loading, logout, signup };
+  return { login, authError, loading, logout, signup, setAuthError };
 };

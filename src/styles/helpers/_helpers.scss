@@ -34,7 +34,14 @@ html {
   margin: 0 auto;
   padding: 0 1rem;
 }
-
-// body {
-//   overflow: hidden;
-// }
+.error-text {
+  color: rgba($red-primary, 0.7);
+  font-size: 0.875rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.Toastify__close-button {
+  svg {
+    fill: $text-color !important;
+  }
+}
