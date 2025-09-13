@@ -3,6 +3,5 @@ import { Navigate, Outlet } from "react-router";
 import { useUser } from "../hooks/user/useUser.jsx";
 export const PublicRoute = () => {
   const user = useUser();
-  console.log("PublicRoute user:", user);
   return user ? <Navigate to="/" replace /> : <Outlet />;
 };

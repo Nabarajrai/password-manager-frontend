@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 //icons
 import { SecureIcon, EmailIcon, PasswordIcon } from "../../helpers/Icon.helper";
 //components
@@ -8,6 +9,18 @@ import ButtonComponent from "../../components/button/Button.component";
 import { Link } from "react-router";
 
 const LoginPage = () => {
+  const [loginFormValues, setLoginFormValues] = useState({
+    email: "",
+    password: "",
+  });
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setLoginFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  }, []);
+
   return (
     <div className="login-page-container">
       <div className="login-page-header">
@@ -28,6 +41,10 @@ const LoginPage = () => {
               placeholder="Enter your email"
               label="Email Address"
               icon={<EmailIcon />}
+              name="email"
+              value={loginFormValues.email}
+              onChange={handleInputChange}
+              type="email"
             />
           </div>
           <div className="input-section">
@@ -36,6 +53,9 @@ const LoginPage = () => {
               type="password"
               label="Password"
               icon={<PasswordIcon />}
+              name="password"
+              value={loginFormValues.password}
+              onChange={handleInputChange}
             />
           </div>
           <div className="login-button">
