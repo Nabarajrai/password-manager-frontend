@@ -9,12 +9,13 @@ import ButtonComponent from "../../components/button/Button.component";
 import { Link } from "react-router";
 //hooks
 import { useAuth } from "../../hooks/user/useAuth.js";
+
 const LoginPage = () => {
   const [loginFormValues, setLoginFormValues] = useState({
     email: "",
     password: "",
   });
-  const { login, error, loading } = useAuth();
+  const { login, authError, loading, setAuthError } = useAuth();
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setLoginFormValues((prevValues) => ({
@@ -25,12 +26,20 @@ const LoginPage = () => {
   const logHandleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
+      if (!loginFormValues.email || !loginFormValues.password) {
+        setAuthError("Please fill in all fields.");
+        return;
+      }
       if (loading) return;
       await login(loginFormValues);
     },
-    [login, loginFormValues, loading]
+    [login, loginFormValues, loading, setAuthError]
   );
-  // console.log("LoginPage render, loading:", loading, "error:", error);
+  const handleErrorClear = useCallback(() => {
+    if (authError) {
+      setAuthError("");
+    }
+  }, [authError, setAuthError]);
   return (
     <div className="login-page-container">
       <div className="login-page-header">
@@ -54,6 +63,7 @@ const LoginPage = () => {
               name="email"
               value={loginFormValues.email}
               onChange={handleInputChange}
+              onFocus={handleErrorClear}
               type="email"
             />
           </div>
@@ -66,12 +76,19 @@ const LoginPage = () => {
               name="password"
               value={loginFormValues.password}
               onChange={handleInputChange}
+              onFocus={handleErrorClear}
             />
           </div>
+          <div className="login-error">
+            {authError && <p className="error-text">{authError}</p>}
+          </div>
           <div className="login-button">
-            <ButtonComponent>Login</ButtonComponent>
+            <ButtonComponent>
+              {loading ? "Logging in..." : "Login"}
+            </ButtonComponent>
           </div>
         </form>
+
         <div className="login-footer-section">
           <p className="login-footer-text">
             Don't have an account?{" "}
