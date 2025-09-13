@@ -40,21 +40,28 @@ export const useAuth = () => {
     [navigate, setUser, showSuccessToast]
   );
 
-  const signup = useCallback(async (userInfo) => {
-    setLoading(true);
-    setAuthError("");
-    try {
-      const response = await api.post(APIS_PAYLOAD.SIGNUP, userInfo);
-      setLoading(false);
-      return response.data;
-    } catch (error) {
-      setLoading(false);
-      setAuthError(
-        error.response?.data?.message || "Signup failed. Please try again."
-      );
-      return null;
-    }
-  }, []);
+  const signup = useCallback(
+    async (userInfo) => {
+      setLoading(true);
+      setAuthError("");
+      try {
+        const response = await api(APIS_PAYLOAD.SIGNUP, "POST", userInfo);
+        if (response?.status === "success") {
+          showSuccessToast(response?.message);
+          navigate("/login", { replace: true });
+        } else {
+          setAuthError(response?.message);
+        }
+      } catch (error) {
+        setLoading(false);
+        setAuthError(error?.message);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [showSuccessToast, navigate]
+  );
 
   const logout = useCallback(async () => {
     setLoading(true);

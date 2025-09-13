@@ -9,6 +9,7 @@ import ButtonComponent from "../../components/button/Button.component";
 import { Link } from "react-router";
 //hooks
 import { useAuth } from "../../hooks/user/useAuth.js";
+
 const LoginPage = () => {
   const [loginFormValues, setLoginFormValues] = useState({
     email: "",
@@ -82,7 +83,9 @@ const LoginPage = () => {
             {authError && <p className="error-text">{authError}</p>}
           </div>
           <div className="login-button">
-            <ButtonComponent>Login</ButtonComponent>
+            <ButtonComponent>
+              {loading ? "Logging in..." : "Login"}
+            </ButtonComponent>
           </div>
         </form>
 
