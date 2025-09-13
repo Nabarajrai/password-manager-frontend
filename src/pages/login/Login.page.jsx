@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 //icons
 import { SecureIcon, EmailIcon, PasswordIcon } from "../../helpers/Icon.helper";
 //components
@@ -6,8 +7,30 @@ import ButtonComponent from "../../components/button/Button.component";
 
 //route router
 import { Link } from "react-router";
-
+//hooks
+import { useAuth } from "../../hooks/user/useAuth.js";
 const LoginPage = () => {
+  const [loginFormValues, setLoginFormValues] = useState({
+    email: "",
+    password: "",
+  });
+  const { login, error, loading } = useAuth();
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setLoginFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  }, []);
+  const logHandleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (loading) return;
+      await login(loginFormValues);
+    },
+    [login, loginFormValues, loading]
+  );
+  // console.log("LoginPage render, loading:", loading, "error:", error);
   return (
     <div className="login-page-container">
       <div className="login-page-header">
@@ -22,12 +45,16 @@ const LoginPage = () => {
           <h4 className="login-top-title">Welcome Back</h4>
           <p className="login-top-des">Sign in to access your passwords</p>
         </div>
-        <form>
+        <form onSubmit={logHandleSubmit} className="login-form">
           <div className="input-section">
             <CustomInput
               placeholder="Enter your email"
               label="Email Address"
               icon={<EmailIcon />}
+              name="email"
+              value={loginFormValues.email}
+              onChange={handleInputChange}
+              type="email"
             />
           </div>
           <div className="input-section">
@@ -36,6 +63,9 @@ const LoginPage = () => {
               type="password"
               label="Password"
               icon={<PasswordIcon />}
+              name="password"
+              value={loginFormValues.password}
+              onChange={handleInputChange}
             />
           </div>
           <div className="login-button">
