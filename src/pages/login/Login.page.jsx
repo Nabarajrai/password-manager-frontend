@@ -7,12 +7,15 @@ import ButtonComponent from "../../components/button/Button.component";
 
 //route router
 import { Link } from "react-router";
-
+//hooks
+import { useAuth } from "../../hooks/user/useAuth.js";
 const LoginPage = () => {
   const [loginFormValues, setLoginFormValues] = useState({
     email: "",
     password: "",
   });
+
+  const { login, error, loading } = useAuth();
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setLoginFormValues((prevValues) => ({
@@ -20,6 +23,15 @@ const LoginPage = () => {
       [name]: value,
     }));
   }, []);
+  const logHandleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (loading) return;
+      const response = await login(loginFormValues);
+      // console.log("Login form submit response:", response);
+    },
+    [login, loginFormValues, loading]
+  );
 
   return (
     <div className="login-page-container">
@@ -35,7 +47,7 @@ const LoginPage = () => {
           <h4 className="login-top-title">Welcome Back</h4>
           <p className="login-top-des">Sign in to access your passwords</p>
         </div>
-        <form>
+        <form onSubmit={logHandleSubmit} className="login-form">
           <div className="input-section">
             <CustomInput
               placeholder="Enter your email"

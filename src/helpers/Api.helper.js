@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const apiGenerator = ({ baseURL }) => {
-  return async function api({ url, method = "GET", data, ...rest }) {
+  return async function api(url, method = "GET", data, config = {}) {
     try {
       const configOptions = {
         baseURL,
@@ -11,17 +11,13 @@ export const apiGenerator = ({ baseURL }) => {
           "Content-Type": "application/json",
         },
         data,
-        ...rest,
+        withCredentials: true,
+        ...config,
       };
       const response = await axios(configOptions);
       return response.data;
     } catch (error) {
-      console.log("error", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data ||
-        error.message ||
-        "An error occurred while making the API request.";
+      const errorMessage = error.response?.data?.error;
       throw new Error(errorMessage);
     }
   };
