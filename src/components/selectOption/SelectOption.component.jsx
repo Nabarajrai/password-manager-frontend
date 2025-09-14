@@ -17,8 +17,8 @@ const SelectOptionComponent = ({ type, category, values, ...rest }) => {
           <option value="">Select an option</option>
           {values !== undefined &&
             values.map((val, idx) => (
-              <option key={idx} value={val.name}>
-                {val.name}
+              <option key={idx} value={val.role_id}>
+                {val.role_name}
               </option>
             ))}
         </select>
