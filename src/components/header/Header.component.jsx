@@ -7,6 +7,9 @@ import ButtonComponent from "../button/Button.component";
 import AddPasswordInput from "../addInput/AddPasswordInput";
 import SelectOptionComponent from "../selectOption/SelectOption.component";
 import classnames from "classnames";
+//react-query
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+//icons
 import {
   ResetKeyIcon,
   ResetPinIcon,
@@ -14,11 +17,22 @@ import {
 } from "../../helpers/Icon.helper";
 //helpers
 import { useAuth } from "../../hooks/user/useAuth.js";
+//hooks
+import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
-
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    pin: "",
+    role_id: 2,
+  });
+  const queryClient = useQueryClient();
   const { logout } = useAuth();
+  const { createUser, fetchUsers } = useUserCreate();
 
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
@@ -33,6 +47,65 @@ const HeaderComponent = () => {
     const activeClass = addUserSection && "active";
     return classnames("admin-panel-useradd-form", activeClass);
   }, [addUserSection]);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error: userError,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchUsers,
+  });
+  console.log("users data:", data?.users);
+  console.log("isLoading:", isLoading);
+
+  const mutation = useMutation({
+    mutationFn: createUser,
+    onMutate: async (newUser) => {
+      await queryClient.cancelQueries(["users"]);
+      const previousUsers = queryClient.getQueryData(["users"]);
+      queryClient.setQueryData(["users"], (old) => [
+        ...old,
+        { ...newUser, temp_id: Math.random().toString(36).substr(2, 9) },
+      ]);
+      return { previousUsers };
+    },
+    onError: (err, newUser, context) => {
+      queryClient.setQueryData(["users"], context.previousUsers);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["users"]);
+    },
+    onSuccess: () => {
+      setAddUserSection(false);
+    },
+  });
+  const handleCreateUser = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (
+        !formData.fullName &&
+        !formData.email &&
+        !formData.password &&
+        !formData.pin
+      ) {
+        setError("All fields are required");
+        return;
+      }
+
+      if (mutation.isLoading) return;
+      const userInfo = {
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        pin: formData.pin,
+        role_id: formData.role_id,
+      };
+      mutation.mutate(userInfo);
+    },
+    [mutation, formData]
+  );
   return (
     <>
       <ModalComponent
@@ -77,7 +150,7 @@ const HeaderComponent = () => {
           </div>
           <div className={handleAdduserSection}>
             <h3>Add New User</h3>
-            <div className="useradd-form-group">
+            <form className="useradd-form-group" onSubmit={handleCreateUser}>
               <div className="useradd-form-input-section">
                 <AddPasswordInput type="text" placeholder="Full Name" />
               </div>
@@ -105,6 +178,9 @@ const HeaderComponent = () => {
                   <ButtonComponent varient="copy">Cancel</ButtonComponent>
                 </div>
               </div>
+            </form>
+            <div className="login-error">
+              {error && <p className="error-text">{error}</p>}
             </div>
           </div>
           <div className="admin-panel-table-section">
@@ -121,59 +197,41 @@ const HeaderComponent = () => {
                     <th>Actions</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  <tr>
-                    <td className="admin-user">
-                      <div className="admin-user__name">
-                        Nabaraj Rai <span>(You)</span>
-                      </div>
-                      <div className="admin-user__email">
-                        nabaraj2055@gmail.com
-                      </div>
-                    </td>
-                    <td>
-                      <span className="admin-user-admin">Admin</span>
-                    </td>
-                    <td>2024-06-10</td>
-                    <td className="action-btns">
-                      <button className="reset-key" title="Reset Password">
-                        <ResetKeyIcon />
-                      </button>
-                      <button className="reset-pin" title="Reset Pin">
-                        <ResetPinIcon />
-                      </button>
-                      <button className="delete-user" title="Delete User">
-                        <DeleteIcon />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="admin-user">
-                      <div className="admin-user__name">
-                        Nabaraj Rai <span>(You)</span>
-                      </div>
-                      <div className="admin-user__email">
-                        nabaraj2055@gmail.com
-                      </div>
-                    </td>
-                    <td>
-                      <span className="admin-user-regular">Regular User</span>
-                    </td>
-                    <td>2024-06-11</td>
-                    <td className="action-btns">
-                      <button className="reset-key" title="Reset Password">
-                        <ResetKeyIcon />
-                      </button>
-                      <button className="reset-pin" title="Reset Pin">
-                        <ResetPinIcon />
-                      </button>
-                      <button className="delete-user" title="Delete User">
-                        <DeleteIcon />
-                      </button>
-                    </td>
-                  </tr>
+                  {data?.users?.map((user) => (
+                    <tr>
+                      <td className="admin-user">
+                        <div className="admin-user__name">
+                          {/* Nabaraj Rai <span>(You)</span> */}
+                          {user?.username}
+                        </div>
+                        <div className="admin-user__email">{user?.email}</div>
+                      </td>
+                      <td>
+                        <span className="admin-user-admin">
+                          {user?.role_name}
+                        </span>
+                      </td>
+                      <td>{user?.created_at}</td>
+                      <td className="action-btns">
+                        <button className="reset-key" title="Reset Password">
+                          <ResetKeyIcon />
+                        </button>
+                        <button className="reset-pin" title="Reset Pin">
+                          <ResetPinIcon />
+                        </button>
+                        <button className="delete-user" title="Delete User">
+                          <DeleteIcon />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+              <div className="table-error">
+                {isError && <p className="error-text">{userError}</p>}
+              </div>
             </div>
           </div>
         </div>
