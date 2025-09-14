@@ -11,4 +11,6 @@ export const APIS_PAYLOAD = {
   FORGOT_PASSWORD: "api/auth/forgot-admin-password",
   CREATE_USER: "api/create-user-by-admin",
   FETCH_USERS: "api/allUsers",
+  CATEGORIES: "api/get-all-categories",
+  ROLES: "api/roles",
 };

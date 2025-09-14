@@ -19,21 +19,23 @@ import {
 import { useAuth } from "../../hooks/user/useAuth.js";
 //hooks
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
+import { useRole } from "../../hooks/roles/useRole.js";
+
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
   const [error, setError] = useState("");
+  const [categoryId, setCategoryId] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
     pin: "",
-    role_id: 2,
   });
   const queryClient = useQueryClient();
   const { logout } = useAuth();
   const { createUser, fetchUsers } = useUserCreate();
-
+  const { fetchRoles } = useRole();
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
   }, []);
@@ -50,15 +52,18 @@ const HeaderComponent = () => {
 
   const {
     data,
-    isLoading,
     isError,
     error: userError,
   } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
-  console.log("users data:", data?.users);
-  console.log("isLoading:", isLoading);
+  const { data: roles } = useQuery({
+    queryKey: ["roles"],
+    queryFn: fetchRoles,
+  });
+
+  console.log("roles data", roles);
 
   const mutation = useMutation({
     mutationFn: createUser,
@@ -106,6 +111,18 @@ const HeaderComponent = () => {
     },
     [mutation, formData]
   );
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
+
+  const handleCategoryChange = useCallback((e) => {
+    setCategoryId(e.target.value);
+  }, []);
+
   return (
     <>
       <ModalComponent
@@ -152,19 +169,48 @@ const HeaderComponent = () => {
             <h3>Add New User</h3>
             <form className="useradd-form-group" onSubmit={handleCreateUser}>
               <div className="useradd-form-input-section">
-                <AddPasswordInput type="text" placeholder="Full Name" />
+                <AddPasswordInput
+                  type="text"
+                  placeholder="Full Name"
+                  onChange={handleInputChange}
+                  name="fullName"
+                  value={formData.fullName}
+                />
               </div>
               <div className="useradd-form-input-section">
-                <AddPasswordInput type="email" placeholder="Email Address" />
+                <AddPasswordInput
+                  type="email"
+                  placeholder="Email Address"
+                  onChange={handleInputChange}
+                  name="email"
+                  value={formData.email}
+                />
               </div>
               <div className="useradd-form-input-section">
-                <AddPasswordInput type="password" placeholder="Password" />
+                <AddPasswordInput
+                  type="password"
+                  placeholder="Password"
+                  onChange={handleInputChange}
+                  name="password"
+                  value={formData.password}
+                />
               </div>
               <div className="useradd-form-input-section">
-                <AddPasswordInput type="password" placeholder="4 Digit Pin" />
+                <AddPasswordInput
+                  type="password"
+                  placeholder="4 Digit Pin"
+                  onChange={handleInputChange}
+                  name="pin"
+                  value={formData.pin}
+                />
               </div>
               <div className="useradd-form-input-section">
-                <SelectOptionComponent type="forPass" />
+                <SelectOptionComponent
+                  type="forPass"
+                  values={roles}
+                  onChange={handleCategoryChange}
+                  value={categoryId}
+                />
               </div>
               <div className="useradd-form-action-section">
                 <div className="user-form-action-section__add">
@@ -197,7 +243,6 @@ const HeaderComponent = () => {
                     <th>Actions</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {data?.users?.map((user) => (
                     <tr>

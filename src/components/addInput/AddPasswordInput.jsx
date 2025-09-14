@@ -1,6 +1,13 @@
 import React from "react";
 
-const AddPasswordInput = ({ label, placeholder, icon, copy, type }) => {
+const AddPasswordInput = ({
+  label,
+  placeholder,
+  icon,
+  copy,
+  type,
+  ...rest
+}) => {
   return (
     <div className="addPassword-group">
       <div className="addPassword-label">{label}</div>
@@ -9,6 +16,7 @@ const AddPasswordInput = ({ label, placeholder, icon, copy, type }) => {
           type={type}
           className="addPassword-input-field"
           placeholder={placeholder}
+          {...rest}
         />
         <div className="icon">
           {icon && <div className="eye">{icon}</div>}
