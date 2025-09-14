@@ -19,6 +19,7 @@ import {
 import { useAuth } from "../../hooks/user/useAuth.js";
 //hooks
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
+import { useCategories } from "../../hooks/categories/useCategories.js";
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
@@ -33,6 +34,7 @@ const HeaderComponent = () => {
   const queryClient = useQueryClient();
   const { logout } = useAuth();
   const { createUser, fetchUsers } = useUserCreate();
+  const { fetchCategories } = useCategories();
 
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
@@ -57,8 +59,20 @@ const HeaderComponent = () => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
-  console.log("users data:", data?.users);
-  console.log("isLoading:", isLoading);
+  const {
+    data: categories,
+    isLoading: isLoadingCategories,
+    isError: isErrorCategories,
+    error: categoriesError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+
+  console.log("categories", categories);
+  console.log("categoriesError", categoriesError);
+  console.log("isErrorCategories", isErrorCategories);
+  console.log("isLoadingCategories", isLoadingCategories);
 
   const mutation = useMutation({
     mutationFn: createUser,
@@ -164,7 +178,10 @@ const HeaderComponent = () => {
                 <AddPasswordInput type="password" placeholder="4 Digit Pin" />
               </div>
               <div className="useradd-form-input-section">
-                <SelectOptionComponent type="forPass" />
+                <SelectOptionComponent
+                  type="forPass"
+                  values={categories?.data}
+                />
               </div>
               <div className="useradd-form-action-section">
                 <div className="user-form-action-section__add">
@@ -197,7 +214,6 @@ const HeaderComponent = () => {
                     <th>Actions</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {data?.users?.map((user) => (
                     <tr>
