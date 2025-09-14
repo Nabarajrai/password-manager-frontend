@@ -9,4 +9,5 @@ export const APIS_PAYLOAD = {
   SIGNUP: "api/auth/register",
   LOGOUT: "api/auth/logout",
   FORGOT_PASSWORD: "api/auth/forgot-admin-password",
+  CREATE_USER: "api/create-user-by-admin",
 };
