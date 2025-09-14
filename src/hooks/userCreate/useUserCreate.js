@@ -6,5 +6,9 @@ export const useUserCreate = () => {
     const response = await api(APIS_PAYLOAD.CREATE_USER, "POST", userInfo);
     return response;
   }, []);
-  return { createUser };
+  const fetchUsers = useCallback(async () => {
+    const response = await api(APIS_PAYLOAD.FETCH_USERS, "GET");
+    return response;
+  }, []);
+  return { createUser, fetchUsers };
 };

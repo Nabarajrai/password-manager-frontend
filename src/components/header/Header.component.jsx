@@ -8,7 +8,7 @@ import AddPasswordInput from "../addInput/AddPasswordInput";
 import SelectOptionComponent from "../selectOption/SelectOption.component";
 import classnames from "classnames";
 //react-query
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 //icons
 import {
   ResetKeyIcon,
@@ -32,7 +32,7 @@ const HeaderComponent = () => {
   });
   const queryClient = useQueryClient();
   const { logout } = useAuth();
-  const { createUser } = useUserCreate();
+  const { createUser, fetchUsers } = useUserCreate();
 
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
@@ -47,6 +47,19 @@ const HeaderComponent = () => {
     const activeClass = addUserSection && "active";
     return classnames("admin-panel-useradd-form", activeClass);
   }, [addUserSection]);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error: userError,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchUsers,
+  });
+  console.log("users data:", data?.users);
+  console.log("isLoading:", isLoading);
+
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
@@ -184,59 +197,41 @@ const HeaderComponent = () => {
                     <th>Actions</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  <tr>
-                    <td className="admin-user">
-                      <div className="admin-user__name">
-                        Nabaraj Rai <span>(You)</span>
-                      </div>
-                      <div className="admin-user__email">
-                        nabaraj2055@gmail.com
-                      </div>
-                    </td>
-                    <td>
-                      <span className="admin-user-admin">Admin</span>
-                    </td>
-                    <td>2024-06-10</td>
-                    <td className="action-btns">
-                      <button className="reset-key" title="Reset Password">
-                        <ResetKeyIcon />
-                      </button>
-                      <button className="reset-pin" title="Reset Pin">
-                        <ResetPinIcon />
-                      </button>
-                      <button className="delete-user" title="Delete User">
-                        <DeleteIcon />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="admin-user">
-                      <div className="admin-user__name">
-                        Nabaraj Rai <span>(You)</span>
-                      </div>
-                      <div className="admin-user__email">
-                        nabaraj2055@gmail.com
-                      </div>
-                    </td>
-                    <td>
-                      <span className="admin-user-regular">Regular User</span>
-                    </td>
-                    <td>2024-06-11</td>
-                    <td className="action-btns">
-                      <button className="reset-key" title="Reset Password">
-                        <ResetKeyIcon />
-                      </button>
-                      <button className="reset-pin" title="Reset Pin">
-                        <ResetPinIcon />
-                      </button>
-                      <button className="delete-user" title="Delete User">
-                        <DeleteIcon />
-                      </button>
-                    </td>
-                  </tr>
+                  {data?.users?.map((user) => (
+                    <tr>
+                      <td className="admin-user">
+                        <div className="admin-user__name">
+                          {/* Nabaraj Rai <span>(You)</span> */}
+                          {user?.username}
+                        </div>
+                        <div className="admin-user__email">{user?.email}</div>
+                      </td>
+                      <td>
+                        <span className="admin-user-admin">
+                          {user?.role_name}
+                        </span>
+                      </td>
+                      <td>{user?.created_at}</td>
+                      <td className="action-btns">
+                        <button className="reset-key" title="Reset Password">
+                          <ResetKeyIcon />
+                        </button>
+                        <button className="reset-pin" title="Reset Pin">
+                          <ResetPinIcon />
+                        </button>
+                        <button className="delete-user" title="Delete User">
+                          <DeleteIcon />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+              <div className="table-error">
+                {isError && <p className="error-text">{userError}</p>}
+              </div>
             </div>
           </div>
         </div>
