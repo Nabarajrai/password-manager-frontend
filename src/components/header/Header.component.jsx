@@ -34,6 +34,7 @@ const HeaderComponent = () => {
     pin: "",
     role_id: 2,
   });
+
   const queryClient = useQueryClient();
   const { logout } = useAuth();
   const { createUser, fetchUsers, fetchTempUsers } = useUserCreate();
@@ -56,6 +57,7 @@ const HeaderComponent = () => {
     data,
     isError,
     error: userError,
+    isPending: userPending,
   } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
@@ -259,31 +261,37 @@ const HeaderComponent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tempUsers.map((user, idx) => (
-                    <tr key={idx}>
-                      <td className="admin-user">
-                        <div className="admin-user__name">{user?.username}</div>
-                        <div className="admin-user__email">{user?.email}</div>
-                      </td>
-                      <td>
-                        <span className="admin-user-admin">
-                          {user?.role_name}
-                        </span>
-                      </td>
-                      <td>{user?.created_at}</td>
-                      <td className="action-btns">
-                        <button className="reset-key" title="Reset Password">
-                          <ResetKeyIcon />
-                        </button>
-                        <button className="reset-pin" title="Reset Pin">
-                          <ResetPinIcon />
-                        </button>
-                        <button className="delete-user" title="Delete User">
-                          <DeleteIcon />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {userPending ? (
+                    <h3>Loading....</h3>
+                  ) : (
+                    tempUsers.map((user, idx) => (
+                      <tr key={idx}>
+                        <td className="admin-user">
+                          <div className="admin-user__name">
+                            {user?.username}
+                          </div>
+                          <div className="admin-user__email">{user?.email}</div>
+                        </td>
+                        <td>
+                          <span className="admin-user-admin">
+                            {user?.role_name}
+                          </span>
+                        </td>
+                        <td>{user?.created_at}</td>
+                        <td className="action-btns">
+                          <button className="reset-key" title="Reset Password">
+                            <ResetKeyIcon />
+                          </button>
+                          <button className="reset-pin" title="Reset Pin">
+                            <ResetPinIcon />
+                          </button>
+                          <button className="delete-user" title="Delete User">
+                            <DeleteIcon />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
               <div className="table-error">
@@ -336,7 +344,7 @@ const HeaderComponent = () => {
                 </tbody>
               </table>
               <div className="table-error">
-                {isError && <p className="error-text">{userError}</p>}
+                {isError && <p className="error-text">{userError?.message}</p>}
               </div>
             </div>
           </div>

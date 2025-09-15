@@ -14,4 +14,5 @@ export const APIS_PAYLOAD = {
   CATEGORIES: "api/get-all-categories",
   ROLES: "api/roles",
   TEMP_USER_ALL: "api/all-temp-users",
+  UPDATE_USER_CREDENTIALS: "api/update-password-pin",
 };
