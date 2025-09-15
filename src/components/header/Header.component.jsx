@@ -18,19 +18,19 @@ import {
 //helpers
 import { useAuth } from "../../hooks/user/useAuth.js";
 //hooks
-import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 import { useRole } from "../../hooks/roles/useRole.js";
+import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
   const [error, setError] = useState("");
-  const [categoryId, setCategoryId] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
     pin: "",
+    role_id: 2,
   });
   const queryClient = useQueryClient();
   const { logout } = useAuth();
@@ -63,36 +63,36 @@ const HeaderComponent = () => {
     queryFn: fetchRoles,
   });
 
-  console.log("roles data", roles);
-
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
-      await queryClient.cancelQueries(["users"]);
+      console.log("new user", newUser);
+      await queryClient.cancelQueries({ queryKey: ["users"] });
       const previousUsers = queryClient.getQueryData(["users"]);
-      queryClient.setQueryData(["users"], (old) => [
+      queryClient.setQueryData(["users"], (old = []) => [
         ...old,
-        { ...newUser, temp_id: Math.random().toString(36).substr(2, 9) },
+        { ...newUser, temp_id: Math.random().toString(36).slice(2, 11) },
       ]);
       return { previousUsers };
     },
-    onError: (err, newUser, context) => {
-      queryClient.setQueryData(["users"], context.previousUsers);
+    onError: (error, _, context) => {
+      queryClient.setQueryData(["users"], context?.previousUsers);
     },
     onSettled: () => {
-      queryClient.invalidateQueries(["users"]);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onSuccess: () => {
       setAddUserSection(false);
     },
   });
+
   const handleCreateUser = useCallback(
     async (e) => {
       e.preventDefault();
       if (
-        !formData.fullName &&
-        !formData.email &&
-        !formData.password &&
+        !formData.fullName ||
+        !formData.email ||
+        !formData.password ||
         !formData.pin
       ) {
         setError("All fields are required");
@@ -100,12 +100,13 @@ const HeaderComponent = () => {
       }
 
       if (mutation.isLoading) return;
+
       const userInfo = {
-        fullName: formData.fullName,
+        username: formData.fullName,
         email: formData.email,
-        password: formData.password,
-        pin: formData.pin,
-        role_id: formData.role_id,
+        temp_password: formData.password,
+        pin_hash: formData.pin,
+        role_id: Number(formData.role_id),
       };
       mutation.mutate(userInfo);
     },
@@ -117,10 +118,6 @@ const HeaderComponent = () => {
       ...prevData,
       [name]: value,
     }));
-  }, []);
-
-  const handleCategoryChange = useCallback((e) => {
-    setCategoryId(e.target.value);
   }, []);
 
   return (
@@ -207,9 +204,10 @@ const HeaderComponent = () => {
               <div className="useradd-form-input-section">
                 <SelectOptionComponent
                   type="forPass"
-                  values={roles}
-                  onChange={handleCategoryChange}
-                  value={categoryId}
+                  onChange={handleInputChange}
+                  values={roles?.data}
+                  name="role_id"
+                  value={formData.role_id}
                 />
               </div>
               <div className="useradd-form-action-section">
