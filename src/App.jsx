@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import { routes } from "./routes/Routes";
 //toasts
 import { ToastContainer } from "react-toastify";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 function App() {
   return (
     <>
@@ -16,6 +17,7 @@ function App() {
         rtl={false}
         pauseOnFocusLoss={true}
       />
+      <ReactQueryDevtools initialIsOpen={true} />
     </>
   );
 }

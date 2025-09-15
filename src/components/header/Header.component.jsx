@@ -66,7 +66,7 @@ const HeaderComponent = () => {
     queryFn: fetchRoles,
   });
 
-  const { data: tempUsers } = useQuery({
+  const { data: tempUsers = [] } = useQuery({
     queryKey: ["temp-users"],
     queryFn: fetchTempUsers,
   });
@@ -74,29 +74,31 @@ const HeaderComponent = () => {
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
-      try {
-        await queryClient.cancelQueries({ queryKey: ["users"] });
-        const previousUsers = queryClient.getQueryData(["temp-users"]) ?? [];
-        queryClient.setQueryData(["temp-users"], (old) => {
-          // Ensure old is an array; fallback to empty array if not
-          const usersArray = Array.isArray(old) ? old : [];
-          return [...usersArray, { ...newUser, temp_id: crypto.randomUUID() }];
-        });
-        return { previousUsers };
-      } catch (error) {
-        console.error("Error in onMutate:", error);
-        return { previousUsers: [] };
-      }
+      await queryClient.cancelQueries({ queryKey: ["temp-users"] });
+      const previousUsers = queryClient.getQueryData(["temp-users"]) ?? [];
+      queryClient.setQueryData(["temp-users"], (old) => {
+        const newData = [
+          ...old,
+          {
+            temp_id: crypto.randomUUID(),
+            created_at: new Date().toISOString(),
+            role_name: "USER",
+            ...newUser,
+          },
+        ];
+        return newData;
+      });
+      return { previousUsers };
     },
     onError: (error, _, context) => {
-      queryClient.setQueryData(["users"], context?.previousUsers);
+      queryClient.setQueryData(["temp-users"], context?.previousUsers);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      setAddUserSection(false);
+    onSuccess: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      queryClient.invalidateQueries({ queryKey: ["temp-users"] });
     },
   });
 
@@ -241,57 +243,55 @@ const HeaderComponent = () => {
               {error && <p className="error-text">{error}</p>}
             </div>
           </div>
-          {tempUsers?.users?.length > 0 && (
-            <div className="admin-panel-table-section">
-              <div className="admin-panel-table-section__head">
-                Temporary User Management
-              </div>
-              <div className="admin-panel-table" style={{ overflowX: "auto" }}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>User</th>
-                      <th>Rol</th>
-                      <th>Created At</th>
-                      <th>Actions</th>
+          {/* {tempUsers?.users?.length > 0 && ( */}
+          <div className="admin-panel-table-section">
+            <div className="admin-panel-table-section__head">
+              Temporary User Management
+            </div>
+            <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Rol</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tempUsers.map((user, idx) => (
+                    <tr key={idx}>
+                      <td className="admin-user">
+                        <div className="admin-user__name">{user?.username}</div>
+                        <div className="admin-user__email">{user?.email}</div>
+                      </td>
+                      <td>
+                        <span className="admin-user-admin">
+                          {user?.role_name}
+                        </span>
+                      </td>
+                      <td>{user?.created_at}</td>
+                      <td className="action-btns">
+                        <button className="reset-key" title="Reset Password">
+                          <ResetKeyIcon />
+                        </button>
+                        <button className="reset-pin" title="Reset Pin">
+                          <ResetPinIcon />
+                        </button>
+                        <button className="delete-user" title="Delete User">
+                          <DeleteIcon />
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {tempUsers?.users?.map((user, idx) => (
-                      <tr key={idx}>
-                        <td className="admin-user">
-                          <div className="admin-user__name">
-                            {user?.username}
-                          </div>
-                          <div className="admin-user__email">{user?.email}</div>
-                        </td>
-                        <td>
-                          <span className="admin-user-admin">
-                            {user?.role_name}
-                          </span>
-                        </td>
-                        <td>{user?.created_at}</td>
-                        <td className="action-btns">
-                          <button className="reset-key" title="Reset Password">
-                            <ResetKeyIcon />
-                          </button>
-                          <button className="reset-pin" title="Reset Pin">
-                            <ResetPinIcon />
-                          </button>
-                          <button className="delete-user" title="Delete User">
-                            <DeleteIcon />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="table-error">
-                  {isError && <p className="error-text">{userError}</p>}
-                </div>
+                  ))}
+                </tbody>
+              </table>
+              <div className="table-error">
+                {isError && <p className="error-text">{userError}</p>}
               </div>
             </div>
-          )}
+          </div>
+          {/* )} */}
 
           <div className="admin-panel-table-section">
             <div className="admin-panel-table-section__head">
