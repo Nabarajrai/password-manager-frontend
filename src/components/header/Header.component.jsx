@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { AddUserIcon, PeopleIcon, SecureIcon } from "../../helpers/Icon.helper";
 import { UserIcon, AdminIcon, LogoutIcon } from "../../helpers/Icon.helper";
 import ModalComponent from "../modal/Modal.component";
@@ -20,6 +20,8 @@ import { useAuth } from "../../hooks/user/useAuth.js";
 //hooks
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
+
+//helpres
 
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -58,6 +60,7 @@ const HeaderComponent = () => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
+
   const { data: roles } = useQuery({
     queryKey: ["roles"],
     queryFn: fetchRoles,
@@ -66,14 +69,19 @@ const HeaderComponent = () => {
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
-      console.log("new user", newUser);
-      await queryClient.cancelQueries({ queryKey: ["users"] });
-      const previousUsers = queryClient.getQueryData(["users"]);
-      queryClient.setQueryData(["users"], (old = []) => [
-        ...old,
-        { ...newUser, temp_id: Math.random().toString(36).slice(2, 11) },
-      ]);
-      return { previousUsers };
+      try {
+        await queryClient.cancelQueries({ queryKey: ["users"] });
+        const previousUsers = queryClient.getQueryData(["users"]) ?? [];
+        queryClient.setQueryData(["users"], (old) => {
+          // Ensure old is an array; fallback to empty array if not
+          const usersArray = Array.isArray(old) ? old : [];
+          return [...usersArray, { ...newUser, temp_id: crypto.randomUUID() }];
+        });
+        return { previousUsers };
+      } catch (error) {
+        console.error("Error in onMutate:", error);
+        return { previousUsers: [] };
+      }
     },
     onError: (error, _, context) => {
       queryClient.setQueryData(["users"], context?.previousUsers);
@@ -82,6 +90,7 @@ const HeaderComponent = () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       setAddUserSection(false);
     },
   });
@@ -242,13 +251,10 @@ const HeaderComponent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.users?.map((user) => (
-                    <tr>
+                  {data?.users?.map((user, idx) => (
+                    <tr key={idx}>
                       <td className="admin-user">
-                        <div className="admin-user__name">
-                          {/* Nabaraj Rai <span>(You)</span> */}
-                          {user?.username}
-                        </div>
+                        <div className="admin-user__name">{user?.username}</div>
                         <div className="admin-user__email">{user?.email}</div>
                       </td>
                       <td>
