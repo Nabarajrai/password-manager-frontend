@@ -1,7 +1,10 @@
 import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+//config
 import { api, APIS_PAYLOAD } from "../../config/api.config.js";
 
 export const useUserCreate = () => {
+  const navigate = useNavigate();
   const createUser = useCallback(async (userInfo) => {
     try {
       const response = await api(APIS_PAYLOAD.CREATE_USER, "POST", userInfo);
@@ -15,8 +18,8 @@ export const useUserCreate = () => {
       const response = await api(APIS_PAYLOAD.FETCH_USERS, "GET");
       return response || [];
     } catch (e) {
-      console.error("Error fetching users:", e);
-      throw new Error(e);
+      console.log("Error fetching users", e);
+      throw e;
     }
   }, []);
 
@@ -26,9 +29,29 @@ export const useUserCreate = () => {
       return response?.users || [];
     } catch (e) {
       console.error("Error fetching temp users:", e);
-      throw new Error(e);
+      throw e;
     }
   }, []);
 
-  return { createUser, fetchUsers, fetchTempUsers };
+  const updateUserCredentials = useCallback(
+    async (payload) => {
+      console.log("Payload for updating credentials", payload);
+      try {
+        const response = await api(
+          APIS_PAYLOAD.UPDATE_USER_CREDENTIALS,
+          "POST",
+          payload
+        );
+        if (response.status === "success") {
+          navigate("/login");
+        }
+        return response;
+      } catch (error) {
+        console.error("Error updating user credentials:", error);
+        throw error;
+      }
+    },
+    [navigate]
+  );
+  return { createUser, fetchUsers, fetchTempUsers, updateUserCredentials };
 };
