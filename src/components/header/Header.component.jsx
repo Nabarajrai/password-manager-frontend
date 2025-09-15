@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { AddUserIcon, PeopleIcon, SecureIcon } from "../../helpers/Icon.helper";
 import { UserIcon, AdminIcon, LogoutIcon } from "../../helpers/Icon.helper";
 import ModalComponent from "../modal/Modal.component";
@@ -21,6 +21,8 @@ import { useAuth } from "../../hooks/user/useAuth.js";
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 
+//helpres
+
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
@@ -34,7 +36,7 @@ const HeaderComponent = () => {
   });
   const queryClient = useQueryClient();
   const { logout } = useAuth();
-  const { createUser, fetchUsers } = useUserCreate();
+  const { createUser, fetchUsers, fetchTempUsers } = useUserCreate();
   const { fetchRoles } = useRole();
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
@@ -58,31 +60,45 @@ const HeaderComponent = () => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
+
   const { data: roles } = useQuery({
     queryKey: ["roles"],
     queryFn: fetchRoles,
   });
 
+  const { data: tempUsers = [] } = useQuery({
+    queryKey: ["temp-users"],
+    queryFn: fetchTempUsers,
+  });
+
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
-      console.log("new user", newUser);
-      await queryClient.cancelQueries({ queryKey: ["users"] });
-      const previousUsers = queryClient.getQueryData(["users"]);
-      queryClient.setQueryData(["users"], (old = []) => [
-        ...old,
-        { ...newUser, temp_id: Math.random().toString(36).slice(2, 11) },
-      ]);
+      await queryClient.cancelQueries({ queryKey: ["temp-users"] });
+      const previousUsers = queryClient.getQueryData(["temp-users"]) ?? [];
+      queryClient.setQueryData(["temp-users"], (old) => {
+        const newData = [
+          ...old,
+          {
+            temp_id: crypto.randomUUID(),
+            created_at: new Date().toISOString(),
+            role_name: "USER",
+            ...newUser,
+          },
+        ];
+        return newData;
+      });
       return { previousUsers };
     },
     onError: (error, _, context) => {
-      queryClient.setQueryData(["users"], context?.previousUsers);
+      queryClient.setQueryData(["temp-users"], context?.previousUsers);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
     },
-    onSuccess: () => {
-      setAddUserSection(false);
+    onSuccess: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      queryClient.invalidateQueries({ queryKey: ["temp-users"] });
     },
   });
 
@@ -227,6 +243,56 @@ const HeaderComponent = () => {
               {error && <p className="error-text">{error}</p>}
             </div>
           </div>
+          {/* {tempUsers?.users?.length > 0 && ( */}
+          <div className="admin-panel-table-section">
+            <div className="admin-panel-table-section__head">
+              Temporary User Management
+            </div>
+            <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Rol</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tempUsers.map((user, idx) => (
+                    <tr key={idx}>
+                      <td className="admin-user">
+                        <div className="admin-user__name">{user?.username}</div>
+                        <div className="admin-user__email">{user?.email}</div>
+                      </td>
+                      <td>
+                        <span className="admin-user-admin">
+                          {user?.role_name}
+                        </span>
+                      </td>
+                      <td>{user?.created_at}</td>
+                      <td className="action-btns">
+                        <button className="reset-key" title="Reset Password">
+                          <ResetKeyIcon />
+                        </button>
+                        <button className="reset-pin" title="Reset Pin">
+                          <ResetPinIcon />
+                        </button>
+                        <button className="delete-user" title="Delete User">
+                          <DeleteIcon />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="table-error">
+                {isError && <p className="error-text">{userError}</p>}
+              </div>
+            </div>
+          </div>
+          {/* )} */}
+
           <div className="admin-panel-table-section">
             <div className="admin-panel-table-section__head">
               User Management
@@ -242,13 +308,10 @@ const HeaderComponent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.users?.map((user) => (
-                    <tr>
+                  {data?.users?.map((user, idx) => (
+                    <tr key={idx}>
                       <td className="admin-user">
-                        <div className="admin-user__name">
-                          {/* Nabaraj Rai <span>(You)</span> */}
-                          {user?.username}
-                        </div>
+                        <div className="admin-user__name">{user?.username}</div>
                         <div className="admin-user__email">{user?.email}</div>
                       </td>
                       <td>
