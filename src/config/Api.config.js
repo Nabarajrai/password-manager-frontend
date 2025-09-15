@@ -15,4 +15,10 @@ export const APIS_PAYLOAD = {
   ROLES: "api/roles",
   TEMP_USER_ALL: "api/all-temp-users",
   UPDATE_USER_CREDENTIALS: "api/update-password-pin",
+  DELETE_USER: "api/delete-user",
+  DELETE_TEMP_USER: "api/delete-temp-user",
+  SEND_RESET_PASSWORD_LINK: "api/send-reset-password-link",
+  RESET_PASSWORD: "api/reset-password",
+  SEND_RESET_PIN_LINK: "api/send-reset-pin-link",
+  RESET_PIN: "api/reset-pin",
 };

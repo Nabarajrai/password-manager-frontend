@@ -21,6 +21,7 @@ import { useAuth } from "../../hooks/user/useAuth.js";
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 import { useUser } from "../../hooks/user/useUser.jsx";
+import { useToast } from "../../hooks/toast/useToast.js";
 
 //helpres
 
@@ -37,8 +38,17 @@ const HeaderComponent = () => {
   });
 
   const queryClient = useQueryClient();
+  const { showSuccessToast } = useToast();
   const { logout } = useAuth();
-  const { createUser, fetchUsers, fetchTempUsers } = useUserCreate();
+  const {
+    createUser,
+    fetchUsers,
+    fetchTempUsers,
+    deleteUser,
+    deleteTempUser,
+    passwordResetLink,
+    sendResetPinLink,
+  } = useUserCreate();
   const { fetchRoles } = useRole();
   const { user } = useUser();
   const handleOpenModal = useCallback(() => {
@@ -75,6 +85,55 @@ const HeaderComponent = () => {
     queryFn: fetchTempUsers,
   });
 
+  const deleteMutate = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      showSuccessToast("User deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Error deleting user:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+
+  const deleteTempUserMutate = useMutation({
+    mutationFn: deleteTempUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["temp-users"] });
+      showSuccessToast("Temporary user deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Error deleting temp users", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+
+  const passwordResetLinkMutation = useMutation({
+    mutationFn: passwordResetLink,
+    onSuccess: async () => {
+      showSuccessToast("Password reset link sent successfully");
+    },
+    onError: (error) => {
+      console.error("Error sending password reset link:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+  const sendResetPinLinkMutation = useMutation({
+    mutationFn: sendResetPinLink,
+    onSuccess: async () => {
+      showSuccessToast("Reset pin link sent successfully");
+    },
+    onError: (error) => {
+      console.error("Error sending reset pin link:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
@@ -90,19 +149,32 @@ const HeaderComponent = () => {
             ...newUser,
           },
         ];
+        setAddUserSection(false);
         return newData;
       });
       return { previousUsers };
     },
     onError: (error, _, context) => {
       queryClient.setQueryData(["temp-users"], context?.previousUsers);
+      showSuccessToast(error?.message, "error");
+      throw error;
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
+      setAddUserSection(false);
     },
     onSuccess: async () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       queryClient.invalidateQueries({ queryKey: ["temp-users"] });
+      showSuccessToast("User created successfully");
+      setAddUserSection(false);
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+        pin: "",
+        role_id: "",
+      });
     },
   });
 
@@ -139,6 +211,47 @@ const HeaderComponent = () => {
       [name]: value,
     }));
   }, []);
+
+  const handleDeleteUser = useCallback(
+    (userId) => {
+      if (mutation.isLoading) return;
+      deleteMutate.mutate(userId);
+    },
+    [deleteMutate, mutation]
+  );
+
+  const handleTempUserDelete = useCallback(
+    (userId) => {
+      console.log("tempuser id", userId);
+      if (deleteTempUserMutate.isLoading) return;
+      deleteTempUserMutate.mutate(userId);
+    },
+    [deleteTempUserMutate]
+  );
+
+  const sendResetLinkPassword = useCallback(
+    (userInfo) => {
+      const payload = {
+        username: userInfo.username,
+        email: userInfo.email,
+      };
+      if (passwordResetLinkMutation.isLoading) return;
+      passwordResetLinkMutation.mutate(payload);
+    },
+    [passwordResetLinkMutation]
+  );
+
+  const sendResetPinLinks = useCallback(
+    (userInfo) => {
+      const payload = {
+        username: userInfo.username,
+        email: userInfo.email,
+      };
+      if (sendResetPinLinkMutation.isLoading) return;
+      sendResetPinLinkMutation.mutate(payload);
+    },
+    [sendResetPinLinkMutation]
+  );
 
   return (
     <>
@@ -247,62 +360,68 @@ const HeaderComponent = () => {
               {error && <p className="error-text">{error}</p>}
             </div>
           </div>
-          {/* {tempUsers?.users?.length > 0 && ( */}
-          <div className="admin-panel-table-section">
-            <div className="admin-panel-table-section__head">
-              Temporary User Management
-            </div>
-            <div className="admin-panel-table" style={{ overflowX: "auto" }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>Rol</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userPending ? (
-                    <h3>Loading....</h3>
-                  ) : (
-                    tempUsers.map((user, idx) => (
-                      <tr key={idx}>
-                        <td className="admin-user">
-                          <div className="admin-user__name">
-                            {user?.username}
-                          </div>
-                          <div className="admin-user__email">{user?.email}</div>
-                        </td>
-                        <td>
-                          <span className="admin-user-admin">
-                            {user?.role_name}
-                          </span>
-                        </td>
-                        <td>{user?.created_at}</td>
-                        <td className="action-btns">
-                          <button className="reset-key" title="Reset Password">
-                            <ResetKeyIcon />
-                          </button>
-                          <button className="reset-pin" title="Reset Pin">
-                            <ResetPinIcon />
-                          </button>
-                          <button className="delete-user" title="Delete User">
-                            <DeleteIcon />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-              <div className="table-error">
-                {isError && <p className="error-text">{userError}</p>}
+          {tempUsers?.length > 0 && (
+            <div className="admin-panel-table-section">
+              <div className="admin-panel-table-section__head">
+                Temporary User Management
+              </div>
+              <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Rol</th>
+                      <th>Created At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {userPending ? (
+                      <h3>Loading....</h3>
+                    ) : (
+                      tempUsers.map((user, idx) => (
+                        <tr key={idx}>
+                          <td className="admin-user">
+                            <div className="admin-user__name">
+                              {user?.username}
+                            </div>
+                            <div className="admin-user__email">
+                              {user?.email}
+                            </div>
+                          </td>
+                          <td>
+                            <span className="admin-user-admin">
+                              {user?.role_name}
+                            </span>
+                          </td>
+                          <td>{user?.created_at}</td>
+                          <td className="action-btns">
+                            <button
+                              className="reset-key"
+                              title="Reset Password">
+                              <ResetKeyIcon />
+                            </button>
+                            <button className="reset-pin" title="Reset Pin">
+                              <ResetPinIcon />
+                            </button>
+                            <button
+                              className="delete-user"
+                              title="Delete User"
+                              onClick={() => handleTempUserDelete(user.id)}>
+                              <DeleteIcon />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+                <div className="table-error">
+                  {isError && <p className="error-text">{userError}</p>}
+                </div>
               </div>
             </div>
-          </div>
-          {/* )} */}
-
+          )}
           <div className="admin-panel-table-section">
             <div className="admin-panel-table-section__head">
               User Management
@@ -331,13 +450,22 @@ const HeaderComponent = () => {
                       </td>
                       <td>{user?.created_at}</td>
                       <td className="action-btns">
-                        <button className="reset-key" title="Reset Password">
+                        <button
+                          className="reset-key"
+                          title="Reset Password"
+                          onClick={() => sendResetLinkPassword(user)}>
                           <ResetKeyIcon />
                         </button>
-                        <button className="reset-pin" title="Reset Pin">
+                        <button
+                          className="reset-pin"
+                          title="Reset Pin"
+                          onClick={() => sendResetPinLinks(user)}>
                           <ResetPinIcon />
                         </button>
-                        <button className="delete-user" title="Delete User">
+                        <button
+                          className="delete-user"
+                          title="Delete User"
+                          onClick={() => handleDeleteUser(user.id)}>
                           <DeleteIcon />
                         </button>
                       </td>

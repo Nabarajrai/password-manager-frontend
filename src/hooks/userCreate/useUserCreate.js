@@ -53,5 +53,91 @@ export const useUserCreate = () => {
     },
     [navigate]
   );
-  return { createUser, fetchUsers, fetchTempUsers, updateUserCredentials };
+
+  const deleteUser = useCallback(async (userId) => {
+    try {
+      const response = await api(
+        `${APIS_PAYLOAD.DELETE_USER}?id=${userId}`,
+        "DELETE"
+      );
+      return response;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  }, []);
+
+  const deleteTempUser = useCallback(async (userId) => {
+    try {
+      const response = await api(
+        `${APIS_PAYLOAD.DELETE_TEMP_USER}?id=${userId}`,
+        "DELETE"
+      );
+      return response;
+    } catch (error) {
+      console.error("Error deleting temp user:", error);
+      throw error;
+    }
+  }, []);
+
+  const passwordResetLink = useCallback(async (payload) => {
+    try {
+      const response = await api(
+        APIS_PAYLOAD.SEND_RESET_PASSWORD_LINK,
+        "POST",
+        payload
+      );
+      return response;
+    } catch (error) {
+      console.error("Error sending password reset link:", error);
+      throw error;
+    }
+  }, []);
+
+  const updatePassword = useCallback(async (payload) => {
+    try {
+      const response = await api(APIS_PAYLOAD.RESET_PASSWORD, "PATCH", payload);
+      return response;
+    } catch (error) {
+      console.error("Error updating password:", error);
+      throw error;
+    }
+  }, []);
+
+  const sendResetPinLink = useCallback(async (payload) => {
+    try {
+      const response = await api(
+        APIS_PAYLOAD.SEND_RESET_PIN_LINK,
+        "POST",
+        payload
+      );
+      return response;
+    } catch (error) {
+      console.error("Error sending reset pin link:", error);
+      throw error;
+    }
+  }, []);
+
+  const resetPin = useCallback(async (payload) => {
+    try {
+      const response = await api(APIS_PAYLOAD.RESET_PIN, "PATCH", payload);
+      return response;
+    } catch (error) {
+      console.error("Error resetting pin:", error);
+      throw error;
+    }
+  }, []);
+
+  return {
+    createUser,
+    fetchUsers,
+    fetchTempUsers,
+    updateUserCredentials,
+    deleteUser,
+    deleteTempUser,
+    passwordResetLink,
+    updatePassword,
+    sendResetPinLink,
+    resetPin,
+  };
 };
