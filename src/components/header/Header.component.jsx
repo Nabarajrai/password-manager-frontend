@@ -38,8 +38,14 @@ const HeaderComponent = () => {
 
   const queryClient = useQueryClient();
   const { logout } = useAuth();
-  const { createUser, fetchUsers, fetchTempUsers, deleteUser, deleteTempUser } =
-    useUserCreate();
+  const {
+    createUser,
+    fetchUsers,
+    fetchTempUsers,
+    deleteUser,
+    deleteTempUser,
+    passwordResetLink,
+  } = useUserCreate();
   const { fetchRoles } = useRole();
   const { user } = useUser();
   const handleOpenModal = useCallback(() => {
@@ -98,6 +104,14 @@ const HeaderComponent = () => {
     },
   });
 
+  const passwordResetLinkMutation = useMutation({
+    mutationFn: passwordResetLink,
+    onError: (error) => {
+      console.error("Error sending password reset link:", error);
+      throw error;
+    },
+  });
+
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
@@ -113,6 +127,7 @@ const HeaderComponent = () => {
             ...newUser,
           },
         ];
+        setAddUserSection(false);
         return newData;
       });
       return { previousUsers };
@@ -122,10 +137,19 @@ const HeaderComponent = () => {
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
+      setAddUserSection(false);
     },
     onSuccess: async () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       queryClient.invalidateQueries({ queryKey: ["temp-users"] });
+      setAddUserSection(false);
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+        pin: "",
+        role_id: "",
+      });
     },
   });
 
@@ -178,6 +202,18 @@ const HeaderComponent = () => {
       deleteTempUserMutate.mutate(userId);
     },
     [deleteTempUserMutate]
+  );
+
+  const sendResetLinkPassword = useCallback(
+    (userInfo) => {
+      const payload = {
+        username: userInfo.username,
+        email: userInfo.email,
+      };
+      if (passwordResetLinkMutation.isLoading) return;
+      passwordResetLinkMutation.mutate(payload);
+    },
+    [passwordResetLinkMutation]
   );
 
   return (
@@ -377,7 +413,10 @@ const HeaderComponent = () => {
                       </td>
                       <td>{user?.created_at}</td>
                       <td className="action-btns">
-                        <button className="reset-key" title="Reset Password">
+                        <button
+                          className="reset-key"
+                          title="Reset Password"
+                          onClick={() => sendResetLinkPassword(user)}>
                           <ResetKeyIcon />
                         </button>
                         <button className="reset-pin" title="Reset Pin">

@@ -80,6 +80,20 @@ export const useUserCreate = () => {
     }
   }, []);
 
+  const passwordResetLink = useCallback(async (payload) => {
+    try {
+      const response = await api(
+        APIS_PAYLOAD.SEND_RESET_PASSWORD_LINK,
+        "POST",
+        payload
+      );
+      return response;
+    } catch (error) {
+      console.error("Error sending password reset link:", error);
+      throw error;
+    }
+  }, []);
+
   return {
     createUser,
     fetchUsers,
@@ -87,5 +101,6 @@ export const useUserCreate = () => {
     updateUserCredentials,
     deleteUser,
     deleteTempUser,
+    passwordResetLink,
   };
 };
