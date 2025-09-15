@@ -20,6 +20,7 @@ import { useAuth } from "../../hooks/user/useAuth.js";
 //hooks
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
+import { useUser } from "../../hooks/user/useUser.jsx";
 
 //helpres
 
@@ -39,6 +40,7 @@ const HeaderComponent = () => {
   const { logout } = useAuth();
   const { createUser, fetchUsers, fetchTempUsers } = useUserCreate();
   const { fetchRoles } = useRole();
+  const { user } = useUser();
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
   }, []);
@@ -369,16 +371,24 @@ const HeaderComponent = () => {
                 </div>
                 <div className="name">
                   <p>
-                    Nabaraj Rai <span>(Admin)</span>
+                    Nabaraj Rai{" "}
+                    {user?.role_name === "ADMIN" ? (
+                      <span>(Admin)</span>
+                    ) : (
+                      <span>(User)</span>
+                    )}
                   </p>
                 </div>
               </div>
-              <div className="admin-profile" onClick={handleOpenModal}>
-                <div className="icon">
-                  <AdminIcon />
+              {user?.role_name === "ADMIN" && (
+                <div className="admin-profile" onClick={handleOpenModal}>
+                  <div className="icon">
+                    <AdminIcon />
+                  </div>
+                  <div className="name">Admin</div>
                 </div>
-                <div className="name">Admin</div>
-              </div>
+              )}
+
               <div className="logout" onClick={logout}>
                 <div className="icon">
                   <LogoutIcon />
