@@ -21,6 +21,7 @@ import { useAuth } from "../../hooks/user/useAuth.js";
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 import { useUser } from "../../hooks/user/useUser.jsx";
+import { useToast } from "../../hooks/toast/useToast.js";
 
 //helpres
 
@@ -37,6 +38,7 @@ const HeaderComponent = () => {
   });
 
   const queryClient = useQueryClient();
+  const { showSuccessToast } = useToast();
   const { logout } = useAuth();
   const {
     createUser,
@@ -90,6 +92,7 @@ const HeaderComponent = () => {
     },
     onError: (error) => {
       console.error("Error deleting user:", error);
+      showSuccessToast(error?.message, "error");
       throw error;
     },
   });
