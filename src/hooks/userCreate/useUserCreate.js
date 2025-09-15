@@ -53,5 +53,25 @@ export const useUserCreate = () => {
     },
     [navigate]
   );
-  return { createUser, fetchUsers, fetchTempUsers, updateUserCredentials };
+
+  const deleteUser = useCallback(async (userId) => {
+    try {
+      const response = await api(
+        `${APIS_PAYLOAD.DELETE_USER}?id=${userId}`,
+        "DELETE"
+      );
+      return response;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  }, []);
+
+  return {
+    createUser,
+    fetchUsers,
+    fetchTempUsers,
+    updateUserCredentials,
+    deleteUser,
+  };
 };

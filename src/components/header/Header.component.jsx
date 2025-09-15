@@ -38,7 +38,8 @@ const HeaderComponent = () => {
 
   const queryClient = useQueryClient();
   const { logout } = useAuth();
-  const { createUser, fetchUsers, fetchTempUsers } = useUserCreate();
+  const { createUser, fetchUsers, fetchTempUsers, deleteUser } =
+    useUserCreate();
   const { fetchRoles } = useRole();
   const { user } = useUser();
   const handleOpenModal = useCallback(() => {
@@ -73,6 +74,17 @@ const HeaderComponent = () => {
   const { data: tempUsers = [] } = useQuery({
     queryKey: ["temp-users"],
     queryFn: fetchTempUsers,
+  });
+
+  const deleteMutate = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+    onError: (error) => {
+      console.error("Error deleting user:", error);
+      throw error;
+    },
   });
 
   const mutation = useMutation({
@@ -139,6 +151,15 @@ const HeaderComponent = () => {
       [name]: value,
     }));
   }, []);
+
+  const handleDeleteUser = useCallback(
+    (userId) => {
+      console.log("Deleting user with ID from mutation", userId);
+      if (mutation.isLoading) return;
+      deleteMutate.mutate(userId);
+    },
+    [deleteMutate, mutation]
+  );
 
   return (
     <>
@@ -337,7 +358,10 @@ const HeaderComponent = () => {
                         <button className="reset-pin" title="Reset Pin">
                           <ResetPinIcon />
                         </button>
-                        <button className="delete-user" title="Delete User">
+                        <button
+                          className="delete-user"
+                          title="Delete User"
+                          onClick={() => handleDeleteUser(user.id)}>
                           <DeleteIcon />
                         </button>
                       </td>
