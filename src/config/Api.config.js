@@ -18,4 +18,5 @@ export const APIS_PAYLOAD = {
   DELETE_USER: "api/delete-user",
   DELETE_TEMP_USER: "api/delete-temp-user",
   SEND_RESET_PASSWORD_LINK: "api/send-reset-password-link",
+  RESET_PASSWORD: "api/reset-password",
 };

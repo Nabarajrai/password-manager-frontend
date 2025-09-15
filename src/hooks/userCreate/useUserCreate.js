@@ -94,6 +94,15 @@ export const useUserCreate = () => {
     }
   }, []);
 
+  const updatePassword = useCallback(async (payload) => {
+    try {
+      const response = await api(APIS_PAYLOAD.RESET_PASSWORD, "PATCH", payload);
+      return response;
+    } catch (error) {
+      console.error("Error updating password:", error);
+      throw error;
+    }
+  }, []);
   return {
     createUser,
     fetchUsers,
@@ -102,5 +111,6 @@ export const useUserCreate = () => {
     deleteUser,
     deleteTempUser,
     passwordResetLink,
+    updatePassword,
   };
 };
