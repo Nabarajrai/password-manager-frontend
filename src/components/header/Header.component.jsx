@@ -38,7 +38,7 @@ const HeaderComponent = () => {
 
   const queryClient = useQueryClient();
   const { logout } = useAuth();
-  const { createUser, fetchUsers, fetchTempUsers, deleteUser } =
+  const { createUser, fetchUsers, fetchTempUsers, deleteUser, deleteTempUser } =
     useUserCreate();
   const { fetchRoles } = useRole();
   const { user } = useUser();
@@ -83,6 +83,17 @@ const HeaderComponent = () => {
     },
     onError: (error) => {
       console.error("Error deleting user:", error);
+      throw error;
+    },
+  });
+
+  const deleteTempUserMutate = useMutation({
+    mutationFn: deleteTempUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["temp-users"] });
+    },
+    onError: (error) => {
+      console.error("Error deleting temp users", error);
       throw error;
     },
   });
@@ -154,11 +165,19 @@ const HeaderComponent = () => {
 
   const handleDeleteUser = useCallback(
     (userId) => {
-      console.log("Deleting user with ID from mutation", userId);
       if (mutation.isLoading) return;
       deleteMutate.mutate(userId);
     },
     [deleteMutate, mutation]
+  );
+
+  const handleTempUserDelete = useCallback(
+    (userId) => {
+      console.log("tempuser id", userId);
+      if (deleteTempUserMutate.isLoading) return;
+      deleteTempUserMutate.mutate(userId);
+    },
+    [deleteTempUserMutate]
   );
 
   return (
@@ -268,62 +287,68 @@ const HeaderComponent = () => {
               {error && <p className="error-text">{error}</p>}
             </div>
           </div>
-          {/* {tempUsers?.users?.length > 0 && ( */}
-          <div className="admin-panel-table-section">
-            <div className="admin-panel-table-section__head">
-              Temporary User Management
-            </div>
-            <div className="admin-panel-table" style={{ overflowX: "auto" }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>Rol</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userPending ? (
-                    <h3>Loading....</h3>
-                  ) : (
-                    tempUsers.map((user, idx) => (
-                      <tr key={idx}>
-                        <td className="admin-user">
-                          <div className="admin-user__name">
-                            {user?.username}
-                          </div>
-                          <div className="admin-user__email">{user?.email}</div>
-                        </td>
-                        <td>
-                          <span className="admin-user-admin">
-                            {user?.role_name}
-                          </span>
-                        </td>
-                        <td>{user?.created_at}</td>
-                        <td className="action-btns">
-                          <button className="reset-key" title="Reset Password">
-                            <ResetKeyIcon />
-                          </button>
-                          <button className="reset-pin" title="Reset Pin">
-                            <ResetPinIcon />
-                          </button>
-                          <button className="delete-user" title="Delete User">
-                            <DeleteIcon />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-              <div className="table-error">
-                {isError && <p className="error-text">{userError}</p>}
+          {tempUsers?.length > 0 && (
+            <div className="admin-panel-table-section">
+              <div className="admin-panel-table-section__head">
+                Temporary User Management
+              </div>
+              <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Rol</th>
+                      <th>Created At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {userPending ? (
+                      <h3>Loading....</h3>
+                    ) : (
+                      tempUsers.map((user, idx) => (
+                        <tr key={idx}>
+                          <td className="admin-user">
+                            <div className="admin-user__name">
+                              {user?.username}
+                            </div>
+                            <div className="admin-user__email">
+                              {user?.email}
+                            </div>
+                          </td>
+                          <td>
+                            <span className="admin-user-admin">
+                              {user?.role_name}
+                            </span>
+                          </td>
+                          <td>{user?.created_at}</td>
+                          <td className="action-btns">
+                            <button
+                              className="reset-key"
+                              title="Reset Password">
+                              <ResetKeyIcon />
+                            </button>
+                            <button className="reset-pin" title="Reset Pin">
+                              <ResetPinIcon />
+                            </button>
+                            <button
+                              className="delete-user"
+                              title="Delete User"
+                              onClick={() => handleTempUserDelete(user.id)}>
+                              <DeleteIcon />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+                <div className="table-error">
+                  {isError && <p className="error-text">{userError}</p>}
+                </div>
               </div>
             </div>
-          </div>
-          {/* )} */}
-
+          )}
           <div className="admin-panel-table-section">
             <div className="admin-panel-table-section__head">
               User Management
