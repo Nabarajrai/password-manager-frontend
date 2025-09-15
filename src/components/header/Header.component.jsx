@@ -89,6 +89,7 @@ const HeaderComponent = () => {
     mutationFn: deleteUser,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
+      showSuccessToast("User deleted successfully");
     },
     onError: (error) => {
       console.error("Error deleting user:", error);
@@ -101,24 +102,34 @@ const HeaderComponent = () => {
     mutationFn: deleteTempUser,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["temp-users"] });
+      showSuccessToast("Temporary user deleted successfully");
     },
     onError: (error) => {
       console.error("Error deleting temp users", error);
+      showSuccessToast(error?.message, "error");
       throw error;
     },
   });
 
   const passwordResetLinkMutation = useMutation({
     mutationFn: passwordResetLink,
+    onSuccess: async () => {
+      showSuccessToast("Password reset link sent successfully");
+    },
     onError: (error) => {
       console.error("Error sending password reset link:", error);
+      showSuccessToast(error?.message, "error");
       throw error;
     },
   });
   const sendResetPinLinkMutation = useMutation({
     mutationFn: sendResetPinLink,
+    onSuccess: async () => {
+      showSuccessToast("Reset pin link sent successfully");
+    },
     onError: (error) => {
       console.error("Error sending reset pin link:", error);
+      showSuccessToast(error?.message, "error");
       throw error;
     },
   });
@@ -145,6 +156,8 @@ const HeaderComponent = () => {
     },
     onError: (error, _, context) => {
       queryClient.setQueryData(["temp-users"], context?.previousUsers);
+      showSuccessToast(error?.message, "error");
+      throw error;
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -153,6 +166,7 @@ const HeaderComponent = () => {
     onSuccess: async () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       queryClient.invalidateQueries({ queryKey: ["temp-users"] });
+      showSuccessToast("User created successfully");
       setAddUserSection(false);
       setFormData({
         fullName: "",
