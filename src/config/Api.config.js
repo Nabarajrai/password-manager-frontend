@@ -13,4 +13,5 @@ export const APIS_PAYLOAD = {
   FETCH_USERS: "api/allUsers",
   CATEGORIES: "api/get-all-categories",
   ROLES: "api/roles",
+  TEMP_USER_ALL: "api/all-temp-users",
 };

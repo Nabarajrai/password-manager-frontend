@@ -19,5 +19,16 @@ export const useUserCreate = () => {
       throw new Error(e);
     }
   }, []);
-  return { createUser, fetchUsers };
+
+  const fetchTempUsers = useCallback(async () => {
+    try {
+      const response = await api(APIS_PAYLOAD.TEMP_USER_ALL, "GET");
+      return response || [];
+    } catch (e) {
+      console.error("Error fetching temp users:", e);
+      throw new Error(e);
+    }
+  }, []);
+
+  return { createUser, fetchUsers, fetchTempUsers };
 };

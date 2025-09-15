@@ -36,7 +36,7 @@ const HeaderComponent = () => {
   });
   const queryClient = useQueryClient();
   const { logout } = useAuth();
-  const { createUser, fetchUsers } = useUserCreate();
+  const { createUser, fetchUsers, fetchTempUsers } = useUserCreate();
   const { fetchRoles } = useRole();
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
@@ -66,13 +66,18 @@ const HeaderComponent = () => {
     queryFn: fetchRoles,
   });
 
+  const { data: tempUsers } = useQuery({
+    queryKey: ["temp-users"],
+    queryFn: fetchTempUsers,
+  });
+
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
       try {
         await queryClient.cancelQueries({ queryKey: ["users"] });
-        const previousUsers = queryClient.getQueryData(["users"]) ?? [];
-        queryClient.setQueryData(["users"], (old) => {
+        const previousUsers = queryClient.getQueryData(["temp-users"]) ?? [];
+        queryClient.setQueryData(["temp-users"], (old) => {
           // Ensure old is an array; fallback to empty array if not
           const usersArray = Array.isArray(old) ? old : [];
           return [...usersArray, { ...newUser, temp_id: crypto.randomUUID() }];
@@ -236,6 +241,58 @@ const HeaderComponent = () => {
               {error && <p className="error-text">{error}</p>}
             </div>
           </div>
+          {tempUsers?.users?.length > 0 && (
+            <div className="admin-panel-table-section">
+              <div className="admin-panel-table-section__head">
+                Temporary User Management
+              </div>
+              <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Rol</th>
+                      <th>Created At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tempUsers?.users?.map((user, idx) => (
+                      <tr key={idx}>
+                        <td className="admin-user">
+                          <div className="admin-user__name">
+                            {user?.username}
+                          </div>
+                          <div className="admin-user__email">{user?.email}</div>
+                        </td>
+                        <td>
+                          <span className="admin-user-admin">
+                            {user?.role_name}
+                          </span>
+                        </td>
+                        <td>{user?.created_at}</td>
+                        <td className="action-btns">
+                          <button className="reset-key" title="Reset Password">
+                            <ResetKeyIcon />
+                          </button>
+                          <button className="reset-pin" title="Reset Pin">
+                            <ResetPinIcon />
+                          </button>
+                          <button className="delete-user" title="Delete User">
+                            <DeleteIcon />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="table-error">
+                  {isError && <p className="error-text">{userError}</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="admin-panel-table-section">
             <div className="admin-panel-table-section__head">
               User Management
