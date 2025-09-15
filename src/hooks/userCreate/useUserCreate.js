@@ -103,6 +103,31 @@ export const useUserCreate = () => {
       throw error;
     }
   }, []);
+
+  const sendResetPinLink = useCallback(async (payload) => {
+    try {
+      const response = await api(
+        APIS_PAYLOAD.SEND_RESET_PIN_LINK,
+        "POST",
+        payload
+      );
+      return response;
+    } catch (error) {
+      console.error("Error sending reset pin link:", error);
+      throw error;
+    }
+  }, []);
+
+  const resetPin = useCallback(async (payload) => {
+    try {
+      const response = await api(APIS_PAYLOAD.RESET_PIN, "PATCH", payload);
+      return response;
+    } catch (error) {
+      console.error("Error resetting pin:", error);
+      throw error;
+    }
+  }, []);
+
   return {
     createUser,
     fetchUsers,
@@ -112,5 +137,7 @@ export const useUserCreate = () => {
     deleteTempUser,
     passwordResetLink,
     updatePassword,
+    sendResetPinLink,
+    resetPin,
   };
 };

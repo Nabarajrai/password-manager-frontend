@@ -45,6 +45,7 @@ const HeaderComponent = () => {
     deleteUser,
     deleteTempUser,
     passwordResetLink,
+    sendResetPinLink,
   } = useUserCreate();
   const { fetchRoles } = useRole();
   const { user } = useUser();
@@ -108,6 +109,13 @@ const HeaderComponent = () => {
     mutationFn: passwordResetLink,
     onError: (error) => {
       console.error("Error sending password reset link:", error);
+      throw error;
+    },
+  });
+  const sendResetPinLinkMutation = useMutation({
+    mutationFn: sendResetPinLink,
+    onError: (error) => {
+      console.error("Error sending reset pin link:", error);
       throw error;
     },
   });
@@ -214,6 +222,18 @@ const HeaderComponent = () => {
       passwordResetLinkMutation.mutate(payload);
     },
     [passwordResetLinkMutation]
+  );
+
+  const sendResetPinLinks = useCallback(
+    (userInfo) => {
+      const payload = {
+        username: userInfo.username,
+        email: userInfo.email,
+      };
+      if (sendResetPinLinkMutation.isLoading) return;
+      sendResetPinLinkMutation.mutate(payload);
+    },
+    [sendResetPinLinkMutation]
   );
 
   return (
@@ -419,7 +439,10 @@ const HeaderComponent = () => {
                           onClick={() => sendResetLinkPassword(user)}>
                           <ResetKeyIcon />
                         </button>
-                        <button className="reset-pin" title="Reset Pin">
+                        <button
+                          className="reset-pin"
+                          title="Reset Pin"
+                          onClick={() => sendResetPinLinks(user)}>
                           <ResetPinIcon />
                         </button>
                         <button
