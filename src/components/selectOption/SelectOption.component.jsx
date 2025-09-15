@@ -1,5 +1,5 @@
 import classnames from "classnames";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 const SelectOptionComponent = ({ type, category, values, ...rest }) => {
   const selectClass = useMemo(() => {
     return type && `select-option-group-${type}`;
@@ -8,7 +8,6 @@ const SelectOptionComponent = ({ type, category, values, ...rest }) => {
   const combinedClass = useMemo(() => {
     return classnames("select-option-group", selectClass);
   }, [selectClass]);
-
   return (
     <div className="select-option-component">
       {category && <label className="select-label">{category}</label>}
@@ -27,4 +26,4 @@ const SelectOptionComponent = ({ type, category, values, ...rest }) => {
   );
 };
 
-export default SelectOptionComponent;
+export default memo(SelectOptionComponent);
