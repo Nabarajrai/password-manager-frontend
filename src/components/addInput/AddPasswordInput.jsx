@@ -1,4 +1,6 @@
-import React from "react";
+import { useCallback, useState } from "react";
+//icons
+import { EyeOffIcon } from "../../helpers/Icon.helper";
 
 const AddPasswordInput = ({
   label,
@@ -10,12 +12,16 @@ const AddPasswordInput = ({
   type,
   ...rest
 }) => {
+  const [show, setShow] = useState(false);
+  const handleShowPassword = useCallback(() => {
+    return setShow((prev) => !prev);
+  }, []);
   return (
     <div className="addPassword-group">
       <div className="addPassword-label">{label}</div>
       <div className="addPassword-input-group">
         <input
-          type={type}
+          type={type === "password" ? (show ? "text" : "password") : type}
           className="addPassword-input-field"
           placeholder={placeholder}
           {...rest}
@@ -26,7 +32,11 @@ const AddPasswordInput = ({
               {reset}
             </div>
           )}
-          {icon && <div className="eye">{icon}</div>}
+          {icon && (
+            <div className="eye" onClick={handleShowPassword}>
+              {show ? <EyeOffIcon /> : icon}
+            </div>
+          )}
           {copy && <div className="copy">{copy}</div>}
         </div>
       </div>

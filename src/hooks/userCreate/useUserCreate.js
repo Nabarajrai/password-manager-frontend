@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 //config
 import { api, APIS_PAYLOAD } from "../../config/api.config.js";
+//helpers
+import { clearLocalStorage } from "../../helpers/LocalStroage.helper.js";
 
 export const useUserCreate = () => {
   const navigate = useNavigate();
@@ -28,10 +30,15 @@ export const useUserCreate = () => {
       const response = await api(APIS_PAYLOAD.TEMP_USER_ALL, "GET");
       return response?.users || [];
     } catch (e) {
+      if (e?.message === "Invalid or expired token") {
+        clearLocalStorage();
+        window.location.reload();
+        navigate("/login");
+      }
       console.error("Error fetching temp users:", e);
       throw e;
     }
-  }, []);
+  }, [navigate]);
 
   const updateUserCredentials = useCallback(
     async (payload) => {

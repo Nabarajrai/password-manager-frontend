@@ -60,6 +60,7 @@ const DashboardPage = () => {
     includeNumbers: true,
     includeSymbols: true,
   });
+
   const [strength, setStrength] = useState({ score: 0, label: "Weak" });
   const { generateSecurePassword, getPasswordStrength } =
     usePasswordGenerator();
@@ -86,11 +87,13 @@ const DashboardPage = () => {
   }, [options, generateSecurePassword]);
 
   const handleCheckbox = (e) => {
+    const { name, checked } = e.target;
     setOptions((prev) => ({
       ...prev,
-      [e.target.name]: e.target.checked,
+      [name]: checked, // true / false
     }));
   };
+
   const handleCopied = useCallback(async (text) => {
     if (!text) return;
     try {
@@ -185,6 +188,7 @@ const DashboardPage = () => {
                 onChange={handleCheckbox}
                 name="includeLowercase"
                 checked={options?.includeLowercase}
+                value={options?.includeLowercase}
               />
             </div>
             <div className="char-types__type">
@@ -193,6 +197,7 @@ const DashboardPage = () => {
                 onChange={handleCheckbox}
                 name="includeNumbers"
                 checked={options?.includeNumbers}
+                value={options?.includeLowercase}
               />
             </div>
             <div className="char-types__type">
@@ -256,13 +261,12 @@ const DashboardPage = () => {
           <div className="dashboard-add-section">
             <AddPasswordInput
               label="Password *"
-              type="text"
+              type="password"
               placeholder="Enter Password"
               onChange={handleChangeFormData}
               name="password"
               onFocus={removeErrorMessage}
               icon={<EyeIcon />}
-              copy={<CopyIcon />}
               reset={<ResetPinIcon />}
               generatePassword={generatePasswordOnly}
               value={passwordFormData?.password}
