@@ -125,74 +125,85 @@
   }
 }
 
-
-.admin-panel-container{
+.admin-panel-container {
   width: 100%;
   padding: 0.5rem 0;
   max-height: 83dvh;
   overflow-y: auto;
-  .admin-panel-dash{
+  .admin-panel-dash {
     @include flex(flex-start);
     gap: 1rem;
-    .admin-panel-card{
+    .admin-panel-card {
       flex: 1;
+      &.total {
+        background-color: rgba($primary-color, 0.1);
+        color: $primary-color;
+      }
+      &.ADMIN {
+        background-color: rgba($button-bg-color-primary, 0.1);
+        color: $button-bg-color-primary;
+      }
+      &.USER {
+        background-color: rgba($orange-primary, 0.1);
+        color: $orange-primary;
+      }
     }
   }
-  .admin-panel-action{
-    max-width:11rem ;
+  .admin-panel-action {
+    max-width: 11rem;
     width: 100%;
     padding: 1.6rem 0;
   }
 }
-.admin-panel-useradd-form{
+.admin-panel-useradd-form {
   background-color: $header-background-color;
   padding: 1.5rem;
   border-radius: 10px;
   width: 100%;
   display: none;
   transition: all 0.3s ease;
-  &.active{
+  &.active {
     display: block;
   }
-  h3{
+  h3 {
     color: $text-color-secondary;
     font-size: 1rem;
     margin-bottom: 1rem;
     font-weight: 500;
   }
-  .useradd-form-group{
+  .useradd-form-group {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 1rem;
   }
-  .useradd-form-action-section{
+  .useradd-form-action-section {
     @include flex(flex-start);
     align-items: flex-end;
     gap: 0.7rem;
-    &__add{
+    &__add {
       @include flex(flex-start);
     }
-    &__cancel{
+    &__cancel {
       @include flex(flex-start);
     }
   }
 }
-.admin-panel-table-section{
+.admin-panel-table-section {
   background-color: $header-background-color;
   padding: 1.5rem;
-  margin:2rem 0;
+  margin: 2rem 0;
   border-radius: 10px;
   width: 100%;
- &__head{
-  font-size: 1.1rem;
-  color: $icon-hover-color;
-  font-weight: 500;
-  padding: 1.2rem 0.75rem;
-  border: 1px solid rgba($text-color,0.1);
-  border-bottom: none;
-  border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
- }
+  &__head {
+    font-size: 1.1rem;
+    color: $icon-hover-color;
+    font-weight: 500;
+    padding: 1.2rem 0.75rem;
+    border: 1px solid rgba($text-color, 0.1);
+    border-bottom: none;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+  }
 }
 .admin-panel-table {
   width: 100%;
@@ -200,7 +211,7 @@
 
   table {
     width: 100%;
-    border-collapse: separate; 
+    border-collapse: separate;
     border-spacing: 0;
     border: 1px solid rgba($text-color, 0.1);
     border-bottom-left-radius: 10px;
@@ -226,13 +237,13 @@
     tr {
       transition: all 0.3s ease;
       &:last-child {
-   td{
-        border-bottom: none;
-   }
+        td {
+          border-bottom: none;
+        }
       }
     }
-    td{
-        border-bottom: 1px solid rgba($text-color, 0.1);
+    td {
+      border-bottom: 1px solid rgba($text-color, 0.1);
     }
   }
 
@@ -251,80 +262,88 @@
   tr:hover {
     background-color: rgba($text-color, 0.1);
   }
-  .admin-user-admin{
+  .admin-user-admin {
     font-size: 0.8rem;
     color: $primary-color;
     text-transform: capitalize;
-    background-color: rgba($primary-color,0.1);
+    background-color: rgba($primary-color, 0.1);
     padding: 0.25rem 0.5rem;
     border-radius: 15px;
+    &.ADMIN {
+      background-color: rgba($button-bg-color-primary, 0.2);
+      color: $button-bg-color-primary;
+    }
+    &.USER {
+      background-color: rgba($orange-primary, 0.1);
+      color: $orange-primary;
+    }
   }
-  .admin-user-regular{
+  .admin-user-regular {
     font-size: 0.8rem;
     color: $secondary-color;
     text-transform: capitalize;
-    background-color: rgba($secondary-color,0.1);
+    background-color: rgba($secondary-color, 0.1);
     padding: 0.25rem 0.5rem;
     border-radius: 15px;
   }
-  .admin-user{
-    &__name{
-      width: 100% ;
+  .admin-user {
+    &__name {
+      width: 100%;
       font-size: 0.9rem;
       font-weight: 500;
       color: $text-color-secondary;
-      span{
+      span {
         font-size: 0.9rem;
-        color:$text-color;
+        color: $text-color;
         font-weight: 500;
       }
     }
-    &__email{
-      width: 100% ;
+    &__email {
+      width: 100%;
       font-size: 0.75rem;
       color: $text-color;
     }
   }
-  .action-btns{
+  .action-btns {
     @include flex(flex-start);
     gap: 0.5rem;
-    button{
+    button {
       @include flex(flex-start);
       cursor: pointer;
-      padding: 1.5rem 1.75px; 
+      padding: 1.5rem 1.75px;
       transition: all 0.3s ease;
-     svg{
+      svg {
         width: 1.05rem;
         height: 1.05rem;
         transition: all 0.3s ease;
       }
-      &.reset-key{
-        &:hover{
-          svg{
+      &.reset-key {
+        &:hover {
+          svg {
             stroke: rgba($primary-color, 1);
           }
         }
-        svg{
+        svg {
           stroke: rgba($primary-color, 0.8);
         }
       }
-     &.reset-pin{
-        &:hover{
-          svg{
+      &.reset-pin {
+        &:hover {
+          svg {
             stroke: rgba($secondary-color, 1);
           }
         }
-        svg{
+        svg {
           stroke: rgba($secondary-color, 0.4);
         }
       }
-       &.delete-user{
-        &:hover{
-          svg{
+      &.delete-user {
+        &:hover {
+          svg {
             stroke: rgba($red-primary, 1);
           }
         }
-        svg{
+        svg {
           stroke: rgba($red-primary, 0.7);
         }
       }

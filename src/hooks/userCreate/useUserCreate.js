@@ -128,6 +128,16 @@ export const useUserCreate = () => {
     }
   }, []);
 
+  const countUsers = useCallback(async () => {
+    try {
+      const response = await api(APIS_PAYLOAD.USER_COUNTS, "GET");
+      return response;
+    } catch (error) {
+      console.error("Error counting users:", error);
+      throw error;
+    }
+  }, []);
+
   return {
     createUser,
     fetchUsers,
@@ -139,5 +149,6 @@ export const useUserCreate = () => {
     updatePassword,
     sendResetPinLink,
     resetPin,
+    countUsers,
   };
 };
