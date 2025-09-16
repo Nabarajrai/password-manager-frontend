@@ -88,17 +88,13 @@ const HeaderComponent = () => {
 
   const {
     data: userCounts,
-    isPending: userCountsPending,
-    isError: userCountsError,
-    error: userCountsErrors,
+    // isPending: userCountsPending,
+    // isError: userCountsError,
+    // error: userCountsErrors,
   } = useQuery({
     queryKey: ["user-counts"],
     queryFn: countUsers,
   });
-  console.log("userCounts", userCounts);
-  console.log("userCountsErrors", userCountsErrors);
-  console.log("userCountsError", userCountsError);
-  console.log("userCountsPending", userCountsPending);
 
   const deleteMutate = useMutation({
     mutationFn: deleteUser,
@@ -237,7 +233,6 @@ const HeaderComponent = () => {
 
   const handleTempUserDelete = useCallback(
     (userId) => {
-      console.log("tempuser id", userId);
       if (deleteTempUserMutate.isLoading) return;
       deleteTempUserMutate.mutate(userId);
     },
@@ -342,10 +337,15 @@ const HeaderComponent = () => {
                 <SelectOptionComponent
                   type="forPass"
                   onChange={handleInputChange}
-                  values={roles?.data}
                   name="role_id"
-                  value={formData.role_id}
-                />
+                  value={formData.role_id}>
+                  {roles?.data !== undefined &&
+                    roles?.data.map((val, idx) => (
+                      <option key={idx} value={val.role_id}>
+                        {val.role_name}
+                      </option>
+                    ))}
+                </SelectOptionComponent>
               </div>
               <div className="useradd-form-action-section">
                 <div className="user-form-action-section__add">

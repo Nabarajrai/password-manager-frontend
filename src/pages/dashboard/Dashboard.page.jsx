@@ -26,20 +26,33 @@ import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 //hooks
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useCategories } from "../../hooks/categories/useCategories";
+import {
+  checkPasswordValid,
+  checkValidUrl,
+  checkValidEmail,
+} from "../../helpers/PasswordCheck.helper";
 
 //react query
 import { useQuery } from "@tanstack/react-query";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [passwordAddError, setPasswordAddError] = useState("");
+  const [password, setPassword] = useState("ua0YG!}~R;XCbZ`EhEj");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [copyOpen, setCopyOpen] = useState(false);
+  const [passwordFormData, setPasswordFormData] = useState({
+    title: "",
+    email: "",
+    password: "",
+    url: "",
+    category_id: "",
+  });
 
   const { fetchCategories } = useCategories();
 
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
-  const [password, setPassword] = useState("ua0YG!}~R;XCbZ`EhEj");
   const [length, setLength] = useState(12);
   const [options, setOptions] = useState({
     includeUppercase: true,
@@ -66,7 +79,10 @@ const DashboardPage = () => {
 
   const generatePasswordOnly = useCallback(() => {
     const newPassword = generateSecurePassword({ length: 12, ...options });
-    setPassword(newPassword);
+    setPasswordFormData((prev) => ({
+      ...prev,
+      password: newPassword,
+    }));
   }, [options, generateSecurePassword]);
 
   const handleCheckbox = (e) => {
@@ -75,7 +91,6 @@ const DashboardPage = () => {
       [e.target.name]: e.target.checked,
     }));
   };
-  console.log("Password", password);
   const handleCopied = useCallback(async (text) => {
     if (!text) return;
     try {
@@ -87,6 +102,14 @@ const DashboardPage = () => {
     }
   }, []);
 
+  const handleChangeFormData = useCallback((e) => {
+    const { name, value } = e.target;
+    setPasswordFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
+
   const { data } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
@@ -94,7 +117,35 @@ const DashboardPage = () => {
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
-  console.log("categories data:", data);
+  const handleAddPassword = useCallback(
+    (e) => {
+      e.preventDefault();
+      const { title, email, password, url, category_id } = passwordFormData;
+      if (!title || !email || !password || !url || !category_id) {
+        setPasswordAddError("All fields are required!");
+        return null;
+      }
+      if (!checkValidEmail(email)) {
+        setPasswordAddError("Invalid email format!");
+      }
+      if (!checkPasswordValid(password)) {
+        setPasswordAddError(
+          "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character."
+        );
+      }
+      if (!checkValidUrl(url)) {
+        setPasswordAddError("Invalid url format");
+      }
+    },
+    [passwordFormData]
+  );
+
+  const removeErrorMessage = useCallback(() => {
+    setPasswordAddError("");
+  }, []);
+
+  console.log("passwordAddError", passwordAddError);
+
   return (
     <>
       <ModalComponent
@@ -183,6 +234,10 @@ const DashboardPage = () => {
               label="Title *"
               type="text"
               placeholder="E.g: Google Account"
+              onChange={handleChangeFormData}
+              name="title"
+              value={passwordFormData?.title}
+              onFocus={removeErrorMessage}
               required
             />
           </div>
@@ -191,6 +246,10 @@ const DashboardPage = () => {
               label="Username/Email"
               type="email"
               placeholder="E.g: nabaraj2055@gmail.com"
+              onChange={handleChangeFormData}
+              name="email"
+              onFocus={removeErrorMessage}
+              value={passwordFormData?.email}
               required
             />
           </div>
@@ -199,11 +258,14 @@ const DashboardPage = () => {
               label="Password *"
               type="text"
               placeholder="Enter Password"
+              onChange={handleChangeFormData}
+              name="password"
+              onFocus={removeErrorMessage}
               icon={<EyeIcon />}
               copy={<CopyIcon />}
               reset={<ResetPinIcon />}
               generatePassword={generatePasswordOnly}
-              value={password}
+              value={passwordFormData?.password}
               required
             />
           </div>
@@ -212,6 +274,10 @@ const DashboardPage = () => {
               label="URl *"
               placeholder="E.g: www.salapbikasbank.com.np"
               type="text"
+              onChange={handleChangeFormData}
+              onFocus={removeErrorMessage}
+              name="url"
+              value={passwordFormData?.url}
               required
             />
           </div>
@@ -219,13 +285,29 @@ const DashboardPage = () => {
             <SelectOptionComponent
               type="forPass"
               category="category"
-              values={data}
-              required
-            />
+              onChange={handleChangeFormData}
+              name="category_id"
+              onFocus={removeErrorMessage}
+              value={passwordFormData?.category_id}
+              required>
+              {data !== undefined &&
+                data.map((option) => (
+                  <option key={option.category_id} value={option.category_id}>
+                    {option.name}
+                  </option>
+                ))}
+            </SelectOptionComponent>
           </div>
         </div>
+        {
+          <div className="add-password-error">
+            {passwordAddError && (
+              <p className="error-text">{passwordAddError}</p>
+            )}
+          </div>
+        }
         <div className="dashboard-addPassword-footer">
-          <div className="save-action">
+          <div className="save-action" onClick={handleAddPassword}>
             <ButtonComponent varient="secondary" style="generator">
               <div className="title">Save Password</div>
             </ButtonComponent>
@@ -277,7 +359,16 @@ const DashboardPage = () => {
                 <SearchInputComponent placeholder="Search Passwords..." />
               </div>
               <div className="category-action">
-                <SelectOptionComponent />
+                <SelectOptionComponent>
+                  {data !== undefined &&
+                    data.map((option) => (
+                      <option
+                        key={option.category_id}
+                        value={option.category_id}>
+                        {option.name}
+                      </option>
+                    ))}
+                </SelectOptionComponent>
               </div>
               <div className="modal-actions">
                 <div className="generate-action" onClick={handleOpenModal}>

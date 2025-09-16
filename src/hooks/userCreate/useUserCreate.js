@@ -18,7 +18,7 @@ export const useUserCreate = () => {
       const response = await api(APIS_PAYLOAD.FETCH_USERS, "GET");
       return response || [];
     } catch (e) {
-      console.log("Error fetching users", e);
+      console.error("Error fetching users", e);
       throw e;
     }
   }, []);

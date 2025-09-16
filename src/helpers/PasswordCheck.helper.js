@@ -13,3 +13,8 @@ export const checkValidUrl = (url) => {
   const urlRegex = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/;
   return urlRegex.test(url);
 };
+
+export const checkValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};

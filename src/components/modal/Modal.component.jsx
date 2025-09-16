@@ -9,7 +9,6 @@ const ModalComponent = ({
   children,
 }) => {
   const handleClose = useCallback(() => {
-    console.log("close");
     setIsModalOpen(false);
   }, [setIsModalOpen]);
 
@@ -17,7 +16,7 @@ const ModalComponent = ({
     const activeClass = isModalOpen ? "active" : "";
     const modalClass = modalFor ? `modal-container-${modalFor}` : "";
     return classnames("modal-container", activeClass, modalClass);
-  }, [isModalOpen]);
+  }, [isModalOpen, modalFor]);
 
   useEffect(() => {
     if (isModalOpen) {
