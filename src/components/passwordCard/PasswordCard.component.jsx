@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   EditIcon,
   DeleteIcon,
@@ -5,13 +6,14 @@ import {
   CopyIcon,
   EyeIcon,
 } from "../../helpers/Icon.helper";
-const PasswordCardComponent = ({ handleAddModalOpen }) => {
+const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
+  console.log("datas", datas);
   return (
     <div className="password-card-group">
       <div className="password-card-header">
         <div className="password-card-header-des">
-          <div className="title">Google Account</div>
-          <span className="category">General</span>
+          <div className="title">{datas?.title}</div>
+          <span className="category">{datas?.category_name}</span>
         </div>
         <div className="password-card-action">
           <div className="icon" onClick={handleAddModalOpen}>
@@ -27,7 +29,7 @@ const PasswordCardComponent = ({ handleAddModalOpen }) => {
           <div className="icon">
             <UserIcon />
           </div>
-          <div className="user">nabaraj2055@gmail.com</div>
+          <div className="user">{datas?.username}</div>
         </div>
         <div className="password-card-copy">
           <CopyIcon />
@@ -35,7 +37,7 @@ const PasswordCardComponent = ({ handleAddModalOpen }) => {
       </div>
       <div className="password-card-details">
         <div className="password-card-right">
-          <span className="password-value">••••••••••••</span>
+          <span className="password-value">{datas?.encrypted_password}</span>
           <span className="password-category">Weak</span>
         </div>
         <div className="password-card-left">
@@ -47,9 +49,14 @@ const PasswordCardComponent = ({ handleAddModalOpen }) => {
           </div>
         </div>
       </div>
-      <div className="password-card-footer">Updated 8/27/2025</div>
+      <div className="password-card-footer">
+        <div className="date">{datas?.created_at}</div>
+        <div className="shared-by">
+          {datas?.shared_by_name && datas?.shared_by_name}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default PasswordCardComponent;
+export default memo(PasswordCardComponent);

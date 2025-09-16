@@ -22,4 +22,6 @@ export const APIS_PAYLOAD = {
   SEND_RESET_PIN_LINK: "api/send-reset-pin-link",
   RESET_PIN: "api/reset-pin",
   USER_COUNTS: "api/user-counts",
+  CREATE_PASSWORD: "api/create-password",
+  GET_ALL_PASSWORDS: "api/get-all-passwords",
 };

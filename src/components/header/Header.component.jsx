@@ -381,7 +381,7 @@ const HeaderComponent = () => {
                   </thead>
                   <tbody>
                     {tempUsersPending ? (
-                      <h3>Loading....</h3>
+                      <span>Loading....</span>
                     ) : (
                       tempUsers.map((user, idx) => (
                         <tr key={idx}>
@@ -443,7 +443,7 @@ const HeaderComponent = () => {
                 </thead>
                 <tbody>
                   {userPending ? (
-                    <h3>Loading....</h3>
+                    <span>Loading....</span>
                   ) : (
                     data?.users?.map((user, idx) => (
                       <tr key={idx}>
