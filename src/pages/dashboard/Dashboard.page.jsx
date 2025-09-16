@@ -24,10 +24,16 @@ import AddPasswordInput from "../../components/addInput/AddPasswordInput";
 import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 //hooks
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
+import { useCategories } from "../../hooks/categories/useCategories";
+
+//react query
+import { useQuery } from "@tanstack/react-query";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [copyOpen, setCopyOpen] = useState(false);
+
+  const { fetchCategories } = useCategories();
 
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
@@ -74,6 +80,15 @@ const DashboardPage = () => {
       console.error("Failed to copy: ", err);
     }
   }, []);
+
+  const { data } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  console.log("categories data:", data);
   return (
     <>
       <ModalComponent
@@ -178,7 +193,11 @@ const DashboardPage = () => {
             />
           </div>
           <div className="dashboard-add-section">
-            <SelectOptionComponent type="forPass" category="category" />
+            <SelectOptionComponent
+              type="forPass"
+              category="category"
+              values={data}
+            />
           </div>
         </div>
         <div className="dashboard-addPassword-footer">

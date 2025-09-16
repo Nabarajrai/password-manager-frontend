@@ -2,8 +2,13 @@ import { api, APIS_PAYLOAD } from "../../config/api.config";
 
 export const useCategories = () => {
   const fetchCategories = async () => {
-    const response = await api(APIS_PAYLOAD.CATEGORIES);
-    return response;
+    try {
+      const response = await api(APIS_PAYLOAD.CATEGORIES);
+      return response?.data || [];
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      throw error;
+    }
   };
 
   return { fetchCategories };
