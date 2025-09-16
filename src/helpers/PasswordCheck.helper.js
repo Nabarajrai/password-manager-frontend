@@ -8,3 +8,8 @@ export const checkPinValid = (pin) => {
   const pinRegex = /^\d{4}$/;
   return pinRegex.test(pin);
 };
+
+export const checkValidUrl = (url) => {
+  const urlRegex = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/;
+  return urlRegex.test(url);
+};

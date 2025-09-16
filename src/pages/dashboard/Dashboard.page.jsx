@@ -12,6 +12,7 @@ import {
   CopyIcon,
   PasswordIcon,
   EyeIcon,
+  ResetPinIcon,
 } from "../../helpers/Icon.helper";
 import SelectOptionComponent from "../../components/selectOption/SelectOption.component";
 import ButtonComponent from "../../components/button/Button.component";
@@ -63,13 +64,18 @@ const DashboardPage = () => {
     setStrength(getPasswordStrength(newPassword));
   }, [length, options, generateSecurePassword, getPasswordStrength]);
 
+  const generatePasswordOnly = useCallback(() => {
+    const newPassword = generateSecurePassword({ length: 12, ...options });
+    setPassword(newPassword);
+  }, [options, generateSecurePassword]);
+
   const handleCheckbox = (e) => {
     setOptions((prev) => ({
       ...prev,
       [e.target.name]: e.target.checked,
     }));
   };
-  console.log("password", password, strength, length);
+  console.log("Password", password);
   const handleCopied = useCallback(async (text) => {
     if (!text) return;
     try {
@@ -175,21 +181,38 @@ const DashboardPage = () => {
           <div className="dashboard-add-section">
             <AddPasswordInput
               label="Title *"
+              type="text"
               placeholder="E.g: Google Account"
+              required
             />
           </div>
           <div className="dashboard-add-section">
             <AddPasswordInput
               label="Username/Email"
+              type="email"
               placeholder="E.g: nabaraj2055@gmail.com"
+              required
             />
           </div>
           <div className="dashboard-add-section">
             <AddPasswordInput
               label="Password *"
+              type="text"
               placeholder="Enter Password"
               icon={<EyeIcon />}
               copy={<CopyIcon />}
+              reset={<ResetPinIcon />}
+              generatePassword={generatePasswordOnly}
+              value={password}
+              required
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="URl *"
+              placeholder="E.g: www.salapbikasbank.com.np"
+              type="text"
+              required
             />
           </div>
           <div className="dashboard-add-section">
@@ -197,6 +220,7 @@ const DashboardPage = () => {
               type="forPass"
               category="category"
               values={data}
+              required
             />
           </div>
         </div>

@@ -5,6 +5,8 @@ const AddPasswordInput = ({
   placeholder,
   icon,
   copy,
+  reset,
+  generatePassword,
   type,
   ...rest
 }) => {
@@ -19,6 +21,11 @@ const AddPasswordInput = ({
           {...rest}
         />
         <div className="icon">
+          {reset && (
+            <div className="copy" onClick={generatePassword}>
+              {reset}
+            </div>
+          )}
           {icon && <div className="eye">{icon}</div>}
           {copy && <div className="copy">{copy}</div>}
         </div>
