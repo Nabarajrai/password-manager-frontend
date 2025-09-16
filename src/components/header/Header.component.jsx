@@ -48,6 +48,7 @@ const HeaderComponent = () => {
     deleteTempUser,
     passwordResetLink,
     sendResetPinLink,
+    countUsers,
   } = useUserCreate();
   const { fetchRoles } = useRole();
   const { user } = useUser();
@@ -80,10 +81,24 @@ const HeaderComponent = () => {
     queryFn: fetchRoles,
   });
 
-  const { data: tempUsers = [] } = useQuery({
+  const { data: tempUsers = [], isPending: tempUsersPending } = useQuery({
     queryKey: ["temp-users"],
     queryFn: fetchTempUsers,
   });
+
+  const {
+    data: userCounts,
+    isPending: userCountsPending,
+    isError: userCountsError,
+    error: userCountsErrors,
+  } = useQuery({
+    queryKey: ["user-counts"],
+    queryFn: countUsers,
+  });
+  console.log("userCounts", userCounts);
+  console.log("userCountsErrors", userCountsErrors);
+  console.log("userCountsError", userCountsError);
+  console.log("userCountsPending", userCountsPending);
 
   const deleteMutate = useMutation({
     mutationFn: deleteUser,
@@ -262,30 +277,18 @@ const HeaderComponent = () => {
         modalFor="admin">
         <div className="admin-panel-container">
           <div className="admin-panel-dash">
-            <div className="admin-panel-card">
-              <CardComponent
-                title="Total Users"
-                number="3"
-                icon={<PeopleIcon />}
-                iconColor="purple"
-              />
-            </div>
-            <div className="admin-panel-card">
-              <CardComponent
-                title="Admin Users"
-                icon={<SecureIcon />}
-                number="2"
-                iconColor="green"
-              />
-            </div>
-            <div className="admin-panel-card">
-              <CardComponent
-                title="Regular Users"
-                number="3"
-                icon={<PeopleIcon />}
-                iconColor="green"
-              />
-            </div>
+            {userCounts.map((count) => (
+              <div
+                className={`admin-panel-card ${count.title}`}
+                key={count.label}>
+                <CardComponent
+                  title={`${count.title} Users`}
+                  number={count.number}
+                  icon={<PeopleIcon />}
+                  iconColor={count.title}
+                />
+              </div>
+            ))}
           </div>
           <div className="admin-panel-action" onClick={handleAdduser}>
             <ButtonComponent variant="primary">
@@ -376,7 +379,7 @@ const HeaderComponent = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {userPending ? (
+                    {tempUsersPending ? (
                       <h3>Loading....</h3>
                     ) : (
                       tempUsers.map((user, idx) => (
@@ -390,7 +393,8 @@ const HeaderComponent = () => {
                             </div>
                           </td>
                           <td>
-                            <span className="admin-user-admin">
+                            <span
+                              className={`admin-user-admin ${user?.role_name}`}>
                               {user?.role_name}
                             </span>
                           </td>
@@ -437,40 +441,47 @@ const HeaderComponent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.users?.map((user, idx) => (
-                    <tr key={idx}>
-                      <td className="admin-user">
-                        <div className="admin-user__name">{user?.username}</div>
-                        <div className="admin-user__email">{user?.email}</div>
-                      </td>
-                      <td>
-                        <span className="admin-user-admin">
-                          {user?.role_name}
-                        </span>
-                      </td>
-                      <td>{user?.created_at}</td>
-                      <td className="action-btns">
-                        <button
-                          className="reset-key"
-                          title="Reset Password"
-                          onClick={() => sendResetLinkPassword(user)}>
-                          <ResetKeyIcon />
-                        </button>
-                        <button
-                          className="reset-pin"
-                          title="Reset Pin"
-                          onClick={() => sendResetPinLinks(user)}>
-                          <ResetPinIcon />
-                        </button>
-                        <button
-                          className="delete-user"
-                          title="Delete User"
-                          onClick={() => handleDeleteUser(user.id)}>
-                          <DeleteIcon />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {userPending ? (
+                    <h3>Loading....</h3>
+                  ) : (
+                    data?.users?.map((user, idx) => (
+                      <tr key={idx}>
+                        <td className="admin-user">
+                          <div className="admin-user__name">
+                            {user?.username}
+                          </div>
+                          <div className="admin-user__email">{user?.email}</div>
+                        </td>
+                        <td>
+                          <span
+                            className={`admin-user-admin ${user?.role_name}`}>
+                            {user?.role_name}
+                          </span>
+                        </td>
+                        <td>{user?.created_at}</td>
+                        <td className="action-btns">
+                          <button
+                            className="reset-key"
+                            title="Reset Password"
+                            onClick={() => sendResetLinkPassword(user)}>
+                            <ResetKeyIcon />
+                          </button>
+                          <button
+                            className="reset-pin"
+                            title="Reset Pin"
+                            onClick={() => sendResetPinLinks(user)}>
+                            <ResetPinIcon />
+                          </button>
+                          <button
+                            className="delete-user"
+                            title="Delete User"
+                            onClick={() => handleDeleteUser(user.id)}>
+                            <DeleteIcon />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
               <div className="table-error">
