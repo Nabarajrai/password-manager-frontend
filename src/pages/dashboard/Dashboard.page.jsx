@@ -27,6 +27,8 @@ import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordG
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [copyOpen, setCopyOpen] = useState(false);
+
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
@@ -62,6 +64,16 @@ const DashboardPage = () => {
     }));
   };
   console.log("password", password, strength, length);
+  const handleCopied = useCallback(async (text) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyOpen(true);
+      setTimeout(() => setCopyOpen(false), 2000); // reset after 2s
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  }, []);
   return (
     <>
       <ModalComponent
@@ -69,7 +81,11 @@ const DashboardPage = () => {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}>
         <div className="generate-newpass-input">
-          <ReadOnlyInput value={password} />
+          <ReadOnlyInput
+            value={password}
+            handleCopied={handleCopied}
+            copyOpen={copyOpen}
+          />
         </div>
         <div className="dashboard-progress-bar-section">
           <ProgressBar strength={strength} />
@@ -126,7 +142,7 @@ const DashboardPage = () => {
               <div className="title">Generate Password</div>
             </ButtonComponent>
           </div>
-          <div className="copy-action">
+          <div className="copy-action" onClick={() => handleCopied(password)}>
             <ButtonComponent varient="copy" style="generator">
               <div className="icon">
                 <CopyIcon />

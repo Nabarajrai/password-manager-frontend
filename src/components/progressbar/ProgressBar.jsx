@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import classnames from "classnames";
 
 const ProgressBar = ({ strength }) => {

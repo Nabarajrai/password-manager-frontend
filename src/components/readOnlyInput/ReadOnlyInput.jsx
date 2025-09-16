@@ -1,5 +1,5 @@
 import { CopyIcon } from "../../helpers/Icon.helper";
-const ReadOnlyInput = ({ value }) => {
+const ReadOnlyInput = ({ value, handleCopied, copyOpen }) => {
   return (
     <div className="readonly-input-group">
       <label htmlFor="readonly-input" className="input-label">
@@ -13,9 +13,13 @@ const ReadOnlyInput = ({ value }) => {
           value={value}
           placeholder={value}
         />
-        <span className="icon">
-          <CopyIcon />
-        </span>
+        {copyOpen ? (
+          <span className="readonly-input-copy">Copied</span>
+        ) : (
+          <span className="icon" onClick={() => handleCopied(value)}>
+            <CopyIcon />
+          </span>
+        )}
       </div>
     </div>
   );
