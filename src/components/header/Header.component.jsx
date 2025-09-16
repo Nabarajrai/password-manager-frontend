@@ -277,18 +277,19 @@ const HeaderComponent = () => {
         modalFor="admin">
         <div className="admin-panel-container">
           <div className="admin-panel-dash">
-            {userCounts.map((count) => (
-              <div
-                className={`admin-panel-card ${count.title}`}
-                key={count.label}>
-                <CardComponent
-                  title={`${count.title} Users`}
-                  number={count.number}
-                  icon={<PeopleIcon />}
-                  iconColor={count.title}
-                />
-              </div>
-            ))}
+            {userCounts !== undefined &&
+              userCounts.map((count) => (
+                <div
+                  className={`admin-panel-card ${count.title}`}
+                  key={count.label}>
+                  <CardComponent
+                    title={`${count.title} Users`}
+                    number={count.number}
+                    icon={<PeopleIcon />}
+                    iconColor={count.title}
+                  />
+                </div>
+              ))}
           </div>
           <div className="admin-panel-action" onClick={handleAdduser}>
             <ButtonComponent variant="primary">

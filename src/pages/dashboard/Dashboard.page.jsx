@@ -22,53 +22,103 @@ import ProgressBar from "../../components/progressbar/ProgressBar";
 import RangeInput from "../../components/rangeInput/RangeInput";
 import AddPasswordInput from "../../components/addInput/AddPasswordInput";
 import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
+//hooks
+import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
+  const [password, setPassword] = useState("");
+  const [length, setLength] = useState(12);
+  const [options, setOptions] = useState({
+    includeUppercase: true,
+    includeLowercase: true,
+    includeNumbers: true,
+    includeSymbols: true,
+  });
+  const [strength, setStrength] = useState({ score: 0, label: "Weak" });
+  const { generateSecurePassword, getPasswordStrength } =
+    usePasswordGenerator();
+
   const handleAddModalClose = useCallback(() => {
     setIsAddModalOpen(false);
   }, []);
   const handleAddModalOpen = useCallback(() => {
     setIsAddModalOpen(true);
   }, []);
+
+  const handleGenerate = useCallback(() => {
+    const newPassword = generateSecurePassword({ length, ...options });
+    setPassword(newPassword);
+    setStrength(getPasswordStrength(newPassword));
+  }, [length, options, generateSecurePassword, getPasswordStrength]);
+
+  const handleCheckbox = (e) => {
+    setOptions((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.checked,
+    }));
+  };
+  console.log("password", password, strength, length);
   return (
     <>
       <ModalComponent
         title="Password Generator"
         isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-      >
+        setIsModalOpen={setIsModalOpen}>
         <div className="generate-newpass-input">
-          <ReadOnlyInput />
+          <ReadOnlyInput value={password} />
         </div>
         <div className="dashboard-progress-bar-section">
-          <ProgressBar />
+          <ProgressBar strength={strength} />
         </div>
         <div className="dashboard-range-input-section">
-          <RangeInput />
+          <RangeInput
+            onChange={(e) => setLength(Number(e.target.value))}
+            value={length}
+          />
         </div>
         <div className="dashboard-password-generator">
           <div className="char">Character Types</div>
           <div className="char-types">
             <div className="char-types__type">
-              <CheckboxInput title="Uppercase Letters (A_Z)" />
+              <CheckboxInput
+                title="Uppercase Letters (A_Z)"
+                onChange={handleCheckbox}
+                name="includeUppercase"
+                checked={options?.includeUppercase}
+              />
             </div>
             <div className="char-types__type">
-              <CheckboxInput title="Lowercase Letters" />
+              <CheckboxInput
+                title="Lowercase Letters"
+                onChange={handleCheckbox}
+                name="includeLowercase"
+                checked={options?.includeLowercase}
+              />
             </div>
             <div className="char-types__type">
-              <CheckboxInput title="Numbers (0-9)" />
+              <CheckboxInput
+                title="Numbers (0-9)"
+                onChange={handleCheckbox}
+                name="includeNumbers"
+                checked={options?.includeNumbers}
+              />
             </div>
             <div className="char-types__type">
-              <CheckboxInput title="Symbols (!@#$...)" />
+              <CheckboxInput
+                title="Symbols (!@#$...)"
+                onChange={handleCheckbox}
+                name="includeSymbols"
+                checked={options.includeSymbols}
+              />
             </div>
           </div>
         </div>
         <div className="dashboard-modal-footer">
-          <div className="generate-action">
+          <div className="generate-action" onClick={handleGenerate}>
             <ButtonComponent varient="secondary" style="generator">
               <div className="icon">
                 <GenerateIcon />
@@ -89,8 +139,7 @@ const DashboardPage = () => {
       <ModalComponent
         title="Add New Password"
         isModalOpen={isAddModalOpen}
-        setIsModalOpen={setIsAddModalOpen}
-      >
+        setIsModalOpen={setIsAddModalOpen}>
         <div className="dashboard-add-password">
           <div className="dashboard-add-section">
             <AddPasswordInput
@@ -182,8 +231,7 @@ const DashboardPage = () => {
                 </div>
                 <div
                   className="addPassword-action"
-                  onClick={handleAddModalOpen}
-                >
+                  onClick={handleAddModalOpen}>
                   <ButtonComponent varient="secondary">
                     <div className="icon">
                       <AddIcon />
