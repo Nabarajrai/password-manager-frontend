@@ -20,7 +20,6 @@ const UpdateCredentail = () => {
     new_pin: "",
     confirm_pin: "",
   });
-  console.log("updateForm", updateForm);
 
   const queryClient = useQueryClient();
   const { updateUserCredentials } = useUserCreate();

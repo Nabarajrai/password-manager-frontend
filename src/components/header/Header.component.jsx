@@ -88,17 +88,13 @@ const HeaderComponent = () => {
 
   const {
     data: userCounts,
-    isPending: userCountsPending,
-    isError: userCountsError,
-    error: userCountsErrors,
+    // isPending: userCountsPending,
+    // isError: userCountsError,
+    // error: userCountsErrors,
   } = useQuery({
     queryKey: ["user-counts"],
     queryFn: countUsers,
   });
-  console.log("userCounts", userCounts);
-  console.log("userCountsErrors", userCountsErrors);
-  console.log("userCountsError", userCountsError);
-  console.log("userCountsPending", userCountsPending);
 
   const deleteMutate = useMutation({
     mutationFn: deleteUser,
@@ -237,7 +233,6 @@ const HeaderComponent = () => {
 
   const handleTempUserDelete = useCallback(
     (userId) => {
-      console.log("tempuser id", userId);
       if (deleteTempUserMutate.isLoading) return;
       deleteTempUserMutate.mutate(userId);
     },
@@ -277,18 +272,19 @@ const HeaderComponent = () => {
         modalFor="admin">
         <div className="admin-panel-container">
           <div className="admin-panel-dash">
-            {userCounts.map((count) => (
-              <div
-                className={`admin-panel-card ${count.title}`}
-                key={count.label}>
-                <CardComponent
-                  title={`${count.title} Users`}
-                  number={count.number}
-                  icon={<PeopleIcon />}
-                  iconColor={count.title}
-                />
-              </div>
-            ))}
+            {userCounts !== undefined &&
+              userCounts.map((count) => (
+                <div
+                  className={`admin-panel-card ${count.title}`}
+                  key={count.label}>
+                  <CardComponent
+                    title={`${count.title} Users`}
+                    number={count.number}
+                    icon={<PeopleIcon />}
+                    iconColor={count.title}
+                  />
+                </div>
+              ))}
           </div>
           <div className="admin-panel-action" onClick={handleAdduser}>
             <ButtonComponent variant="primary">
@@ -341,10 +337,15 @@ const HeaderComponent = () => {
                 <SelectOptionComponent
                   type="forPass"
                   onChange={handleInputChange}
-                  values={roles?.data}
                   name="role_id"
-                  value={formData.role_id}
-                />
+                  value={formData.role_id}>
+                  {roles?.data !== undefined &&
+                    roles?.data.map((val, idx) => (
+                      <option key={idx} value={val.role_id}>
+                        {val.role_name}
+                      </option>
+                    ))}
+                </SelectOptionComponent>
               </div>
               <div className="useradd-form-action-section">
                 <div className="user-form-action-section__add">

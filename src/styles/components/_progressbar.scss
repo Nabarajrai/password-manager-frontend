@@ -30,11 +30,26 @@
     width: 100%;
     border-radius: 10px;
     &--child {
-      background-color: $secondary-color;
+      background-color: rgba($secondary-color, 1);
       height: 100%;
       border-radius: 10px;
       width: 89%;
       transition: all 0.3s ease;
+      &.very-strong {
+        background-color: rgba($secondary-color, 1);
+      }
+      &.strong {
+        background-color: rgba($secondary-color, 0.8);
+      }
+      &.good {
+        background-color: rgba($orange-primary, 1);
+      }
+      &.fair {
+        background-color: rgba($orange-primary, 0.5);
+      }
+      &.weak {
+        background-color: $red-primary;
+      }
     }
   }
 }

@@ -11,6 +11,11 @@
     color: $text-color;
     margin-bottom: 0.5rem;
   }
+  .readonly-input-copy {
+    color: $secondary-color;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
 }
 
 .input-section-readonly {
