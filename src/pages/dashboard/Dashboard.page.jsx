@@ -30,7 +30,7 @@ const DashboardPage = () => {
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("ua0YG!}~R;XCbZ`EhEj");
   const [length, setLength] = useState(12);
   const [options, setOptions] = useState({
     includeUppercase: true,
