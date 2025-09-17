@@ -1,13 +1,58 @@
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
+
 import {
   EditIcon,
   DeleteIcon,
   UserIcon,
   CopyIcon,
   EyeIcon,
+  LinkIcon,
 } from "../../helpers/Icon.helper";
+//components
+import ReadOnlyInput from "../readOnlyInput/ReadOnlyInput";
+
+//hooks
+import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
   console.log("datas", datas);
+  const [copyOpen, setCopyOpen] = useState(false);
+  const { getPasswordStrength } = usePasswordGenerator();
+  const generateClassNames = useCallback((params) => {
+    let className = "";
+    switch (params.toLowerCase()) {
+      case "very strong":
+        className = "very-strong";
+        break;
+      case "strong":
+        className = "strong";
+        break;
+      case "good":
+        className = "good";
+        break;
+      case "fair":
+        className = "fair";
+        break;
+      case "weak":
+        className = "weak";
+        break;
+      default:
+        className = "very-strong";
+    }
+    console.log("nabaraj", params);
+    return className;
+  }, []);
+
+  const handleCopied = useCallback(async (text) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyOpen(true);
+      setTimeout(() => setCopyOpen(false), 2000); // reset after 2s
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  }, []);
+
   return (
     <div className="password-card-group">
       <div className="password-card-header">
@@ -35,10 +80,32 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
           <CopyIcon />
         </div>
       </div>
+      <div className="password-card-link">
+        <div className="icon">
+          <LinkIcon />
+        </div>
+        <div className="title">
+          <a href={datas?.url} target="_blank">
+            {new URL(datas?.url).hostname.replace(/^www\./, "")}
+          </a>
+          <div className="icon">
+            <CopyIcon />
+          </div>
+        </div>
+      </div>
+
       <div className="password-card-details">
         <div className="password-card-right">
-          <span className="password-value">{datas?.encrypted_password}</span>
-          <span className="password-category">Weak</span>
+          <span className="password-value">
+            <ReadOnlyInput value={datas?.encrypted_password} type="card" />
+          </span>
+          <span
+            className={`password-category ${generateClassNames(
+              getPasswordStrength(datas?.encrypted_password).label
+            )}`}>
+            {getPasswordStrength(datas?.encrypted_password) &&
+              getPasswordStrength(datas?.encrypted_password).label}
+          </span>
         </div>
         <div className="password-card-left">
           <div className="icon">

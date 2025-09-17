@@ -55,3 +55,34 @@
     }
   }
 }
+.input-section-readonly-card {
+  @include flex(center);
+  width: 100%;
+  background: transparent;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  &:hover,
+  &:focus-within {
+    border-color: $button-bg-color-primary-frist;
+  }
+  .readonly-input {
+    color: $text-color-secondary;
+  }
+  .icon {
+    @include flex(flex-end);
+    margin-left: auto;
+    padding-right: 10px;
+    cursor: pointer;
+    &:hover {
+      svg {
+        stroke: $text-color;
+      }
+    }
+    svg {
+      height: 1rem;
+      width: 1rem;
+      stroke: rgba($text-color, 0.5);
+      transition: all 0.3s ease;
+    }
+  }
+}

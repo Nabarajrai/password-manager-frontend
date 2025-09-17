@@ -27,7 +27,6 @@ import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useCategories } from "../../hooks/categories/useCategories";
 import {
-  checkPasswordValid,
   checkValidUrl,
   checkValidEmail,
 } from "../../helpers/PasswordCheck.helper";
