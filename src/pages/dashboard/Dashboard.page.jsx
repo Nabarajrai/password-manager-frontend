@@ -468,10 +468,7 @@ const DashboardPage = () => {
               <div className="password-card-item">
                 {allPasswords !== undefined &&
                   allPasswords.map((data) => (
-                    <PasswordCardComponent
-                      handleAddModalOpen={handleAddModalOpen}
-                      datas={data}
-                    />
+                    <PasswordCardComponent datas={data} />
                   ))}
               </div>
               {/* <PasswordCardComponent

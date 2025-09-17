@@ -25,4 +25,6 @@ export const APIS_PAYLOAD = {
   CREATE_PASSWORD: "api/create-password",
   GET_ALL_PASSWORDS: "api/get-all-passwords",
   SHARE_PASSWORD: "api/share-password",
+  UPDATE_PASSWORD: "api/update-password",
+  REMOVE_SHARED_PASSWORD: "api/remove-shared-password",
 };
