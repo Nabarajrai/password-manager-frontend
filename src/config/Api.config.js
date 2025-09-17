@@ -24,4 +24,5 @@ export const APIS_PAYLOAD = {
   USER_COUNTS: "api/user-counts",
   CREATE_PASSWORD: "api/create-password",
   GET_ALL_PASSWORDS: "api/get-all-passwords",
+  SHARE_PASSWORD: "api/share_password",
 };

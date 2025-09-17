@@ -73,7 +73,6 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
-  console.log("users", data);
   return (
     <>
       <ModalComponent
@@ -82,13 +81,21 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
         setIsModalOpen={setIsModalOpen}>
         <div className="share-with-container">
           <div className="share-with-input">
-            <SelectOptionComponent>
+            <SelectOptionComponent required>
+              <option value="">Select user to share</option>
               {data?.users !== undefined &&
                 data?.users.map((option) => (
                   <option key={option?.id} value={option?.id}>
                     {option.username}
                   </option>
                 ))}
+            </SelectOptionComponent>
+          </div>
+          <div className="share-with-permission">
+            <SelectOptionComponent required>
+              <option value="">Choose Permission Level</option>
+              <option value="EDIT">EDIT</option>
+              <option value="">VIEW</option>
             </SelectOptionComponent>
           </div>
           <div className="share-with-action">
