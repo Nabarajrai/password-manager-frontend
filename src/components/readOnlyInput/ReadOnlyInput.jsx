@@ -1,11 +1,21 @@
 import { CopyIcon } from "../../helpers/Icon.helper";
-const ReadOnlyInput = ({ value, handleCopied, copyOpen }) => {
+import { useMemo } from "react";
+const ReadOnlyInput = ({ value, handleCopied, copyOpen, type }) => {
+  const classNames = useMemo(() => {
+    return type === "card"
+      ? "input-section-readonly-card"
+      : "input-section-readonly";
+  }, [type]);
+
   return (
     <div className="readonly-input-group">
-      <label htmlFor="readonly-input" className="input-label">
-        Password Generator
-      </label>
-      <div className="input-section-readonly">
+      {!type == "card" && (
+        <label htmlFor="readonly-input" className="input-label">
+          Password Generator
+        </label>
+      )}
+
+      <div className={classNames}>
         <input
           type="text"
           className="readonly-input"
@@ -16,9 +26,11 @@ const ReadOnlyInput = ({ value, handleCopied, copyOpen }) => {
         {copyOpen ? (
           <span className="readonly-input-copy">Copied</span>
         ) : (
-          <span className="icon" onClick={() => handleCopied(value)}>
-            <CopyIcon />
-          </span>
+          type !== "card" && (
+            <span className="icon" onClick={() => handleCopied(value)}>
+              <CopyIcon />
+            </span>
+          )
         )}
       </div>
     </div>

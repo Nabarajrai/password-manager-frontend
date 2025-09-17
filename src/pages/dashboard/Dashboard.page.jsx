@@ -27,13 +27,16 @@ import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useCategories } from "../../hooks/categories/useCategories";
 import {
-  checkPasswordValid,
   checkValidUrl,
   checkValidEmail,
 } from "../../helpers/PasswordCheck.helper";
+import { useCrendentails } from "../../hooks/credentail/useCredentails";
+import { useToast } from "../../hooks/toast/useToast";
+import { useUser } from "../../hooks/user/useUser";
 
 //react query
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [passwordAddError, setPasswordAddError] = useState("");
@@ -49,6 +52,10 @@ const DashboardPage = () => {
   });
 
   const { fetchCategories } = useCategories();
+  const queryClient = useQueryClient();
+  const { createPasswordEntry, getAllPasswords } = useCrendentails();
+  const { showSuccessToast } = useToast();
+  const { user } = useUser();
 
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
@@ -60,6 +67,7 @@ const DashboardPage = () => {
     includeNumbers: true,
     includeSymbols: true,
   });
+
   const [strength, setStrength] = useState({ score: 0, label: "Weak" });
   const { generateSecurePassword, getPasswordStrength } =
     usePasswordGenerator();
@@ -86,11 +94,13 @@ const DashboardPage = () => {
   }, [options, generateSecurePassword]);
 
   const handleCheckbox = (e) => {
+    const { name, checked } = e.target;
     setOptions((prev) => ({
       ...prev,
-      [e.target.name]: e.target.checked,
+      [name]: checked, // true / false
     }));
   };
+
   const handleCopied = useCallback(async (text) => {
     if (!text) return;
     try {
@@ -117,6 +127,57 @@ const DashboardPage = () => {
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
+  const { data: allPasswords } = useQuery({
+    queryKey: ["all-passwords", user?.user_id],
+    queryFn: getAllPasswords,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  console.log("allPasswords", allPasswords);
+
+  const removeErrorMessage = useCallback(() => {
+    setPasswordAddError("");
+  }, []);
+
+  const mutation = useMutation({
+    mutationFn: createPasswordEntry,
+    onMutate: async (newCredential) => {
+      await queryClient.cancelQueries({ queryKey: ["all-passwords"] });
+      const previousPasswords =
+        queryClient.getQueriesData("all-password") ?? [];
+      queryClient.setQueriesData((old) => {
+        const allPassword = {
+          ...old,
+          ...newCredential,
+        };
+        return allPassword;
+      });
+      return { previousPasswords };
+    },
+    onError: (error, _, context) => {
+      queryClient.setQueryData(["all-passwords"], context?.previousUsers);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+    onSettled: async () => {
+      queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
+      setIsAddModalOpen(false);
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
+      showSuccessToast("Password created successfully");
+      setPasswordFormData({
+        title: "",
+        email: "",
+        password: "",
+        url: "",
+        category_id: "",
+      });
+      setIsAddModalOpen(false);
+    },
+  });
+
   const handleAddPassword = useCallback(
     (e) => {
       e.preventDefault();
@@ -128,24 +189,25 @@ const DashboardPage = () => {
       if (!checkValidEmail(email)) {
         setPasswordAddError("Invalid email format!");
       }
-      if (!checkPasswordValid(password)) {
-        setPasswordAddError(
-          "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character."
-        );
-      }
+
       if (!checkValidUrl(url)) {
         setPasswordAddError("Invalid url format");
       }
+      if (mutation.isLoading) return;
+      const payload = {
+        user_id: user?.user_id,
+        title: passwordFormData?.title,
+        username: passwordFormData?.email,
+        encrypted_password: passwordFormData?.password,
+        url: passwordFormData?.url,
+        notes: "",
+        category_id: passwordFormData?.category_id,
+      };
+      mutation.mutate(payload);
     },
-    [passwordFormData]
+    [passwordFormData, mutation, user]
   );
-
-  const removeErrorMessage = useCallback(() => {
-    setPasswordAddError("");
-  }, []);
-
-  console.log("passwordAddError", passwordAddError);
-
+  // console.log("passwordFormData", passwordFormData);
   return (
     <>
       <ModalComponent
@@ -185,6 +247,7 @@ const DashboardPage = () => {
                 onChange={handleCheckbox}
                 name="includeLowercase"
                 checked={options?.includeLowercase}
+                value={options?.includeLowercase}
               />
             </div>
             <div className="char-types__type">
@@ -193,6 +256,7 @@ const DashboardPage = () => {
                 onChange={handleCheckbox}
                 name="includeNumbers"
                 checked={options?.includeNumbers}
+                value={options?.includeLowercase}
               />
             </div>
             <div className="char-types__type">
@@ -256,13 +320,12 @@ const DashboardPage = () => {
           <div className="dashboard-add-section">
             <AddPasswordInput
               label="Password *"
-              type="text"
+              type="password"
               placeholder="Enter Password"
               onChange={handleChangeFormData}
               name="password"
               onFocus={removeErrorMessage}
               icon={<EyeIcon />}
-              copy={<CopyIcon />}
               reset={<ResetPinIcon />}
               generatePassword={generatePasswordOnly}
               value={passwordFormData?.password}
@@ -403,12 +466,15 @@ const DashboardPage = () => {
 
             <div className="password-card-lists">
               <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
+                {allPasswords !== undefined &&
+                  allPasswords.map((data) => (
+                    <PasswordCardComponent
+                      handleAddModalOpen={handleAddModalOpen}
+                      datas={data}
+                    />
+                  ))}
               </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
+              {/* <PasswordCardComponent
                   handleAddModalOpen={handleAddModalOpen}
                 />
               </div>
@@ -483,7 +549,7 @@ const DashboardPage = () => {
                 <PasswordCardComponent
                   handleAddModalOpen={handleAddModalOpen}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
