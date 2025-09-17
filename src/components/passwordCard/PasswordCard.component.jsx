@@ -35,6 +35,8 @@ import {
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
+    useState(false);
   const [passId, setPassId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [type, setType] = useState(true);
@@ -51,9 +53,12 @@ const PasswordCardComponent = ({ datas }) => {
     password_id: "",
   });
 
+  const [userInfo, setUserInfo] = useState(null);
+
   const { getPasswordStrength } = usePasswordGenerator();
   const { fetchUsers } = useUserCreate();
-  const { shareWithPassword, updatePassword } = useCrendentails();
+  const { shareWithPassword, updatePassword, removeSharedPassword } =
+    useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
   const { fetchCategories } = useCategories();
@@ -136,7 +141,19 @@ const PasswordCardComponent = ({ datas }) => {
     },
     onError: (error) => {
       console.error("Error sharing password:", error);
-      showSuccessToast(error?.message || "Something went wrong", "error");
+      showSuccessToast(error || "Something went wrong", "error");
+    },
+  });
+
+  const removePasswordSharedMutation = useMutation({
+    mutationFn: removeSharedPassword,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
+      showSuccessToast("Password shared removed successfully");
+    },
+    onError: (error) => {
+      console.error("Error sharing password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
     },
   });
 
@@ -175,6 +192,7 @@ const PasswordCardComponent = ({ datas }) => {
     });
     setEditModal(true);
   }, []);
+
   // console.log("formdata", formData);
   const handleChangeInput = useCallback((e) => {
     const { name, value } = e.target;
@@ -217,9 +235,48 @@ const PasswordCardComponent = ({ datas }) => {
     },
     [updateMutation, passwordFormData, showSuccessToast, user]
   );
-  console.log("fordata", passwordFormData);
+
+  const handlePasswordSharedModal = useCallback((userInfo) => {
+    setRemoveSharedPasswordModal(true);
+    setUserInfo(userInfo);
+  }, []);
+  const cancelPasswordShareModal = useCallback(() => {
+    setRemoveSharedPasswordModal(false);
+  }, []);
+  const handleRemoveSharedPassword = useCallback(() => {
+    const payload = {
+      share_id: userInfo?.share_id,
+      user_id: userInfo?.owner_user_id,
+    };
+
+    if (!payload.user_id || !payload.share_id) {
+      showSuccessToast(
+        "You are not authorized person to remove this password card"
+      );
+      setRemoveSharedPasswordModal(false);
+      return;
+    }
+    removePasswordSharedMutation.mutate(payload);
+  }, [showSuccessToast, removePasswordSharedMutation, userInfo]);
   return (
     <>
+      <ModalComponent
+        title="Remove Password share with user"
+        isModalOpen={removeSharedPasswordModal}
+        setIsModalOpen={setRemoveSharedPasswordModal}>
+        <div className="remove-password-container">
+          <div
+            className="remove-password-btn"
+            onClick={handleRemoveSharedPassword}>
+            <ButtonComponent varient="secondary">Yes</ButtonComponent>
+          </div>
+          <div
+            className="remove-password-btn"
+            onClick={cancelPasswordShareModal}>
+            <ButtonComponent varient="copy">No</ButtonComponent>
+          </div>
+        </div>
+      </ModalComponent>
       <ModalComponent
         title="Update  Password"
         isModalOpen={editModal}
@@ -418,12 +475,19 @@ const PasswordCardComponent = ({ datas }) => {
             </div>
           )}
         </div>
-        <button
-          className="password-card-share"
-          title="share with"
-          onClick={() => openModal(datas?.password_id)}>
-          <ShareIcon />
-        </button>
+        <div className="password-card-actions">
+          <button
+            className="password-card-share"
+            title="share with"
+            onClick={() => openModal(datas?.password_id)}>
+            <ShareIcon />
+          </button>
+          <button
+            className="password-card-delete"
+            onClick={() => handlePasswordSharedModal(datas)}>
+            Remove Shared
+          </button>
+        </div>
       </div>
     </>
   );

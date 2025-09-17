@@ -36,11 +36,23 @@ export const useCrendentails = () => {
       throw error?.message;
     }
   }, []);
-
+  const removeSharedPassword = useCallback(async (payload) => {
+    try {
+      const response = await api(
+        APIS_PAYLOAD.REMOVE_SHARED_PASSWORD,
+        "DELETE",
+        payload
+      );
+      return response;
+    } catch (error) {
+      throw error?.message;
+    }
+  }, []);
   return {
     createPasswordEntry,
     getAllPasswords,
     shareWithPassword,
     updatePassword,
+    removeSharedPassword,
   };
 };
