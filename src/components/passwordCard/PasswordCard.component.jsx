@@ -16,6 +16,7 @@ import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordG
 const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
   console.log("datas", datas);
   const [copyOpen, setCopyOpen] = useState(false);
+  const [type, setType] = useState(true);
   const { getPasswordStrength } = usePasswordGenerator();
   const generateClassNames = useCallback((params) => {
     let className = "";
@@ -51,6 +52,10 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
+  }, []);
+
+  const handlePassword = useCallback(() => {
+    setType((prev) => !prev);
   }, []);
 
   return (
@@ -97,7 +102,11 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
       <div className="password-card-details">
         <div className="password-card-right">
           <span className="password-value">
-            <ReadOnlyInput value={datas?.encrypted_password} type="card" />
+            <ReadOnlyInput
+              value={datas?.encrypted_password}
+              type="card"
+              otherType={type}
+            />
           </span>
           <span
             className={`password-category ${generateClassNames(
@@ -108,7 +117,7 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
           </span>
         </div>
         <div className="password-card-left">
-          <div className="icon">
+          <div className="icon" onClick={handlePassword}>
             <EyeIcon />
           </div>
           <div className="icon">
