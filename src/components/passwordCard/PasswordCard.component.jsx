@@ -25,6 +25,13 @@ import { useToast } from "../../hooks/toast/useToast";
 import { useUser } from "../../hooks/user/useUser";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useCategories } from "../../hooks/categories/useCategories";
+
+//helpers
+import {
+  checkValidEmail,
+  checkValidUrl,
+} from "../../helpers/PasswordCheck.helper";
+
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -41,11 +48,12 @@ const PasswordCardComponent = ({ datas }) => {
     password: "",
     url: "",
     category_id: "",
+    password_id: "",
   });
 
   const { getPasswordStrength } = usePasswordGenerator();
   const { fetchUsers } = useUserCreate();
-  const { shareWithPassword } = useCrendentails();
+  const { shareWithPassword, updatePassword } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
   const { fetchCategories } = useCategories();
@@ -120,6 +128,18 @@ const PasswordCardComponent = ({ datas }) => {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: updatePassword,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
+      showSuccessToast("Password shared successfully");
+    },
+    onError: (error) => {
+      console.error("Error sharing password:", error);
+      showSuccessToast(error?.message || "Something went wrong", "error");
+    },
+  });
+
   const handleSharePassword = useCallback(() => {
     const { userId, permisson_level } = formData;
     console.log("formdata", formData);
@@ -151,6 +171,7 @@ const PasswordCardComponent = ({ datas }) => {
       password: passwordInfo?.encrypted_password,
       url: passwordInfo?.url,
       category_id: passwordInfo?.category_id,
+      password_id: Number(passwordInfo?.password_id),
     });
     setEditModal(true);
   }, []);
@@ -165,6 +186,37 @@ const PasswordCardComponent = ({ datas }) => {
   const closeEditModal = useCallback(() => {
     setEditModal(false);
   }, []);
+
+  const handleSubmitPassword = useCallback(
+    (e) => {
+      e.preventDefault();
+      const { title, email, password, url, category_id } = passwordFormData;
+      if (!title || !email || !password || !url || !category_id) {
+        showSuccessToast("All fields are required!");
+        return null;
+      }
+      if (!checkValidEmail(email)) {
+        showSuccessToast("Invalid email format!");
+      }
+
+      if (!checkValidUrl(url)) {
+        showSuccessToast("Invalid url format");
+      }
+      if (updateMutation.isLoading) return;
+      const payload = {
+        user_id: user?.user_id,
+        password_id: passwordFormData?.password_id,
+        title: passwordFormData?.title,
+        username: passwordFormData?.email,
+        encrypted_password: passwordFormData?.password,
+        url: passwordFormData?.url,
+        notes: "",
+        category_id: Number(passwordFormData?.category_id),
+      };
+      updateMutation.mutate(payload);
+    },
+    [updateMutation, passwordFormData, showSuccessToast, user]
+  );
   console.log("fordata", passwordFormData);
   return (
     <>
@@ -191,7 +243,7 @@ const PasswordCardComponent = ({ datas }) => {
               placeholder="E.g: nabaraj2055@gmail.com"
               name="email"
               onChange={handleChangeInput}
-              value={passwordFormData?.password}
+              value={passwordFormData?.email}
               required
             />
           </div>
@@ -239,7 +291,10 @@ const PasswordCardComponent = ({ datas }) => {
 
         <div className="dashboard-addPassword-footer">
           <div className="save-action">
-            <ButtonComponent varient="secondary" style="generator">
+            <ButtonComponent
+              varient="secondary"
+              style="generator"
+              onClick={handleSubmitPassword}>
               <div className="title">Update Password</div>
             </ButtonComponent>
           </div>
