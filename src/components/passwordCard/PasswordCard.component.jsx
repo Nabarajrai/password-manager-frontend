@@ -9,12 +9,14 @@ import {
   EyeIcon,
   LinkIcon,
   ShareIcon,
+  ResetPinIcon,
 } from "../../helpers/Icon.helper";
 //components
 import ReadOnlyInput from "../readOnlyInput/ReadOnlyInput";
 import ModalComponent from "../modal/Modal.component";
 import SelectOptionComponent from "../selectOption/SelectOption.component";
 import ButtonComponent from "../button/Button.component";
+import AddPasswordInput from "../addInput/AddPasswordInput";
 
 //hooks
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
@@ -22,8 +24,10 @@ import { useUserCreate } from "../../hooks/userCreate/useUserCreate";
 import { useToast } from "../../hooks/toast/useToast";
 import { useUser } from "../../hooks/user/useUser";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
-const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
+import { useCategories } from "../../hooks/categories/useCategories";
+const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [passId, setPassId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [type, setType] = useState(true);
@@ -31,12 +35,20 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
     userId: "",
     permisson_level: "",
   });
+  const [passwordFormData, setPasswordFormData] = useState({
+    title: "",
+    email: "",
+    password: "",
+    url: "",
+    category_id: "",
+  });
 
   const { getPasswordStrength } = usePasswordGenerator();
   const { fetchUsers } = useUserCreate();
   const { shareWithPassword } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
+  const { fetchCategories } = useCategories();
 
   const queryClient = useQueryClient();
 
@@ -89,6 +101,13 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
     queryFn: fetchUsers,
   });
 
+  const { data: categoryDatas } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
+
   const mutation = useMutation({
     mutationFn: shareWithPassword,
     onSuccess: async () => {
@@ -103,6 +122,7 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
 
   const handleSharePassword = useCallback(() => {
     const { userId, permisson_level } = formData;
+    console.log("formdata", formData);
     if (!userId || !permisson_level) {
       showSuccessToast("All field are required");
       return;
@@ -123,9 +143,116 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
       [name]: value,
     }));
   }, []);
+
+  const handleOpenEdit = useCallback((passwordInfo) => {
+    setPasswordFormData({
+      title: passwordInfo?.title,
+      email: passwordInfo?.username,
+      password: passwordInfo?.encrypted_password,
+      url: passwordInfo?.url,
+      category_id: passwordInfo?.category_id,
+    });
+    setEditModal(true);
+  }, []);
   // console.log("formdata", formData);
+  const handleChangeInput = useCallback((e) => {
+    const { name, value } = e.target;
+    setPasswordFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
+  const closeEditModal = useCallback(() => {
+    setEditModal(false);
+  }, []);
+  console.log("fordata", passwordFormData);
   return (
     <>
+      <ModalComponent
+        title="Update  Password"
+        isModalOpen={editModal}
+        setIsModalOpen={setEditModal}>
+        <div className="dashboard-add-password">
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="Title *"
+              type="text"
+              placeholder="E.g: Google Account"
+              name="title"
+              onChange={handleChangeInput}
+              value={passwordFormData?.title}
+              required
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="Username/Email"
+              type="email"
+              placeholder="E.g: nabaraj2055@gmail.com"
+              name="email"
+              onChange={handleChangeInput}
+              value={passwordFormData?.password}
+              required
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="Password *"
+              type="password"
+              placeholder="Enter Password"
+              name="password"
+              onChange={handleChangeInput}
+              value={passwordFormData?.password}
+              icon={<EyeIcon />}
+              reset={<ResetPinIcon />}
+              required
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <AddPasswordInput
+              label="URl *"
+              placeholder="E.g: www.salapbikasbank.com.np"
+              type="text"
+              name="url"
+              onChange={handleChangeInput}
+              value={passwordFormData?.url}
+              required
+            />
+          </div>
+          <div className="dashboard-add-section">
+            <SelectOptionComponent
+              type="forPass"
+              category="category"
+              name="category_id"
+              onChange={handleChangeInput}
+              value={passwordFormData?.category_id}
+              required>
+              {categoryDatas !== undefined &&
+                categoryDatas.map((option) => (
+                  <option key={option.category_id} value={option.category_id}>
+                    {option.name}
+                  </option>
+                ))}
+            </SelectOptionComponent>
+          </div>
+        </div>
+
+        <div className="dashboard-addPassword-footer">
+          <div className="save-action">
+            <ButtonComponent varient="secondary" style="generator">
+              <div className="title">Update Password</div>
+            </ButtonComponent>
+          </div>
+          <div className="cancel-action" onClick={closeEditModal}>
+            <ButtonComponent varient="copy" style="generator">
+              <div className="icon">
+                <CopyIcon />
+              </div>
+              <div className="title">Cancel</div>
+            </ButtonComponent>
+          </div>
+        </div>
+      </ModalComponent>
       <ModalComponent
         title="Share with"
         isModalOpen={isModalOpen}
@@ -152,7 +279,7 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
               required>
               <option value="">Choose Permission Level</option>
               <option value="EDIT">EDIT</option>
-              <option value="">VIEW</option>
+              <option value="VIEW">VIEW</option>
             </SelectOptionComponent>
           </div>
           <div className="share-with-action" onClick={handleSharePassword}>
@@ -167,7 +294,7 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
             <span className="category">{datas?.category_name}</span>
           </div>
           <div className="password-card-action">
-            <div className="icon" onClick={handleAddModalOpen}>
+            <div className="icon" onClick={() => handleOpenEdit(datas)}>
               <EditIcon />
             </div>
             <div className="icon-d">
