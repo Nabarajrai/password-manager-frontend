@@ -10,6 +10,7 @@ import {
   LinkIcon,
   ShareIcon,
   ResetPinIcon,
+  RemoveShareIcon,
 } from "../../helpers/Icon.helper";
 //components
 import ReadOnlyInput from "../readOnlyInput/ReadOnlyInput";
@@ -35,6 +36,7 @@ import {
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
     useState(false);
   const [passId, setPassId] = useState(null);
@@ -43,6 +45,10 @@ const PasswordCardComponent = ({ datas }) => {
   const [formData, setFormData] = useState({
     userId: "",
     permisson_level: "",
+  });
+  const [deleteFormData, setDeleteFormData] = useState({
+    password_id: "",
+    user_id: "",
   });
   const [passwordFormData, setPasswordFormData] = useState({
     title: "",
@@ -57,8 +63,12 @@ const PasswordCardComponent = ({ datas }) => {
 
   const { getPasswordStrength } = usePasswordGenerator();
   const { fetchUsers } = useUserCreate();
-  const { shareWithPassword, updatePassword, removeSharedPassword } =
-    useCrendentails();
+  const {
+    shareWithPassword,
+    updatePassword,
+    removeSharedPassword,
+    deletePassword,
+  } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
   const { fetchCategories } = useCategories();
@@ -150,6 +160,18 @@ const PasswordCardComponent = ({ datas }) => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
       showSuccessToast("Password shared removed successfully");
+    },
+    onError: (error) => {
+      console.error("Error sharing password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+    },
+  });
+
+  const removePasswordMutation = useMutation({
+    mutationFn: deletePassword,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
+      showSuccessToast("Password deleted successfully");
     },
     onError: (error) => {
       console.error("Error sharing password:", error);
@@ -258,8 +280,56 @@ const PasswordCardComponent = ({ datas }) => {
     }
     removePasswordSharedMutation.mutate(payload);
   }, [showSuccessToast, removePasswordSharedMutation, userInfo]);
+
+  const handleDeletePassword = useCallback(() => {
+    const payload = {
+      password_id: datas?.password_id,
+      user_id: user?.user_id,
+    };
+    if (!payload.user_id || !payload.password_id) {
+      showSuccessToast("All field are required to delete this password card");
+      return;
+    }
+    if (removePasswordMutation.isLoading) return;
+    removePasswordMutation.mutate(payload);
+    setDeleteModal(false);
+  }, [
+    datas?.password_id,
+    user?.user_id,
+    removePasswordMutation,
+    showSuccessToast,
+  ]);
+
+  const deletePasswordModal = useCallback(
+    (userInfo) => {
+      setDeleteModal(true);
+      setDeleteFormData({
+        password_id: userInfo?.password_id,
+        user_id: user?.owner_user_id,
+      });
+    },
+    [user]
+  );
+  const cancelDeletePasswordModal = useCallback(() => {
+    setDeleteModal(false);
+  }, []);
   return (
     <>
+      <ModalComponent
+        title="Are you sure to delete this Password?"
+        isModalOpen={deleteModal}
+        setIsModalOpen={setDeleteModal}>
+        <div className="remove-password-container">
+          <div className="remove-password-btn" onClick={handleDeletePassword}>
+            <ButtonComponent varient="secondary">Yes</ButtonComponent>
+          </div>
+          <div
+            className="remove-password-btn"
+            onClick={cancelDeletePasswordModal}>
+            <ButtonComponent varient="copy">No</ButtonComponent>
+          </div>
+        </div>
+      </ModalComponent>
       <ModalComponent
         title="Remove Password share with user"
         isModalOpen={removeSharedPasswordModal}
@@ -409,7 +479,7 @@ const PasswordCardComponent = ({ datas }) => {
             <div className="icon" onClick={() => handleOpenEdit(datas)}>
               <EditIcon />
             </div>
-            <div className="icon-d">
+            <div className="icon-d" onClick={() => deletePasswordModal(datas)}>
               <DeleteIcon />
             </div>
           </div>
@@ -483,9 +553,10 @@ const PasswordCardComponent = ({ datas }) => {
             <ShareIcon />
           </button>
           <button
+            title="Remove shared"
             className="password-card-delete"
             onClick={() => handlePasswordSharedModal(datas)}>
-            Remove Shared
+            <RemoveShareIcon />
           </button>
         </div>
       </div>
