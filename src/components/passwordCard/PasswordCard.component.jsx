@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   EditIcon,
@@ -19,12 +19,26 @@ import ButtonComponent from "../button/Button.component";
 //hooks
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate";
+import { useToast } from "../../hooks/toast/useToast";
+import { useUser } from "../../hooks/user/useUser";
+import { useCrendentails } from "../../hooks/credentail/useCredentails";
 const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
+  const [passId, setPassId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [type, setType] = useState(true);
+  const [formData, setFormData] = useState({
+    userId: "",
+    permisson_level: "",
+  });
+
   const { getPasswordStrength } = usePasswordGenerator();
   const { fetchUsers } = useUserCreate();
+  const { shareWithPassword } = useCrendentails();
+  const { showSuccessToast } = useToast();
+  const { user } = useUser();
+
+  const queryClient = useQueryClient();
 
   const generateClassNames = useCallback((params) => {
     let className = "";
@@ -65,7 +79,8 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
   const handlePassword = useCallback(() => {
     setType((prev) => !prev);
   }, []);
-  const openModal = useCallback(() => {
+  const openModal = useCallback((passId) => {
+    setPassId(passId);
     setIsModalOpen(true);
   }, []);
 
@@ -73,6 +88,42 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
+
+  const mutation = useMutation({
+    mutationFn: shareWithPassword,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
+      showSuccessToast("Password shared successfully");
+    },
+    onError: (error) => {
+      console.error("Error sharing password:", error);
+      showSuccessToast(error?.message || "Something went wrong", "error");
+    },
+  });
+
+  const handleSharePassword = useCallback(() => {
+    const { userId, permisson_level } = formData;
+    if (!userId || !permisson_level) {
+      showSuccessToast("All field are required");
+      return;
+    }
+    const payload = {
+      user_id: user?.user_id,
+      password_id: passId,
+      shared_with_user_id: Number(formData?.userId),
+      permission_level: formData?.permisson_level,
+    };
+    mutation.mutate(payload);
+  }, [formData, showSuccessToast, user, passId, mutation]);
+
+  const handleInput = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
+  // console.log("formdata", formData);
   return (
     <>
       <ModalComponent
@@ -81,7 +132,10 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
         setIsModalOpen={setIsModalOpen}>
         <div className="share-with-container">
           <div className="share-with-input">
-            <SelectOptionComponent required>
+            <SelectOptionComponent
+              onChange={handleInput}
+              name="userId"
+              required>
               <option value="">Select user to share</option>
               {data?.users !== undefined &&
                 data?.users.map((option) => (
@@ -92,13 +146,16 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
             </SelectOptionComponent>
           </div>
           <div className="share-with-permission">
-            <SelectOptionComponent required>
+            <SelectOptionComponent
+              onChange={handleInput}
+              name="permisson_level"
+              required>
               <option value="">Choose Permission Level</option>
               <option value="EDIT">EDIT</option>
               <option value="">VIEW</option>
             </SelectOptionComponent>
           </div>
-          <div className="share-with-action">
+          <div className="share-with-action" onClick={handleSharePassword}>
             <ButtonComponent varient="secondary">Share it</ButtonComponent>
           </div>
         </div>
@@ -171,14 +228,18 @@ const PasswordCardComponent = ({ handleAddModalOpen, datas }) => {
         </div>
         <div className="password-card-footer">
           <div className="date">{datas?.created_at}</div>
-          <div className="shared-by">
-            {datas?.shared_by_name && datas?.shared_by_name}
-          </div>
+          {datas?.shared_by_name && (
+            <div className="shared-by">
+              {` Shared By (${
+                datas?.shared_by_name && datas?.shared_by_name
+              }) `}
+            </div>
+          )}
         </div>
         <button
           className="password-card-share"
           title="share with"
-          onClick={openModal}>
+          onClick={() => openModal(datas?.password_id)}>
           <ShareIcon />
         </button>
       </div>
