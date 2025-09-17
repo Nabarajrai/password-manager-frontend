@@ -13,7 +13,6 @@ const SelectOptionComponent = ({ type, category, children, ...rest }) => {
       {category && <label className="select-label">{category}</label>}
       <div className={combinedClass}>
         <select className="select-option" {...rest}>
-          <option value="">Select an option</option>
           {children}
         </select>
       </div>

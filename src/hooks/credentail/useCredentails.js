@@ -23,5 +23,10 @@ export const useCrendentails = () => {
     }
   }, []);
 
-  return { createPasswordEntry, getAllPasswords };
+  const shareWithPassword = useCallback(async (payload) => {
+    const response = await api(APIS_PAYLOAD.SHARE_PASSWORD, "POST", payload);
+    return response;
+  }, []);
+
+  return { createPasswordEntry, getAllPasswords, shareWithPassword };
 };
