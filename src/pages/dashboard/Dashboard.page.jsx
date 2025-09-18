@@ -50,6 +50,10 @@ const DashboardPage = () => {
     url: "",
     category_id: "",
   });
+  const [limit, setLimit] = useState(50);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  //hooks
 
   const { fetchCategories } = useCategories();
   const queryClient = useQueryClient();
@@ -120,21 +124,29 @@ const DashboardPage = () => {
     }));
   }, []);
 
-  const { data } = useQuery({
+  const {
+    data,
+    isError: isCategoryError,
+    isPending: isCategoryPending,
+    error: categoryError,
+  } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
-  const { data: allPasswords } = useQuery({
-    queryKey: ["all-passwords", user?.user_id],
+  const {
+    data: allPasswords,
+    isError: isPasswordError,
+    isPending: isPasswordPending,
+    error: passwordError,
+  } = useQuery({
+    queryKey: ["all-passwords", user?.user_id, limit, search, category],
     queryFn: getAllPasswords,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
-
-  console.log("allPasswords", allPasswords);
 
   const removeErrorMessage = useCallback(() => {
     setPasswordAddError("");
@@ -208,6 +220,18 @@ const DashboardPage = () => {
     [passwordFormData, mutation, user]
   );
   // console.log("passwordFormData", passwordFormData);
+  const handleLimitChange = useCallback(() => {
+    setLimit((prev) => prev + 1);
+  }, []);
+
+  const handleSearchChange = useCallback((e) => {
+    setSearch(e.target.value);
+  }, []);
+
+  const handleCategoryChange = useCallback((e) => {
+    setCategory(e.target.value);
+  }, []);
+
   return (
     <>
       <ModalComponent
@@ -395,7 +419,11 @@ const DashboardPage = () => {
               <div className="card-list-section">
                 <CardComponent
                   title="Total Passwords"
-                  number="0"
+                  number={
+                    (allPasswords?.data !== undefined &&
+                      allPasswords?.data?.length) ||
+                    0
+                  }
                   icon={<KeyIcon />}
                   iconColor="purple"
                 />
@@ -403,7 +431,7 @@ const DashboardPage = () => {
               <div className="card-list-section">
                 <CardComponent
                   title="Categories"
-                  number="7"
+                  number={(data !== undefined && data?.length) || 0}
                   icon={<CategoryIcon />}
                   iconColor="green"
                 />
@@ -419,18 +447,31 @@ const DashboardPage = () => {
             </div>
             <div className="dashboard-actions">
               <div className="search-action">
-                <SearchInputComponent placeholder="Search Passwords..." />
+                <SearchInputComponent
+                  placeholder="Search Passwords..."
+                  value={search}
+                  onChange={handleSearchChange}
+                />
               </div>
               <div className="category-action">
-                <SelectOptionComponent>
+                <SelectOptionComponent
+                  value={category}
+                  onChange={handleCategoryChange}>
+                  <option value="">All Categories</option>
+                  {isCategoryPending && (
+                    <option value="">Loading Categories...</option>
+                  )}
                   {data !== undefined &&
                     data.map((option) => (
-                      <option
-                        key={option.category_id}
-                        value={option.category_id}>
+                      <option key={option.category_id} value={option.name}>
                         {option.name}
                       </option>
                     ))}
+                  {isCategoryError && (
+                    <option value="">
+                      {categoryError?.message || "Error fetching categories"}
+                    </option>
+                  )}
                 </SelectOptionComponent>
               </div>
               <div className="modal-actions">
@@ -454,99 +495,42 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
-            {/* <div className="not-found">
-            <div className="icon">
-              <KeyIcon />
-            </div>
-            <div className="title">No Passwords Found</div>
-            <div className="description">
-              Try adding some passwords to get started.
-            </div>
-          </div> */}
 
             <div className="password-card-lists">
-              <div className="password-card-item">
-                {allPasswords !== undefined &&
-                  allPasswords.map((data) => (
-                    <PasswordCardComponent datas={data} />
-                  ))}
-              </div>
-              {/* <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div>
-              <div className="password-card-item">
-                <PasswordCardComponent
-                  handleAddModalOpen={handleAddModalOpen}
-                />
-              </div> */}
+              {isPasswordPending ? (
+                <div className="loader">Loading...</div>
+              ) : (
+                <div className="password-card-item">
+                  {allPasswords?.data !== undefined &&
+                  allPasswords?.data.length === 0 ? (
+                    <div className="not-found">
+                      <div className="icon">
+                        <KeyIcon />
+                      </div>
+                      <div className="title">No Passwords Found</div>
+                      <div className="description">
+                        Try adding some passwords to get started.
+                      </div>
+                    </div>
+                  ) : (
+                    allPasswords?.data !== undefined &&
+                    allPasswords?.data.map((data) => (
+                      <PasswordCardComponent datas={data} setLimit={setLimit} />
+                    ))
+                  )}
+                </div>
+              )}
+              {isPasswordError && (
+                <div className="error-message">
+                  {passwordError?.message || "Something went wrong!"}
+                </div>
+              )}
+              {allPasswords?.data !== undefined &&
+                allPasswords?.data?.length >= limit && (
+                  <button className="show-more-btn" onClick={handleLimitChange}>
+                    Show More
+                  </button>
+                )}
             </div>
           </div>
         </div>

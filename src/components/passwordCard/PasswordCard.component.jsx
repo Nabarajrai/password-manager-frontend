@@ -26,6 +26,7 @@ import { useToast } from "../../hooks/toast/useToast";
 import { useUser } from "../../hooks/user/useUser";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useCategories } from "../../hooks/categories/useCategories";
+import { useClipboard } from "../../hooks/clipboard/useClipboard";
 
 //helpers
 import {
@@ -72,6 +73,7 @@ const PasswordCardComponent = ({ datas }) => {
   const { showSuccessToast } = useToast();
   const { user } = useUser();
   const { fetchCategories } = useCategories();
+  const { handleCopied } = useClipboard();
 
   const queryClient = useQueryClient();
 
@@ -100,17 +102,6 @@ const PasswordCardComponent = ({ datas }) => {
     return className;
   }, []);
 
-  const handleCopied = useCallback(async (text) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopyOpen(true);
-      setTimeout(() => setCopyOpen(false), 2000); // reset after 2s
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  }, []);
-
   const handlePassword = useCallback(() => {
     setType((prev) => !prev);
   }, []);
@@ -119,12 +110,22 @@ const PasswordCardComponent = ({ datas }) => {
     setIsModalOpen(true);
   }, []);
 
-  const { data } = useQuery({
+  const {
+    data,
+    isError: isUserError,
+    isPending: isUserPending,
+    error: userError,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
-  const { data: categoryDatas } = useQuery({
+  const {
+    data: categoryDatas,
+    isError: isCategoryError,
+    isPending: isCategoryPending,
+    error: categoryError,
+  } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -313,6 +314,14 @@ const PasswordCardComponent = ({ datas }) => {
   const cancelDeletePasswordModal = useCallback(() => {
     setDeleteModal(false);
   }, []);
+
+  const copyToClipboard = useCallback(
+    (datas) => {
+      handleCopied(datas, setCopyOpen);
+    },
+    [handleCopied]
+  );
+
   return (
     <>
       <ModalComponent
@@ -348,7 +357,7 @@ const PasswordCardComponent = ({ datas }) => {
         </div>
       </ModalComponent>
       <ModalComponent
-        title="Update  Password"
+        title="Update Password"
         isModalOpen={editModal}
         setIsModalOpen={setEditModal}>
         <div className="dashboard-add-password">
@@ -406,12 +415,23 @@ const PasswordCardComponent = ({ datas }) => {
               onChange={handleChangeInput}
               value={passwordFormData?.category_id}
               required>
+              {isCategoryPending && (
+                <option value="">Loading Categories...</option>
+              )}
+              {categoryDatas !== undefined && categoryDatas.length === 0 && (
+                <option value="">No Categories Available</option>
+              )}
               {categoryDatas !== undefined &&
                 categoryDatas.map((option) => (
                   <option key={option.category_id} value={option.category_id}>
                     {option.name}
                   </option>
                 ))}
+              {isCategoryError && (
+                <option value="">
+                  {categoryError?.message || "Error fetching categories"}
+                </option>
+              )}
             </SelectOptionComponent>
           </div>
         </div>
@@ -446,6 +466,16 @@ const PasswordCardComponent = ({ datas }) => {
               name="userId"
               required>
               <option value="">Select user to share</option>
+              {isUserPending && <option value="">Loading users...</option>}
+              {isUserError && (
+                <option value="">
+                  {userError?.message || "Error fetching users"}
+                </option>
+              )}
+
+              {data !== undefined && data.length === 0 && (
+                <option value="">No Users Available</option>
+              )}
               {data?.users !== undefined &&
                 data?.users.map((option) => (
                   <option key={option?.id} value={option?.id}>
@@ -491,7 +521,9 @@ const PasswordCardComponent = ({ datas }) => {
             </div>
             <div className="user">{datas?.username}</div>
           </div>
-          <div className="password-card-copy">
+          <div
+            className="password-card-copy"
+            onClick={() => copyToClipboard(datas?.username)}>
             <CopyIcon />
           </div>
         </div>
@@ -503,7 +535,7 @@ const PasswordCardComponent = ({ datas }) => {
             <a href={datas?.url} target="_blank">
               {new URL(datas?.url).hostname.replace(/^www\./, "")}
             </a>
-            <div className="icon">
+            <div className="icon" onClick={() => copyToClipboard(datas?.url)}>
               <CopyIcon />
             </div>
           </div>
@@ -530,7 +562,9 @@ const PasswordCardComponent = ({ datas }) => {
             <div className="icon" onClick={handlePassword}>
               <EyeIcon />
             </div>
-            <div className="icon">
+            <div
+              className="icon"
+              onClick={() => copyToClipboard(datas?.encrypted_password)}>
               <CopyIcon />
             </div>
           </div>
