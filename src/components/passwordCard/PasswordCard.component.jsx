@@ -110,12 +110,22 @@ const PasswordCardComponent = ({ datas }) => {
     setIsModalOpen(true);
   }, []);
 
-  const { data } = useQuery({
+  const {
+    data,
+    isError: isUserError,
+    isPending: isUserPending,
+    error: userError,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
-  const { data: categoryDatas } = useQuery({
+  const {
+    data: categoryDatas,
+    isError: isCategoryError,
+    isPending: isCategoryPending,
+    error: categoryError,
+  } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -405,12 +415,23 @@ const PasswordCardComponent = ({ datas }) => {
               onChange={handleChangeInput}
               value={passwordFormData?.category_id}
               required>
+              {isCategoryPending && (
+                <option value="">Loading Categories...</option>
+              )}
+              {categoryDatas !== undefined && categoryDatas.length === 0 && (
+                <option value="">No Categories Available</option>
+              )}
               {categoryDatas !== undefined &&
                 categoryDatas.map((option) => (
                   <option key={option.category_id} value={option.category_id}>
                     {option.name}
                   </option>
                 ))}
+              {isCategoryError && (
+                <option value="">
+                  {categoryError?.message || "Error fetching categories"}
+                </option>
+              )}
             </SelectOptionComponent>
           </div>
         </div>
@@ -445,6 +466,16 @@ const PasswordCardComponent = ({ datas }) => {
               name="userId"
               required>
               <option value="">Select user to share</option>
+              {isUserPending && <option value="">Loading users...</option>}
+              {isUserError && (
+                <option value="">
+                  {userError?.message || "Error fetching users"}
+                </option>
+              )}
+
+              {data !== undefined && data.length === 0 && (
+                <option value="">No Users Available</option>
+              )}
               {data?.users !== undefined &&
                 data?.users.map((option) => (
                   <option key={option?.id} value={option?.id}>

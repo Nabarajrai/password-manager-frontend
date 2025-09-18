@@ -232,7 +232,6 @@ const DashboardPage = () => {
     setCategory(e.target.value);
   }, []);
 
-  console.log("allPasswords", search, category);
   return (
     <>
       <ModalComponent
@@ -461,9 +460,6 @@ const DashboardPage = () => {
                   <option value="">All Categories</option>
                   {isCategoryPending && (
                     <option value="">Loading Categories...</option>
-                  )}
-                  {data !== undefined && data.length === 0 && (
-                    <option value="">No Categories Available</option>
                   )}
                   {data !== undefined &&
                     data.map((option) => (
