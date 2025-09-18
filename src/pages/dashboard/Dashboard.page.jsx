@@ -131,7 +131,12 @@ const DashboardPage = () => {
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
-  const { data: allPasswords } = useQuery({
+  const {
+    data: allPasswords,
+    isError: isPasswordError,
+    isPending: isPasswordPending,
+    error: passwordError,
+  } = useQuery({
     queryKey: ["all-passwords", user?.user_id, limit, search, category],
     queryFn: getAllPasswords,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -484,12 +489,21 @@ const DashboardPage = () => {
           </div> */}
 
             <div className="password-card-lists">
-              <div className="password-card-item">
-                {allPasswords?.data !== undefined &&
-                  allPasswords?.data.map((data) => (
-                    <PasswordCardComponent datas={data} setLimit={setLimit} />
-                  ))}
-              </div>
+              {isPasswordPending ? (
+                <div className="loader">Loading...</div>
+              ) : (
+                <div className="password-card-item">
+                  {allPasswords?.data !== undefined &&
+                    allPasswords?.data.map((data) => (
+                      <PasswordCardComponent datas={data} setLimit={setLimit} />
+                    ))}
+                </div>
+              )}
+              {isPasswordError && (
+                <div className="error-message">
+                  {passwordError?.message || "Something went wrong!"}
+                </div>
+              )}
               {allPasswords?.data?.length >= limit && (
                 <button className="show-more-btn" onClick={handleLimitChange}>
                   Show More
