@@ -418,7 +418,7 @@ const DashboardPage = () => {
               <div className="card-list-section">
                 <CardComponent
                   title="Categories"
-                  number="7"
+                  number={data?.length || 0}
                   icon={<CategoryIcon />}
                   iconColor="green"
                 />
