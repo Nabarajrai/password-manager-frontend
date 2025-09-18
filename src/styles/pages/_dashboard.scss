@@ -134,3 +134,14 @@
     }
   }
 }
+.show-more-btn {
+  color: rgba($text-color, 1);
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    text-decoration: underline;
+    color: rgba($text-color, 0.8);
+  }
+}

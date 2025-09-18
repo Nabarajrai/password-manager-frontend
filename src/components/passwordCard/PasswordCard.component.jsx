@@ -26,6 +26,7 @@ import { useToast } from "../../hooks/toast/useToast";
 import { useUser } from "../../hooks/user/useUser";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useCategories } from "../../hooks/categories/useCategories";
+import { useClipboard } from "../../hooks/clipboard/useClipboard";
 
 //helpers
 import {
@@ -72,6 +73,7 @@ const PasswordCardComponent = ({ datas }) => {
   const { showSuccessToast } = useToast();
   const { user } = useUser();
   const { fetchCategories } = useCategories();
+  const { handleCopied } = useClipboard();
 
   const queryClient = useQueryClient();
 
@@ -98,17 +100,6 @@ const PasswordCardComponent = ({ datas }) => {
     }
     console.log("nabaraj", params);
     return className;
-  }, []);
-
-  const handleCopied = useCallback(async (text) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopyOpen(true);
-      setTimeout(() => setCopyOpen(false), 2000); // reset after 2s
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
   }, []);
 
   const handlePassword = useCallback(() => {
@@ -313,6 +304,14 @@ const PasswordCardComponent = ({ datas }) => {
   const cancelDeletePasswordModal = useCallback(() => {
     setDeleteModal(false);
   }, []);
+
+  const copyToClipboard = useCallback(
+    (datas) => {
+      handleCopied(datas, setCopyOpen);
+    },
+    [handleCopied]
+  );
+
   return (
     <>
       <ModalComponent
@@ -491,7 +490,9 @@ const PasswordCardComponent = ({ datas }) => {
             </div>
             <div className="user">{datas?.username}</div>
           </div>
-          <div className="password-card-copy">
+          <div
+            className="password-card-copy"
+            onClick={() => copyToClipboard(datas?.username)}>
             <CopyIcon />
           </div>
         </div>
@@ -503,7 +504,7 @@ const PasswordCardComponent = ({ datas }) => {
             <a href={datas?.url} target="_blank">
               {new URL(datas?.url).hostname.replace(/^www\./, "")}
             </a>
-            <div className="icon">
+            <div className="icon" onClick={() => copyToClipboard(datas?.url)}>
               <CopyIcon />
             </div>
           </div>
@@ -530,7 +531,9 @@ const PasswordCardComponent = ({ datas }) => {
             <div className="icon" onClick={handlePassword}>
               <EyeIcon />
             </div>
-            <div className="icon">
+            <div
+              className="icon"
+              onClick={() => copyToClipboard(datas?.encrypted_password)}>
               <CopyIcon />
             </div>
           </div>

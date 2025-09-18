@@ -12,10 +12,12 @@ export const useCrendentails = () => {
   }, []);
 
   const getAllPasswords = useCallback(async ({ queryKey }) => {
-    const [, userId] = queryKey;
+    const [, userId, limit, search, category] = queryKey;
     try {
       const response = await api(
-        `${APIS_PAYLOAD.GET_ALL_PASSWORDS}?id=${Number(userId)}`
+        `${APIS_PAYLOAD.GET_ALL_PASSWORDS}?id=${Number(
+          userId
+        )}&limit=${limit}&search=${search}&category=${category}`
       );
       return response;
     } catch (error) {
