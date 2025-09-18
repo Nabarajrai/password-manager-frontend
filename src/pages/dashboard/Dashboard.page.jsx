@@ -420,7 +420,11 @@ const DashboardPage = () => {
               <div className="card-list-section">
                 <CardComponent
                   title="Total Passwords"
-                  number={allPasswords?.data?.length || 0}
+                  number={
+                    (allPasswords?.data !== undefined &&
+                      allPasswords?.data?.length) ||
+                    0
+                  }
                   icon={<KeyIcon />}
                   iconColor="purple"
                 />
@@ -428,7 +432,7 @@ const DashboardPage = () => {
               <div className="card-list-section">
                 <CardComponent
                   title="Categories"
-                  number={data?.length || 0}
+                  number={(data !== undefined && data?.length) || 0}
                   icon={<CategoryIcon />}
                   iconColor="green"
                 />
@@ -458,10 +462,10 @@ const DashboardPage = () => {
                   {isCategoryPending && (
                     <option value="">Loading Categories...</option>
                   )}
-                  {data.length === 0 && (
+                  {data !== undefined && data.length === 0 && (
                     <option value="">No Categories Available</option>
                   )}
-                  {data.length > 0 &&
+                  {data !== undefined &&
                     data.map((option) => (
                       <option key={option.category_id} value={option.name}>
                         {option.name}
@@ -501,7 +505,8 @@ const DashboardPage = () => {
                 <div className="loader">Loading...</div>
               ) : (
                 <div className="password-card-item">
-                  {allPasswords?.data.length === 0 ? (
+                  {allPasswords?.data !== undefined &&
+                  allPasswords?.data.length === 0 ? (
                     <div className="not-found">
                       <div className="icon">
                         <KeyIcon />
@@ -512,6 +517,7 @@ const DashboardPage = () => {
                       </div>
                     </div>
                   ) : (
+                    allPasswords?.data !== undefined &&
                     allPasswords?.data.map((data) => (
                       <PasswordCardComponent datas={data} setLimit={setLimit} />
                     ))
@@ -523,11 +529,12 @@ const DashboardPage = () => {
                   {passwordError?.message || "Something went wrong!"}
                 </div>
               )}
-              {allPasswords?.data?.length >= limit && (
-                <button className="show-more-btn" onClick={handleLimitChange}>
-                  Show More
-                </button>
-              )}
+              {allPasswords?.data !== undefined &&
+                allPasswords?.data?.length >= limit && (
+                  <button className="show-more-btn" onClick={handleLimitChange}>
+                    Show More
+                  </button>
+                )}
             </div>
           </div>
         </div>

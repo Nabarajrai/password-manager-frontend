@@ -347,7 +347,7 @@ const PasswordCardComponent = ({ datas }) => {
         </div>
       </ModalComponent>
       <ModalComponent
-        title="Update  Password"
+        title="Update Password"
         isModalOpen={editModal}
         setIsModalOpen={setEditModal}>
         <div className="dashboard-add-password">
