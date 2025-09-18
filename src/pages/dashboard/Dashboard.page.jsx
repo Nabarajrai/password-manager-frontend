@@ -410,7 +410,7 @@ const DashboardPage = () => {
               <div className="card-list-section">
                 <CardComponent
                   title="Total Passwords"
-                  number="0"
+                  number={allPasswords?.data?.length || 0}
                   icon={<KeyIcon />}
                   iconColor="purple"
                 />
