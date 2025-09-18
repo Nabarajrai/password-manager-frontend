@@ -36,6 +36,8 @@ import {
 
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
+  const [copyUrl, setCopyUrl] = useState(false);
+  const [copyPassword, setCopyPassword] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
@@ -322,6 +324,19 @@ const PasswordCardComponent = ({ datas }) => {
     [handleCopied]
   );
 
+  const copyToUrlClipboard = useCallback(
+    (datas) => {
+      handleCopied(datas, setCopyUrl);
+    },
+    [handleCopied]
+  );
+
+  const copyToPasswordClipboard = useCallback(
+    (datas) => {
+      handleCopied(datas, setCopyPassword);
+    },
+    [handleCopied]
+  );
   return (
     <>
       <ModalComponent
@@ -524,7 +539,7 @@ const PasswordCardComponent = ({ datas }) => {
           <div
             className="password-card-copy"
             onClick={() => copyToClipboard(datas?.username)}>
-            <CopyIcon />
+            {copyOpen ? <span>Copied</span> : <CopyIcon />}
           </div>
         </div>
         <div className="password-card-link">
@@ -535,9 +550,9 @@ const PasswordCardComponent = ({ datas }) => {
             <a href={datas?.url} target="_blank">
               {new URL(datas?.url).hostname.replace(/^www\./, "")}
             </a>
-            <div className="icon" onClick={() => copyToClipboard(datas?.url)}>
-              <CopyIcon />
-            </div>
+          </div>
+          <div className="icon" onClick={() => copyToUrlClipboard(datas?.url)}>
+            {copyUrl ? <span>Copied</span> : <CopyIcon />}
           </div>
         </div>
 
@@ -559,14 +574,22 @@ const PasswordCardComponent = ({ datas }) => {
             </span>
           </div>
           <div className="password-card-left">
-            <div className="icon" onClick={handlePassword}>
-              <EyeIcon />
-            </div>
-            <div
-              className="icon"
-              onClick={() => copyToClipboard(datas?.encrypted_password)}>
-              <CopyIcon />
-            </div>
+            {copyPassword ? (
+              <span>Copied</span>
+            ) : (
+              <>
+                <div className="icon" onClick={handlePassword}>
+                  <EyeIcon />
+                </div>
+                <div
+                  className="icon"
+                  onClick={() =>
+                    copyToPasswordClipboard(datas?.encrypted_password)
+                  }>
+                  <CopyIcon />
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="password-card-footer">
