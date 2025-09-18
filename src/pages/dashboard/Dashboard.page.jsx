@@ -454,12 +454,24 @@ const DashboardPage = () => {
                 <SelectOptionComponent
                   value={category}
                   onChange={handleCategoryChange}>
-                  {data !== undefined &&
+                  <option value="">All Categories</option>
+                  {isCategoryPending && (
+                    <option value="">Loading Categories...</option>
+                  )}
+                  {data.length === 0 && (
+                    <option value="">No Categories Available</option>
+                  )}
+                  {data.length > 0 &&
                     data.map((option) => (
                       <option key={option.category_id} value={option.name}>
                         {option.name}
                       </option>
                     ))}
+                  {isCategoryError && (
+                    <option value="">
+                      {categoryError?.message || "Error fetching categories"}
+                    </option>
+                  )}
                 </SelectOptionComponent>
               </div>
               <div className="modal-actions">
