@@ -40,6 +40,7 @@ const PasswordCardComponent = ({ datas }) => {
   const [copyPassword, setCopyPassword] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [otpModal, setOtpModal] = useState(false);
   const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
     useState(false);
   const [passId, setPassId] = useState(null);
@@ -333,12 +334,31 @@ const PasswordCardComponent = ({ datas }) => {
 
   const copyToPasswordClipboard = useCallback(
     (datas) => {
-      handleCopied(datas, setCopyPassword);
+      setOtpModal(true);
+      if (otpModal === true) {
+        handleCopied(datas, setCopyPassword);
+      }
     },
-    [handleCopied]
+    [handleCopied, otpModal]
   );
+
   return (
     <>
+      <ModalComponent
+        title="Enter your 4 digit OTP number to see or copy password"
+        isModalOpen={otpModal}
+        setIsModalOpen={setOtpModal}>
+        <div className="remove-password-container">
+          <div className="remove-password-btn">
+            <ButtonComponent varient="secondary">Yes</ButtonComponent>
+          </div>
+          <div
+            className="remove-password-btn"
+            onClick={cancelDeletePasswordModal}>
+            <ButtonComponent varient="copy">No</ButtonComponent>
+          </div>
+        </div>
+      </ModalComponent>
       <ModalComponent
         title="Are you sure to delete this Password?"
         isModalOpen={deleteModal}
@@ -578,7 +598,7 @@ const PasswordCardComponent = ({ datas }) => {
               <span>Copied</span>
             ) : (
               <>
-                <div className="icon" onClick={handlePassword}>
+                <div className="icon" onClick={copyToPasswordClipboard}>
                   <EyeIcon />
                 </div>
                 <div
