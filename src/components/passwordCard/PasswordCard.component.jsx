@@ -39,7 +39,7 @@ import {
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
   const [copyUrl, setCopyUrl] = useState(false);
-  const [copyPassword, setCopyPassword] = useState(false);
+  const [copyPassword, setCopyPassword] = useState("");
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [otpModal, setOtpModal] = useState(false);
@@ -48,7 +48,7 @@ const PasswordCardComponent = ({ datas }) => {
     useState(false);
   const [passId, setPassId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [type, setType] = useState(true);
+  const [showCopyModal, setShowCopyModal] = useState(false);
   const [formData, setFormData] = useState({
     userId: "",
     permisson_level: "",
@@ -107,13 +107,9 @@ const PasswordCardComponent = ({ datas }) => {
       default:
         className = "very-strong";
     }
-    console.log("nabaraj", params);
     return className;
   }, []);
 
-  const handlePassword = useCallback(() => {
-    setType((prev) => !prev);
-  }, []);
   const openModal = useCallback((passId) => {
     setPassId(passId);
     setIsModalOpen(true);
@@ -202,6 +198,22 @@ const PasswordCardComponent = ({ datas }) => {
     },
   });
 
+  const getPasswordMutationCopy = useMutation({
+    mutationFn: passwordEntry,
+    onSuccess: async (data) => {
+      console.log("data", data?.decrypted_password);
+      setCopyPassword(data?.decrypted_password);
+      handleCopied(data?.decrypted_password, setCopyPassword);
+      showSuccessToast("Password copied successfully");
+      setShowCopyModal(false);
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setShowCopyModal(false);
+    },
+  });
+
   const pinServiceMutation = useMutation({
     mutationFn: pinService,
     onSuccess: async () => {
@@ -210,6 +222,24 @@ const PasswordCardComponent = ({ datas }) => {
         passwordId: datas?.password_id,
       };
       getPasswordMutation.mutate(payload);
+      setOtpModal(false);
+      setOtpNumber("");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setOtpModal(false);
+      setOtpNumber("");
+    },
+  });
+  const pinServiceMutationCopy = useMutation({
+    mutationFn: pinService,
+    onSuccess: async () => {
+      const payload = {
+        userId: datas?.owner_user_id,
+        passwordId: datas?.password_id,
+      };
+      getPasswordMutationCopy.mutate(payload);
       setOtpModal(false);
       setOtpNumber("");
     },
@@ -370,15 +400,9 @@ const PasswordCardComponent = ({ datas }) => {
     [handleCopied]
   );
 
-  const copyToPasswordClipboard = useCallback(
-    (datas) => {
-      setOtpModal(true);
-      if (otpModal === true) {
-        handleCopied(datas, setCopyPassword);
-      }
-    },
-    [handleCopied, otpModal]
-  );
+  const copyToPasswordClipboard = useCallback(() => {
+    setOtpModal(true);
+  }, []);
 
   const validPinSubmit = useCallback(
     (datas) => {
@@ -399,11 +423,62 @@ const PasswordCardComponent = ({ datas }) => {
     [pinServiceMutation, otpNumber, showSuccessToast]
   );
 
+  const validPinSubmitCopy = useCallback(
+    (datas) => {
+      const payload = {
+        email: datas?.username,
+        pin: copyPassword,
+      };
+      if (!copyPassword) {
+        showSuccessToast("OTP is required");
+        return;
+      }
+      if (!checkPinValid(copyPassword)) {
+        showSuccessToast("Invalid pin format");
+        return;
+      }
+      pinServiceMutationCopy.mutate(payload);
+    },
+    [pinServiceMutationCopy, showSuccessToast, copyPassword]
+  );
+  const handleShowCopyModal = useCallback(() => {
+    setShowCopyModal(true);
+  }, []);
+
   setTimeout(() => {
     setServerPassword(null);
   }, 60 * 1000);
   return (
     <>
+      <ModalComponent
+        title="Enter your 4 digit OTP number to copy password"
+        isModalOpen={showCopyModal}
+        setIsModalOpen={setShowCopyModal}>
+        <div className="remove-password-container">
+          <div className="remove-password-input">
+            <AddPasswordInput
+              label="OTP *"
+              type="text"
+              placeholder="E.g: 1234"
+              name="otp"
+              onChange={(e) => setCopyPassword(e.target.value)}
+              value={copyPassword}
+              maxLength={4}
+              required
+            />
+          </div>
+          <div className="remove-password-actions">
+            <div
+              className="remove-password-btn"
+              onClick={() => validPinSubmitCopy(datas)}>
+              <ButtonComponent varient="secondary">Submit OTP</ButtonComponent>
+            </div>
+            <div className="remove-password-btn">
+              <ButtonComponent varient="copy">Cancel</ButtonComponent>
+            </div>
+          </div>
+        </div>
+      </ModalComponent>
       <ModalComponent
         title="Enter your 4 digit OTP number to see password"
         isModalOpen={otpModal}
@@ -685,11 +760,7 @@ const PasswordCardComponent = ({ datas }) => {
                 <div className="icon" onClick={copyToPasswordClipboard}>
                   <EyeIcon />
                 </div>
-                <div
-                  className="icon"
-                  onClick={() =>
-                    copyToPasswordClipboard(datas?.encrypted_password)
-                  }>
+                <div className="icon" onClick={() => handleShowCopyModal()}>
                   <CopyIcon />
                 </div>
               </>
