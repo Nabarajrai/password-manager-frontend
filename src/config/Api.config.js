@@ -28,4 +28,6 @@ export const APIS_PAYLOAD = {
   UPDATE_PASSWORD: "api/update-password",
   REMOVE_SHARED_PASSWORD: "api/remove-shared-password",
   REMOVE_PASSWORD: "api/remove-password",
+  PIN_SERVICE: "api/auth/pin-service",
+  GET_PASSWORD_BY_ID: "api/get-password-by-id",
 };

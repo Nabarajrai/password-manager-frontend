@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -27,11 +27,13 @@ import { useUser } from "../../hooks/user/useUser";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useCategories } from "../../hooks/categories/useCategories";
 import { useClipboard } from "../../hooks/clipboard/useClipboard";
+import { useAuth } from "../../hooks/user/useAuth";
 
 //helpers
 import {
   checkValidEmail,
   checkValidUrl,
+  checkPinValid,
 } from "../../helpers/PasswordCheck.helper";
 
 const PasswordCardComponent = ({ datas }) => {
@@ -41,6 +43,7 @@ const PasswordCardComponent = ({ datas }) => {
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [otpModal, setOtpModal] = useState(false);
+  const [otpNumber, setOtpNumber] = useState("");
   const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
     useState(false);
   const [passId, setPassId] = useState(null);
@@ -50,6 +53,7 @@ const PasswordCardComponent = ({ datas }) => {
     userId: "",
     permisson_level: "",
   });
+  const [serverPassword, setServerPassword] = useState(null);
   const [deleteFormData, setDeleteFormData] = useState({
     password_id: "",
     user_id: "",
@@ -66,12 +70,14 @@ const PasswordCardComponent = ({ datas }) => {
   const [userInfo, setUserInfo] = useState(null);
 
   const { getPasswordStrength } = usePasswordGenerator();
+  const { pinService } = useAuth();
   const { fetchUsers } = useUserCreate();
   const {
     shareWithPassword,
     updatePassword,
     removeSharedPassword,
     deletePassword,
+    passwordEntry,
   } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
@@ -180,6 +186,38 @@ const PasswordCardComponent = ({ datas }) => {
     onError: (error) => {
       console.error("Error sharing password:", error);
       showSuccessToast(error || "Something went wrong", "error");
+    },
+  });
+
+  const getPasswordMutation = useMutation({
+    mutationFn: passwordEntry,
+    onSuccess: async (data) => {
+      console.log("data", data?.decrypted_password);
+      setServerPassword(data?.decrypted_password);
+      showSuccessToast(data?.message || "Password fetched successfully");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+    },
+  });
+
+  const pinServiceMutation = useMutation({
+    mutationFn: pinService,
+    onSuccess: async () => {
+      const payload = {
+        userId: datas?.owner_user_id,
+        passwordId: datas?.password_id,
+      };
+      getPasswordMutation.mutate(payload);
+      setOtpModal(false);
+      setOtpNumber("");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setOtpModal(false);
+      setOtpNumber("");
     },
   });
 
@@ -342,20 +380,60 @@ const PasswordCardComponent = ({ datas }) => {
     [handleCopied, otpModal]
   );
 
+  const validPinSubmit = useCallback(
+    (datas) => {
+      const payload = {
+        email: datas?.username,
+        pin: otpNumber,
+      };
+      if (!otpNumber) {
+        showSuccessToast("OTP is required");
+        return;
+      }
+      if (!checkPinValid(otpNumber)) {
+        showSuccessToast("Invalid pin format");
+        return;
+      }
+      pinServiceMutation.mutate(payload);
+    },
+    [pinServiceMutation, otpNumber, showSuccessToast]
+  );
+
+  setTimeout(() => {
+    setServerPassword(null);
+  }, 60 * 1000);
   return (
     <>
       <ModalComponent
-        title="Enter your 4 digit OTP number to see or copy password"
+        title="Enter your 4 digit OTP number to see password"
         isModalOpen={otpModal}
         setIsModalOpen={setOtpModal}>
         <div className="remove-password-container">
-          <div className="remove-password-btn">
-            <ButtonComponent varient="secondary">Yes</ButtonComponent>
+          <div className="remove-password-input">
+            <AddPasswordInput
+              label="OTP *"
+              type="text"
+              placeholder="E.g: 1234"
+              name="otp"
+              onChange={(e) => setOtpNumber(e.target.value)}
+              value={otpNumber}
+              maxLength={4}
+              required
+            />
           </div>
-          <div
-            className="remove-password-btn"
-            onClick={cancelDeletePasswordModal}>
-            <ButtonComponent varient="copy">No</ButtonComponent>
+          <div className="remove-password-actions">
+            <div className="remove-password-btn">
+              <ButtonComponent
+                varient="secondary"
+                onClick={() => validPinSubmit(datas)}>
+                Submit OTP
+              </ButtonComponent>
+            </div>
+            <div
+              className="remove-password-btn"
+              onClick={cancelDeletePasswordModal}>
+              <ButtonComponent varient="copy">Cancel</ButtonComponent>
+            </div>
           </div>
         </div>
       </ModalComponent>
@@ -578,20 +656,26 @@ const PasswordCardComponent = ({ datas }) => {
 
         <div className="password-card-details">
           <div className="password-card-right">
-            <span className="password-value">
-              <ReadOnlyInput
-                value={datas?.encrypted_password}
-                type="card"
-                otherType={type}
-              />
-            </span>
-            <span
-              className={`password-category ${generateClassNames(
-                getPasswordStrength(datas?.encrypted_password).label
-              )}`}>
-              {getPasswordStrength(datas?.encrypted_password) &&
-                getPasswordStrength(datas?.encrypted_password).label}
-            </span>
+            {!serverPassword ? (
+              <span className="star">*********</span>
+            ) : (
+              <>
+                <span className="password-value">
+                  <ReadOnlyInput
+                    value={serverPassword}
+                    type="card"
+                    otherType="text"
+                  />
+                </span>
+                <span
+                  className={`password-category ${generateClassNames(
+                    getPasswordStrength(serverPassword).label
+                  )}`}>
+                  {getPasswordStrength(serverPassword) &&
+                    getPasswordStrength(serverPassword).label}
+                </span>
+              </>
+            )}
           </div>
           <div className="password-card-left">
             {copyPassword ? (

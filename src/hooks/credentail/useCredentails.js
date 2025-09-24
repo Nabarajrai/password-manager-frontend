@@ -1,6 +1,7 @@
 //config
 import { useCallback } from "react";
 import { api, APIS_PAYLOAD } from "../../config/api.config";
+import ResetPin from "../../pages/resetPin/ResetPin";
 export const useCrendentails = () => {
   const createPasswordEntry = useCallback(async (payload) => {
     try {
@@ -64,6 +65,17 @@ export const useCrendentails = () => {
     }
   }, []);
 
+  const passwordEntry = useCallback(async (payload) => {
+    try {
+      const response = await api(
+        `${APIS_PAYLOAD.GET_PASSWORD_BY_ID}?passwordId=${payload.passwordId}&userId=${payload.userId}`,
+        "GET"
+      );
+      return response;
+    } catch (error) {
+      throw error?.message;
+    }
+  }, []);
   return {
     createPasswordEntry,
     getAllPasswords,
@@ -71,5 +83,6 @@ export const useCrendentails = () => {
     updatePassword,
     removeSharedPassword,
     deletePassword,
+    passwordEntry,
   };
 };
