@@ -46,7 +46,6 @@ const PasswordCardComponent = ({ datas }) => {
   const [otpNumber, setOtpNumber] = useState("");
   const [otpEnableNumber, setOtpEnableNumber] = useState("");
   const [showPin, setShowPin] = useState(false);
-  console.log("showPin", showPin);
   const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
     useState(false);
   const [passId, setPassId] = useState(null);
@@ -226,11 +225,13 @@ const PasswordCardComponent = ({ datas }) => {
       });
       showSuccessToast("Password retrieved successfully");
       setEditModal(true);
+      setOtpEnableNumber("");
     },
     onError: (error) => {
       console.error("Error pinning password:", error);
       showSuccessToast(error || "Something went wrong", "error");
       setEditModal(false);
+      setOtpEnableNumber("");
     },
   });
 
@@ -279,13 +280,17 @@ const PasswordCardComponent = ({ datas }) => {
         passwordId: datas?.password_id,
       };
       getPasswordMutationEnable.mutate(payload);
-      setShowPin(true);
+      setShowPin(false);
+      setOtpEnableNumber("");
+      setPasswordFormData((prev) => ({ ...prev, password: "" }));
       showSuccessToast("You can now see the password field");
     },
     onError: (error) => {
       console.error("Error pinning password:", error);
       showSuccessToast(error || "Something went wrong", "error");
-      setShowPin(true);
+      setShowPin(false);
+      setOtpEnableNumber("");
+      setPasswordFormData((prev) => ({ ...prev, password: "" }));
     },
   });
 
@@ -500,40 +505,26 @@ const PasswordCardComponent = ({ datas }) => {
     pinServiceMutationEnable.mutate(payload);
   }, [pinServiceMutationEnable, datas, otpEnableNumber, showSuccessToast]);
 
-  setTimeout(() => {
-    setServerPassword(null);
-  }, 60 * 1000);
+  console.log("passwordFormData", passwordFormData);
+
+  const cancelUpdatePasswordModal = useCallback(() => {
+    setShowPin(false);
+    setOtpEnableNumber("");
+  }, []);
+
+  useEffect(() => {
+    if (serverPassword) {
+      const timer = setTimeout(() => {
+        setServerPassword(null);
+        setPasswordFormData((prev) => ({ ...prev, password: "" }));
+      }, 60 * 1000); // 1 min
+
+      return () => clearTimeout(timer); // cleanup if password changes or unmounts
+    }
+  }, [serverPassword]);
+
   return (
     <>
-      {/* <ModalComponent
-        title="Enter your 4 digit OTP number to retrieve password"
-        isModalOpen={showPin}
-        setIsModalOpen={setShowPin}>
-        <div className="remove-password-container">
-          <div className="remove-password-input">
-            <AddPasswordInput
-              label="OTP *"
-              type="text"
-              placeholder="E.g: 1234"
-              name="otp"
-              onChange={(e) => setOtpEnableNumber(e.target.value)}
-              value={otpEnableNumber}
-              maxLength={4}
-              required
-            />
-          </div>
-          <div className="remove-password-actions">
-            <div
-              className="remove-password-btn"
-              onClick={() => enablePasswordHandle(datas)}>
-              <ButtonComponent varient="secondary">Submit OTP</ButtonComponent>
-            </div>
-            <div className="remove-password-btn">
-              <ButtonComponent varient="copy">Cancel</ButtonComponent>
-            </div>
-          </div>
-        </div>
-      </ModalComponent> */}
       <ModalComponent
         title="Enter your 4 digit OTP number to copy password"
         isModalOpen={showCopyModal}
@@ -655,7 +646,7 @@ const PasswordCardComponent = ({ datas }) => {
               required
             />
           </div>
-          {showPin ? (
+          {!showPin ? (
             <div className="dashboard-add-section">
               <div className="dashboard-add-input">
                 <AddPasswordInput
@@ -666,6 +657,7 @@ const PasswordCardComponent = ({ datas }) => {
                   onChange={handleChangeInput}
                   value={passwordFormData?.password}
                   icon={<EyeIcon />}
+                  disabled={passwordFormData?.password === ""}
                   required
                 />
               </div>
@@ -704,7 +696,7 @@ const PasswordCardComponent = ({ datas }) => {
                 </div>
                 <div
                   className="remove-password-btn"
-                  onClick={() => setShowPin(true)}>
+                  onClick={cancelUpdatePasswordModal}>
                   <ButtonComponent varient="copy">Cancel</ButtonComponent>
                 </div>
               </div>
