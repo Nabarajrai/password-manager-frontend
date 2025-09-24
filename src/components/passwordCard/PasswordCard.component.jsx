@@ -9,7 +9,7 @@ import {
   EyeIcon,
   LinkIcon,
   ShareIcon,
-  ResetPinIcon,
+  EnablePasswordIcon,
   RemoveShareIcon,
 } from "../../helpers/Icon.helper";
 //components
@@ -44,6 +44,9 @@ const PasswordCardComponent = ({ datas }) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [otpModal, setOtpModal] = useState(false);
   const [otpNumber, setOtpNumber] = useState("");
+  const [otpEnableNumber, setOtpEnableNumber] = useState("");
+  const [showPin, setShowPin] = useState(false);
+  console.log("showPin", showPin);
   const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
     useState(false);
   const [passId, setPassId] = useState(null);
@@ -214,6 +217,23 @@ const PasswordCardComponent = ({ datas }) => {
     },
   });
 
+  const getPasswordMutationEnable = useMutation({
+    mutationFn: passwordEntry,
+    onSuccess: async (data) => {
+      setPasswordFormData({
+        ...passwordFormData,
+        password: data?.decrypted_password,
+      });
+      showSuccessToast("Password retrieved successfully");
+      setEditModal(true);
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setEditModal(false);
+    },
+  });
+
   const pinServiceMutation = useMutation({
     mutationFn: pinService,
     onSuccess: async () => {
@@ -248,6 +268,24 @@ const PasswordCardComponent = ({ datas }) => {
       showSuccessToast(error || "Something went wrong", "error");
       setOtpModal(false);
       setOtpNumber("");
+    },
+  });
+
+  const pinServiceMutationEnable = useMutation({
+    mutationFn: pinService,
+    onSuccess: async () => {
+      const payload = {
+        userId: datas?.owner_user_id,
+        passwordId: datas?.password_id,
+      };
+      getPasswordMutationEnable.mutate(payload);
+      setShowPin(true);
+      showSuccessToast("You can now see the password field");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setShowPin(true);
     },
   });
 
@@ -445,11 +483,57 @@ const PasswordCardComponent = ({ datas }) => {
     setShowCopyModal(true);
   }, []);
 
+  const enablePasswordHandle = useCallback(() => {
+    const payload = {
+      email: datas?.username,
+      pin: otpEnableNumber,
+    };
+    if (!otpEnableNumber) {
+      showSuccessToast("OTP is required");
+      return;
+    }
+    if (!checkPinValid(otpEnableNumber)) {
+      showSuccessToast("Invalid pin format");
+      return;
+    }
+    if (pinServiceMutationEnable.isLoading) return;
+    pinServiceMutationEnable.mutate(payload);
+  }, [pinServiceMutationEnable, datas, otpEnableNumber, showSuccessToast]);
+
   setTimeout(() => {
     setServerPassword(null);
   }, 60 * 1000);
   return (
     <>
+      {/* <ModalComponent
+        title="Enter your 4 digit OTP number to retrieve password"
+        isModalOpen={showPin}
+        setIsModalOpen={setShowPin}>
+        <div className="remove-password-container">
+          <div className="remove-password-input">
+            <AddPasswordInput
+              label="OTP *"
+              type="text"
+              placeholder="E.g: 1234"
+              name="otp"
+              onChange={(e) => setOtpEnableNumber(e.target.value)}
+              value={otpEnableNumber}
+              maxLength={4}
+              required
+            />
+          </div>
+          <div className="remove-password-actions">
+            <div
+              className="remove-password-btn"
+              onClick={() => enablePasswordHandle(datas)}>
+              <ButtonComponent varient="secondary">Submit OTP</ButtonComponent>
+            </div>
+            <div className="remove-password-btn">
+              <ButtonComponent varient="copy">Cancel</ButtonComponent>
+            </div>
+          </div>
+        </div>
+      </ModalComponent> */}
       <ModalComponent
         title="Enter your 4 digit OTP number to copy password"
         isModalOpen={showCopyModal}
@@ -571,19 +655,62 @@ const PasswordCardComponent = ({ datas }) => {
               required
             />
           </div>
-          <div className="dashboard-add-section">
-            <AddPasswordInput
-              label="Password *"
-              type="password"
-              placeholder="Enter Password"
-              name="password"
-              onChange={handleChangeInput}
-              value={passwordFormData?.password}
-              icon={<EyeIcon />}
-              reset={<ResetPinIcon />}
-              required
-            />
-          </div>
+          {showPin ? (
+            <div className="dashboard-add-section">
+              <div className="dashboard-add-input">
+                <AddPasswordInput
+                  label="Password *"
+                  type="password"
+                  placeholder="Enter Password"
+                  name="password"
+                  onChange={handleChangeInput}
+                  value={passwordFormData?.password}
+                  icon={<EyeIcon />}
+                  required
+                />
+              </div>
+              <div
+                className="dashboard-add-btn"
+                onClick={() => setShowPin((prev) => !prev)}>
+                <ButtonComponent varient="secondary" style="generator">
+                  <div className="icon">
+                    <EnablePasswordIcon />
+                  </div>
+                  <div className="title">Enable</div>
+                </ButtonComponent>
+              </div>
+            </div>
+          ) : (
+            <div className="remove-password-container">
+              <div className="remove-password-input">
+                <AddPasswordInput
+                  label="Enter OTP to enable password field"
+                  type="text"
+                  placeholder="E.g: 1234"
+                  name="otp"
+                  onChange={(e) => setOtpEnableNumber(e.target.value)}
+                  value={otpEnableNumber}
+                  maxLength={4}
+                  required
+                />
+              </div>
+              <div className="remove-password-actions">
+                <div
+                  className="remove-password-btn"
+                  onClick={() => enablePasswordHandle(datas)}>
+                  <ButtonComponent varient="secondary">
+                    Submit OTP
+                  </ButtonComponent>
+                </div>
+                <div
+                  className="remove-password-btn"
+                  onClick={() => setShowPin(true)}>
+                  <ButtonComponent varient="copy">Cancel</ButtonComponent>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="dashboard-add-section">
             <AddPasswordInput
               label="URl *"
