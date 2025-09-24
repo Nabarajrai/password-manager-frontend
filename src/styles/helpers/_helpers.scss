@@ -1,4 +1,5 @@
 @use "./variables" as *;
+@use "./mixin" as *;
 
 // Optimized Google Fonts Import (Example)
 // Only include the weights and styles you NEED.
@@ -58,4 +59,9 @@ select:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
   -webkit-text-fill-color: rgb(179, 206, 238) !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+.star {
+  @include flex(flex-start);
+  color: $text-color;
 }

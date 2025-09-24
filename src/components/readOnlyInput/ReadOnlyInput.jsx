@@ -17,7 +17,7 @@ const ReadOnlyInput = ({ value, handleCopied, copyOpen, type, otherType }) => {
 
       <div className={classNames}>
         <input
-          type={otherType ? "password" : "text"}
+          type={otherType || "text"}
           className="readonly-input"
           readOnly
           value={value}

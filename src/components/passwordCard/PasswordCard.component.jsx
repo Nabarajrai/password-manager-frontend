@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -9,7 +9,7 @@ import {
   EyeIcon,
   LinkIcon,
   ShareIcon,
-  ResetPinIcon,
+  EnablePasswordIcon,
   RemoveShareIcon,
 } from "../../helpers/Icon.helper";
 //components
@@ -27,26 +27,35 @@ import { useUser } from "../../hooks/user/useUser";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useCategories } from "../../hooks/categories/useCategories";
 import { useClipboard } from "../../hooks/clipboard/useClipboard";
+import { useAuth } from "../../hooks/user/useAuth";
 
 //helpers
 import {
   checkValidEmail,
   checkValidUrl,
+  checkPinValid,
 } from "../../helpers/PasswordCheck.helper";
 
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
+  const [copyUrl, setCopyUrl] = useState(false);
+  const [copyPassword, setCopyPassword] = useState("");
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [otpModal, setOtpModal] = useState(false);
+  const [otpNumber, setOtpNumber] = useState("");
+  const [otpEnableNumber, setOtpEnableNumber] = useState("");
+  const [showPin, setShowPin] = useState(false);
   const [removeSharedPasswordModal, setRemoveSharedPasswordModal] =
     useState(false);
   const [passId, setPassId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [type, setType] = useState(true);
+  const [showCopyModal, setShowCopyModal] = useState(false);
   const [formData, setFormData] = useState({
     userId: "",
     permisson_level: "",
   });
+  const [serverPassword, setServerPassword] = useState(null);
   const [deleteFormData, setDeleteFormData] = useState({
     password_id: "",
     user_id: "",
@@ -63,12 +72,14 @@ const PasswordCardComponent = ({ datas }) => {
   const [userInfo, setUserInfo] = useState(null);
 
   const { getPasswordStrength } = usePasswordGenerator();
+  const { pinService } = useAuth();
   const { fetchUsers } = useUserCreate();
   const {
     shareWithPassword,
     updatePassword,
     removeSharedPassword,
     deletePassword,
+    passwordEntry,
   } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
@@ -98,13 +109,9 @@ const PasswordCardComponent = ({ datas }) => {
       default:
         className = "very-strong";
     }
-    console.log("nabaraj", params);
     return className;
   }, []);
 
-  const handlePassword = useCallback(() => {
-    setType((prev) => !prev);
-  }, []);
   const openModal = useCallback((passId) => {
     setPassId(passId);
     setIsModalOpen(true);
@@ -177,6 +184,113 @@ const PasswordCardComponent = ({ datas }) => {
     onError: (error) => {
       console.error("Error sharing password:", error);
       showSuccessToast(error || "Something went wrong", "error");
+    },
+  });
+
+  const getPasswordMutation = useMutation({
+    mutationFn: passwordEntry,
+    onSuccess: async (data) => {
+      console.log("data", data?.decrypted_password);
+      setServerPassword(data?.decrypted_password);
+      showSuccessToast(data?.message || "Password fetched successfully");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+    },
+  });
+
+  const getPasswordMutationCopy = useMutation({
+    mutationFn: passwordEntry,
+    onSuccess: async (data) => {
+      console.log("data", data?.decrypted_password);
+      setCopyPassword(data?.decrypted_password);
+      handleCopied(data?.decrypted_password, setCopyPassword);
+      showSuccessToast("Password copied successfully");
+      setShowCopyModal(false);
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setShowCopyModal(false);
+    },
+  });
+
+  const getPasswordMutationEnable = useMutation({
+    mutationFn: passwordEntry,
+    onSuccess: async (data) => {
+      setPasswordFormData({
+        ...passwordFormData,
+        password: data?.decrypted_password,
+      });
+      showSuccessToast("Password retrieved successfully");
+      setEditModal(true);
+      setOtpEnableNumber("");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setEditModal(false);
+      setOtpEnableNumber("");
+    },
+  });
+
+  const pinServiceMutation = useMutation({
+    mutationFn: pinService,
+    onSuccess: async () => {
+      const payload = {
+        userId: datas?.owner_user_id,
+        passwordId: datas?.password_id,
+      };
+      getPasswordMutation.mutate(payload);
+      setOtpModal(false);
+      setOtpNumber("");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setOtpModal(false);
+      setOtpNumber("");
+    },
+  });
+  const pinServiceMutationCopy = useMutation({
+    mutationFn: pinService,
+    onSuccess: async () => {
+      const payload = {
+        userId: datas?.owner_user_id,
+        passwordId: datas?.password_id,
+      };
+      getPasswordMutationCopy.mutate(payload);
+      setOtpModal(false);
+      setOtpNumber("");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setOtpModal(false);
+      setOtpNumber("");
+    },
+  });
+
+  const pinServiceMutationEnable = useMutation({
+    mutationFn: pinService,
+    onSuccess: async () => {
+      const payload = {
+        userId: datas?.owner_user_id,
+        passwordId: datas?.password_id,
+      };
+      getPasswordMutationEnable.mutate(payload);
+      setShowPin(false);
+      setOtpEnableNumber("");
+      setPasswordFormData((prev) => ({ ...prev, password: "" }));
+      showSuccessToast("You can now see the password field");
+    },
+    onError: (error) => {
+      console.error("Error pinning password:", error);
+      showSuccessToast(error || "Something went wrong", "error");
+      setShowPin(false);
+      setOtpEnableNumber("");
+      setPasswordFormData((prev) => ({ ...prev, password: "" }));
     },
   });
 
@@ -322,8 +436,157 @@ const PasswordCardComponent = ({ datas }) => {
     [handleCopied]
   );
 
+  const copyToUrlClipboard = useCallback(
+    (datas) => {
+      handleCopied(datas, setCopyUrl);
+    },
+    [handleCopied]
+  );
+
+  const copyToPasswordClipboard = useCallback(() => {
+    setOtpModal(true);
+  }, []);
+
+  const validPinSubmit = useCallback(
+    (datas) => {
+      const payload = {
+        email: datas?.username,
+        pin: otpNumber,
+      };
+      if (!otpNumber) {
+        showSuccessToast("OTP is required");
+        return;
+      }
+      if (!checkPinValid(otpNumber)) {
+        showSuccessToast("Invalid pin format");
+        return;
+      }
+      pinServiceMutation.mutate(payload);
+    },
+    [pinServiceMutation, otpNumber, showSuccessToast]
+  );
+
+  const validPinSubmitCopy = useCallback(
+    (datas) => {
+      const payload = {
+        email: datas?.username,
+        pin: copyPassword,
+      };
+      if (!copyPassword) {
+        showSuccessToast("OTP is required");
+        return;
+      }
+      if (!checkPinValid(copyPassword)) {
+        showSuccessToast("Invalid pin format");
+        return;
+      }
+      pinServiceMutationCopy.mutate(payload);
+    },
+    [pinServiceMutationCopy, showSuccessToast, copyPassword]
+  );
+  const handleShowCopyModal = useCallback(() => {
+    setShowCopyModal(true);
+  }, []);
+
+  const enablePasswordHandle = useCallback(() => {
+    const payload = {
+      email: datas?.username,
+      pin: otpEnableNumber,
+    };
+    if (!otpEnableNumber) {
+      showSuccessToast("OTP is required");
+      return;
+    }
+    if (!checkPinValid(otpEnableNumber)) {
+      showSuccessToast("Invalid pin format");
+      return;
+    }
+    if (pinServiceMutationEnable.isLoading) return;
+    pinServiceMutationEnable.mutate(payload);
+  }, [pinServiceMutationEnable, datas, otpEnableNumber, showSuccessToast]);
+
+  console.log("passwordFormData", passwordFormData);
+
+  const cancelUpdatePasswordModal = useCallback(() => {
+    setShowPin(false);
+    setOtpEnableNumber("");
+  }, []);
+
+  useEffect(() => {
+    if (serverPassword) {
+      const timer = setTimeout(() => {
+        setServerPassword(null);
+        setPasswordFormData((prev) => ({ ...prev, password: "" }));
+      }, 60 * 1000); // 1 min
+
+      return () => clearTimeout(timer); // cleanup if password changes or unmounts
+    }
+  }, [serverPassword]);
+
   return (
     <>
+      <ModalComponent
+        title="Enter your 4 digit OTP number to copy password"
+        isModalOpen={showCopyModal}
+        setIsModalOpen={setShowCopyModal}>
+        <div className="remove-password-container">
+          <div className="remove-password-input">
+            <AddPasswordInput
+              label="OTP *"
+              type="text"
+              placeholder="E.g: 1234"
+              name="otp"
+              onChange={(e) => setCopyPassword(e.target.value)}
+              value={copyPassword}
+              maxLength={4}
+              required
+            />
+          </div>
+          <div className="remove-password-actions">
+            <div
+              className="remove-password-btn"
+              onClick={() => validPinSubmitCopy(datas)}>
+              <ButtonComponent varient="secondary">Submit OTP</ButtonComponent>
+            </div>
+            <div className="remove-password-btn">
+              <ButtonComponent varient="copy">Cancel</ButtonComponent>
+            </div>
+          </div>
+        </div>
+      </ModalComponent>
+      <ModalComponent
+        title="Enter your 4 digit OTP number to see password"
+        isModalOpen={otpModal}
+        setIsModalOpen={setOtpModal}>
+        <div className="remove-password-container">
+          <div className="remove-password-input">
+            <AddPasswordInput
+              label="OTP *"
+              type="text"
+              placeholder="E.g: 1234"
+              name="otp"
+              onChange={(e) => setOtpNumber(e.target.value)}
+              value={otpNumber}
+              maxLength={4}
+              required
+            />
+          </div>
+          <div className="remove-password-actions">
+            <div className="remove-password-btn">
+              <ButtonComponent
+                varient="secondary"
+                onClick={() => validPinSubmit(datas)}>
+                Submit OTP
+              </ButtonComponent>
+            </div>
+            <div
+              className="remove-password-btn"
+              onClick={cancelDeletePasswordModal}>
+              <ButtonComponent varient="copy">Cancel</ButtonComponent>
+            </div>
+          </div>
+        </div>
+      </ModalComponent>
       <ModalComponent
         title="Are you sure to delete this Password?"
         isModalOpen={deleteModal}
@@ -383,19 +646,63 @@ const PasswordCardComponent = ({ datas }) => {
               required
             />
           </div>
-          <div className="dashboard-add-section">
-            <AddPasswordInput
-              label="Password *"
-              type="password"
-              placeholder="Enter Password"
-              name="password"
-              onChange={handleChangeInput}
-              value={passwordFormData?.password}
-              icon={<EyeIcon />}
-              reset={<ResetPinIcon />}
-              required
-            />
-          </div>
+          {!showPin ? (
+            <div className="dashboard-add-section">
+              <div className="dashboard-add-input">
+                <AddPasswordInput
+                  label="Password *"
+                  type="password"
+                  placeholder="Enter Password"
+                  name="password"
+                  onChange={handleChangeInput}
+                  value={passwordFormData?.password}
+                  icon={<EyeIcon />}
+                  disabled={passwordFormData?.password === ""}
+                  required
+                />
+              </div>
+              <div
+                className="dashboard-add-btn"
+                onClick={() => setShowPin((prev) => !prev)}>
+                <ButtonComponent varient="secondary" style="generator">
+                  <div className="icon">
+                    <EnablePasswordIcon />
+                  </div>
+                  <div className="title">Enable</div>
+                </ButtonComponent>
+              </div>
+            </div>
+          ) : (
+            <div className="remove-password-container">
+              <div className="remove-password-input">
+                <AddPasswordInput
+                  label="Enter OTP to enable password field"
+                  type="text"
+                  placeholder="E.g: 1234"
+                  name="otp"
+                  onChange={(e) => setOtpEnableNumber(e.target.value)}
+                  value={otpEnableNumber}
+                  maxLength={4}
+                  required
+                />
+              </div>
+              <div className="remove-password-actions">
+                <div
+                  className="remove-password-btn"
+                  onClick={() => enablePasswordHandle(datas)}>
+                  <ButtonComponent varient="secondary">
+                    Submit OTP
+                  </ButtonComponent>
+                </div>
+                <div
+                  className="remove-password-btn"
+                  onClick={cancelUpdatePasswordModal}>
+                  <ButtonComponent varient="copy">Cancel</ButtonComponent>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="dashboard-add-section">
             <AddPasswordInput
               label="URl *"
@@ -524,7 +831,7 @@ const PasswordCardComponent = ({ datas }) => {
           <div
             className="password-card-copy"
             onClick={() => copyToClipboard(datas?.username)}>
-            <CopyIcon />
+            {copyOpen ? <span>Copied</span> : <CopyIcon />}
           </div>
         </div>
         <div className="password-card-link">
@@ -535,38 +842,48 @@ const PasswordCardComponent = ({ datas }) => {
             <a href={datas?.url} target="_blank">
               {new URL(datas?.url).hostname.replace(/^www\./, "")}
             </a>
-            <div className="icon" onClick={() => copyToClipboard(datas?.url)}>
-              <CopyIcon />
-            </div>
+          </div>
+          <div className="icon" onClick={() => copyToUrlClipboard(datas?.url)}>
+            {copyUrl ? <span>Copied</span> : <CopyIcon />}
           </div>
         </div>
 
         <div className="password-card-details">
           <div className="password-card-right">
-            <span className="password-value">
-              <ReadOnlyInput
-                value={datas?.encrypted_password}
-                type="card"
-                otherType={type}
-              />
-            </span>
-            <span
-              className={`password-category ${generateClassNames(
-                getPasswordStrength(datas?.encrypted_password).label
-              )}`}>
-              {getPasswordStrength(datas?.encrypted_password) &&
-                getPasswordStrength(datas?.encrypted_password).label}
-            </span>
+            {!serverPassword ? (
+              <span className="star">*********</span>
+            ) : (
+              <>
+                <span className="password-value">
+                  <ReadOnlyInput
+                    value={serverPassword}
+                    type="card"
+                    otherType="text"
+                  />
+                </span>
+                <span
+                  className={`password-category ${generateClassNames(
+                    getPasswordStrength(serverPassword).label
+                  )}`}>
+                  {getPasswordStrength(serverPassword) &&
+                    getPasswordStrength(serverPassword).label}
+                </span>
+              </>
+            )}
           </div>
           <div className="password-card-left">
-            <div className="icon" onClick={handlePassword}>
-              <EyeIcon />
-            </div>
-            <div
-              className="icon"
-              onClick={() => copyToClipboard(datas?.encrypted_password)}>
-              <CopyIcon />
-            </div>
+            {copyPassword ? (
+              <span>Copied</span>
+            ) : (
+              <>
+                <div className="icon" onClick={copyToPasswordClipboard}>
+                  <EyeIcon />
+                </div>
+                <div className="icon" onClick={() => handleShowCopyModal()}>
+                  <CopyIcon />
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="password-card-footer">
