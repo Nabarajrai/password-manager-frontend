@@ -295,7 +295,7 @@ const PasswordCardComponent = ({ datas }) => {
     const { userId, permisson_level } = formData;
     console.log("formdata", formData);
     if (!userId || !permisson_level) {
-      showSuccessToast("All field are required");
+      showSuccessToast("All field are required", "error");
       return;
     }
     const payload = {
@@ -343,15 +343,15 @@ const PasswordCardComponent = ({ datas }) => {
       e.preventDefault();
       const { title, email, password, url, category_id } = passwordFormData;
       if (!title || !email || !password || !url || !category_id) {
-        showSuccessToast("All fields are required!");
+        showSuccessToast("All fields are required!", "error");
         return null;
       }
       if (!checkValidEmail(email)) {
-        showSuccessToast("Invalid email format!");
+        showSuccessToast("Invalid email format!", "error");
       }
 
       if (!checkValidUrl(url)) {
-        showSuccessToast("Invalid url format");
+        showSuccessToast("Invalid url format", "error");
       }
       if (updateMutation.isLoading) return;
       const payload = {
@@ -384,7 +384,8 @@ const PasswordCardComponent = ({ datas }) => {
 
     if (!payload.user_id || !payload.share_id) {
       showSuccessToast(
-        "You are not authorized person to remove this password card"
+        "You are not authorized person to remove this password card",
+        "error"
       );
       setRemoveSharedPasswordModal(false);
       return;
@@ -398,7 +399,10 @@ const PasswordCardComponent = ({ datas }) => {
       user_id: user?.user_id,
     };
     if (!payload.user_id || !payload.password_id) {
-      showSuccessToast("All field are required to delete this password card");
+      showSuccessToast(
+        "All field are required to delete this password card",
+        "error"
+      );
       return;
     }
     if (removePasswordMutation.isLoading) return;
@@ -443,11 +447,11 @@ const PasswordCardComponent = ({ datas }) => {
         pin: otpNumber,
       };
       if (!otpNumber) {
-        showSuccessToast("OTP is required");
+        showSuccessToast("OTP is required", "error");
         return;
       }
       if (!checkPinValid(otpNumber)) {
-        showSuccessToast("Invalid pin format");
+        showSuccessToast("Invalid pin format", "error");
         return;
       }
       pinServiceMutation.mutate(payload);
@@ -462,11 +466,11 @@ const PasswordCardComponent = ({ datas }) => {
         pin: copyPassword,
       };
       if (!copyPassword) {
-        showSuccessToast("OTP is required");
+        showSuccessToast("OTP is required", "error");
         return;
       }
       if (!checkPinValid(copyPassword)) {
-        showSuccessToast("Invalid pin format");
+        showSuccessToast("Invalid pin format", "error");
         return;
       }
       pinServiceMutationCopy.mutate(payload);
@@ -483,11 +487,11 @@ const PasswordCardComponent = ({ datas }) => {
       pin: otpEnableNumber,
     };
     if (!otpEnableNumber) {
-      showSuccessToast("OTP is required");
+      showSuccessToast("OTP is required", "error");
       return;
     }
     if (!checkPinValid(otpEnableNumber)) {
-      showSuccessToast("Invalid pin format");
+      showSuccessToast("Invalid pin format", "error");
       return;
     }
     if (pinServiceMutationEnable.isLoading) return;

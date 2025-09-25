@@ -10,7 +10,6 @@ import {
   GenerateIcon,
   AddIcon,
   CopyIcon,
-  PasswordIcon,
   EyeIcon,
   ResetPinIcon,
 } from "../../helpers/Icon.helper";
@@ -196,15 +195,15 @@ const DashboardPage = () => {
       e.preventDefault();
       const { title, email, password, url, category_id } = passwordFormData;
       if (!title || !email || !password || !url || !category_id) {
-        setPasswordAddError("All fields are required!");
+        setPasswordAddError("All fields are required!", "error");
         return null;
       }
       if (!checkValidEmail(email)) {
-        setPasswordAddError("Invalid email format!");
+        setPasswordAddError("Invalid email format!", "error");
       }
 
       if (!checkValidUrl(url)) {
-        setPasswordAddError("Invalid url format");
+        setPasswordAddError("Invalid url format", "error");
       }
       if (mutation.isLoading) return;
       const payload = {
@@ -231,7 +230,6 @@ const DashboardPage = () => {
   const handleCategoryChange = useCallback((e) => {
     setCategory(e.target.value);
   }, []);
-  console.log("isPasswordPending", isPasswordPending);
   return (
     <>
       <ModalComponent
