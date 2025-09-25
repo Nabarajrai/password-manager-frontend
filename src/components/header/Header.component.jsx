@@ -17,6 +17,7 @@ import {
 } from "../../helpers/Icon.helper";
 //helpers
 import { useAuth } from "../../hooks/user/useAuth.js";
+import { FormatDate } from "../../helpers/DateFormat.helper.js";
 //hooks
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
@@ -417,7 +418,7 @@ const HeaderComponent = () => {
                               {user?.role_name}
                             </span>
                           </td>
-                          <td>{user?.created_at}</td>
+                          <td>{FormatDate(user?.created_at)}</td>
                           <td className="action-btns">
                             <button
                               className="reset-key"
@@ -479,7 +480,7 @@ const HeaderComponent = () => {
                             {user?.role_name}
                           </span>
                         </td>
-                        <td>{user?.created_at}</td>
+                        <td>{FormatDate(user?.created_at)}</td>
                         <td className="action-btns">
                           <button
                             className="reset-key"

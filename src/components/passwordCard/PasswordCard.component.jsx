@@ -35,6 +35,7 @@ import {
   checkValidUrl,
   checkPinValid,
 } from "../../helpers/PasswordCheck.helper";
+import { FormatDate } from "../../helpers/DateFormat.helper";
 
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
@@ -879,7 +880,7 @@ const PasswordCardComponent = ({ datas }) => {
           </div>
         </div>
         <div className="password-card-footer">
-          <div className="date">{datas?.created_at}</div>
+          <div className="date">{FormatDate(datas?.created_at)}</div>
           {datas?.shared_by_name && (
             <div className="shared-by">
               {` Shared By (${
