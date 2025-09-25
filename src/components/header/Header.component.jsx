@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { AddUserIcon, PeopleIcon, SecureIcon } from "../../helpers/Icon.helper";
 import { UserIcon, AdminIcon, LogoutIcon } from "../../helpers/Icon.helper";
 import ModalComponent from "../modal/Modal.component";
@@ -24,6 +24,7 @@ import { useUser } from "../../hooks/user/useUser.jsx";
 import { useToast } from "../../hooks/toast/useToast.js";
 
 //helpres
+import Loading from "../loading/Loading.jsx";
 
 const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,16 +82,21 @@ const HeaderComponent = () => {
     queryFn: fetchRoles,
   });
 
-  const { data: tempUsers = [], isPending: tempUsersPending } = useQuery({
+  const {
+    data: tempUsers = [],
+    isPending: tempUsersPending,
+    isError: tempUsersError,
+    error: tempError,
+  } = useQuery({
     queryKey: ["temp-users"],
     queryFn: fetchTempUsers,
   });
 
   const {
     data: userCounts,
-    // isPending: userCountsPending,
-    // isError: userCountsError,
-    // error: userCountsErrors,
+    isPending: userCountsPending,
+    isError: userCountsError,
+    error: userCountsErrors,
   } = useQuery({
     queryKey: ["user-counts"],
     queryFn: countUsers,
@@ -272,13 +278,20 @@ const HeaderComponent = () => {
         modalFor="admin">
         <div className="admin-panel-container">
           <div className="admin-panel-dash">
+            {userCountsPending ? (
+              <span>
+                <Loading />
+              </span>
+            ) : userCountsError ? (
+              <p className="error-text">{userCountsErrors?.message}</p>
+            ) : null}
             {userCounts !== undefined &&
               userCounts.map((count) => (
                 <div
                   className={`admin-panel-card ${count.title}`}
                   key={count.label}>
                   <CardComponent
-                    title={`${count.title} Users`}
+                    title={`${count.title} `}
                     number={count.number}
                     icon={<PeopleIcon />}
                     iconColor={count.title}
@@ -380,8 +393,13 @@ const HeaderComponent = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {tempUsersError && (
+                      <p className="error-text">{tempError?.message}</p>
+                    )}
                     {tempUsersPending ? (
-                      <span>Loading....</span>
+                      <span>
+                        <Loading />
+                      </span>
                     ) : (
                       tempUsers.map((user, idx) => (
                         <tr key={idx}>
@@ -443,7 +461,9 @@ const HeaderComponent = () => {
                 </thead>
                 <tbody>
                   {userPending ? (
-                    <span>Loading....</span>
+                    <span>
+                      <Loading />
+                    </span>
                   ) : (
                     data?.users?.map((user, idx) => (
                       <tr key={idx}>
@@ -511,7 +531,7 @@ const HeaderComponent = () => {
                 </div>
                 <div className="name">
                   <p>
-                    Nabaraj Rai{" "}
+                    {user?.username}
                     {user?.role_name === "ADMIN" ? (
                       <span>(Admin)</span>
                     ) : (

@@ -17,7 +17,7 @@ function App() {
         rtl={false}
         pauseOnFocusLoss={true}
       />
-      <ReactQueryDevtools initialIsOpen={true} />
+      {/* <ReactQueryDevtools initialIsOpen={true} /> */}
     </>
   );
 }

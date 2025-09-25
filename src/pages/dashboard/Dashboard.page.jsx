@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useContext } from "react";
 import HeaderComponent from "../../components/header/Header.component";
 import CardComponent from "../../components/card/Card.component";
 import SearchInputComponent from "../../components/searchInput/SearchInput.component";
@@ -10,7 +10,6 @@ import {
   GenerateIcon,
   AddIcon,
   CopyIcon,
-  PasswordIcon,
   EyeIcon,
   ResetPinIcon,
 } from "../../helpers/Icon.helper";
@@ -23,6 +22,8 @@ import ProgressBar from "../../components/progressbar/ProgressBar";
 import RangeInput from "../../components/rangeInput/RangeInput";
 import AddPasswordInput from "../../components/addInput/AddPasswordInput";
 import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
+import Loading from "../../components/loading/Loading";
+import SessionComponent from "../../components/session/Session.component";
 //hooks
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useCategories } from "../../hooks/categories/useCategories";
@@ -36,6 +37,8 @@ import { useUser } from "../../hooks/user/useUser";
 
 //react query
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+//contexts
+import { SessionContext } from "../../context/sessionContext/Session.context";
 
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,7 +63,9 @@ const DashboardPage = () => {
   const { createPasswordEntry, getAllPasswords } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
-
+  //contexts
+  const { session } = useContext(SessionContext);
+  console.log("session in dash", session);
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
@@ -195,15 +200,15 @@ const DashboardPage = () => {
       e.preventDefault();
       const { title, email, password, url, category_id } = passwordFormData;
       if (!title || !email || !password || !url || !category_id) {
-        setPasswordAddError("All fields are required!");
+        setPasswordAddError("All fields are required!", "error");
         return null;
       }
       if (!checkValidEmail(email)) {
-        setPasswordAddError("Invalid email format!");
+        setPasswordAddError("Invalid email format!", "error");
       }
 
       if (!checkValidUrl(url)) {
-        setPasswordAddError("Invalid url format");
+        setPasswordAddError("Invalid url format", "error");
       }
       if (mutation.isLoading) return;
       const payload = {
@@ -219,7 +224,6 @@ const DashboardPage = () => {
     },
     [passwordFormData, mutation, user]
   );
-  // console.log("passwordFormData", passwordFormData);
   const handleLimitChange = useCallback(() => {
     setLimit((prev) => prev + 1);
   }, []);
@@ -231,7 +235,6 @@ const DashboardPage = () => {
   const handleCategoryChange = useCallback((e) => {
     setCategory(e.target.value);
   }, []);
-
   return (
     <>
       <ModalComponent
@@ -358,7 +361,7 @@ const DashboardPage = () => {
           </div>
           <div className="dashboard-add-section">
             <AddPasswordInput
-              label="URl *"
+              label="URL *"
               placeholder="E.g: www.salapbikasbank.com.np"
               type="text"
               onChange={handleChangeFormData}
@@ -495,10 +498,12 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
-
+            {session && <SessionComponent />}
             <div className="password-card-lists">
               {isPasswordPending ? (
-                <div className="loader">Loading...</div>
+                <div className="dash-loader">
+                  <Loading />
+                </div>
               ) : (
                 <div className="password-card-item">
                   {allPasswords?.data !== undefined &&

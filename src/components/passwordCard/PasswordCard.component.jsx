@@ -56,10 +56,7 @@ const PasswordCardComponent = ({ datas }) => {
     permisson_level: "",
   });
   const [serverPassword, setServerPassword] = useState(null);
-  const [deleteFormData, setDeleteFormData] = useState({
-    password_id: "",
-    user_id: "",
-  });
+
   const [passwordFormData, setPasswordFormData] = useState({
     title: "",
     email: "",
@@ -168,10 +165,12 @@ const PasswordCardComponent = ({ datas }) => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
       showSuccessToast("Password shared removed successfully");
+      setRemoveSharedPasswordModal(false);
     },
     onError: (error) => {
       console.error("Error sharing password:", error);
       showSuccessToast(error || "Something went wrong", "error");
+      setRemoveSharedPasswordModal(false);
     },
   });
 
@@ -203,7 +202,6 @@ const PasswordCardComponent = ({ datas }) => {
   const getPasswordMutationCopy = useMutation({
     mutationFn: passwordEntry,
     onSuccess: async (data) => {
-      console.log("data", data?.decrypted_password);
       setCopyPassword(data?.decrypted_password);
       handleCopied(data?.decrypted_password, setCopyPassword);
       showSuccessToast("Password copied successfully");
@@ -296,9 +294,8 @@ const PasswordCardComponent = ({ datas }) => {
 
   const handleSharePassword = useCallback(() => {
     const { userId, permisson_level } = formData;
-    console.log("formdata", formData);
     if (!userId || !permisson_level) {
-      showSuccessToast("All field are required");
+      showSuccessToast("All field are required", "error");
       return;
     }
     const payload = {
@@ -330,7 +327,6 @@ const PasswordCardComponent = ({ datas }) => {
     setEditModal(true);
   }, []);
 
-  // console.log("formdata", formData);
   const handleChangeInput = useCallback((e) => {
     const { name, value } = e.target;
     setPasswordFormData((prevData) => ({
@@ -347,15 +343,15 @@ const PasswordCardComponent = ({ datas }) => {
       e.preventDefault();
       const { title, email, password, url, category_id } = passwordFormData;
       if (!title || !email || !password || !url || !category_id) {
-        showSuccessToast("All fields are required!");
+        showSuccessToast("All fields are required!", "error");
         return null;
       }
       if (!checkValidEmail(email)) {
-        showSuccessToast("Invalid email format!");
+        showSuccessToast("Invalid email format!", "error");
       }
 
       if (!checkValidUrl(url)) {
-        showSuccessToast("Invalid url format");
+        showSuccessToast("Invalid url format", "error");
       }
       if (updateMutation.isLoading) return;
       const payload = {
@@ -388,7 +384,8 @@ const PasswordCardComponent = ({ datas }) => {
 
     if (!payload.user_id || !payload.share_id) {
       showSuccessToast(
-        "You are not authorized person to remove this password card"
+        "You are not authorized person to remove this password card",
+        "error"
       );
       setRemoveSharedPasswordModal(false);
       return;
@@ -402,7 +399,10 @@ const PasswordCardComponent = ({ datas }) => {
       user_id: user?.user_id,
     };
     if (!payload.user_id || !payload.password_id) {
-      showSuccessToast("All field are required to delete this password card");
+      showSuccessToast(
+        "All field are required to delete this password card",
+        "error"
+      );
       return;
     }
     if (removePasswordMutation.isLoading) return;
@@ -415,16 +415,9 @@ const PasswordCardComponent = ({ datas }) => {
     showSuccessToast,
   ]);
 
-  const deletePasswordModal = useCallback(
-    (userInfo) => {
-      setDeleteModal(true);
-      setDeleteFormData({
-        password_id: userInfo?.password_id,
-        user_id: user?.owner_user_id,
-      });
-    },
-    [user]
-  );
+  const deletePasswordModal = useCallback(() => {
+    setDeleteModal(true);
+  }, []);
   const cancelDeletePasswordModal = useCallback(() => {
     setDeleteModal(false);
   }, []);
@@ -454,11 +447,11 @@ const PasswordCardComponent = ({ datas }) => {
         pin: otpNumber,
       };
       if (!otpNumber) {
-        showSuccessToast("OTP is required");
+        showSuccessToast("OTP is required", "error");
         return;
       }
       if (!checkPinValid(otpNumber)) {
-        showSuccessToast("Invalid pin format");
+        showSuccessToast("Invalid pin format", "error");
         return;
       }
       pinServiceMutation.mutate(payload);
@@ -473,11 +466,11 @@ const PasswordCardComponent = ({ datas }) => {
         pin: copyPassword,
       };
       if (!copyPassword) {
-        showSuccessToast("OTP is required");
+        showSuccessToast("OTP is required", "error");
         return;
       }
       if (!checkPinValid(copyPassword)) {
-        showSuccessToast("Invalid pin format");
+        showSuccessToast("Invalid pin format", "error");
         return;
       }
       pinServiceMutationCopy.mutate(payload);
@@ -494,11 +487,11 @@ const PasswordCardComponent = ({ datas }) => {
       pin: otpEnableNumber,
     };
     if (!otpEnableNumber) {
-      showSuccessToast("OTP is required");
+      showSuccessToast("OTP is required", "error");
       return;
     }
     if (!checkPinValid(otpEnableNumber)) {
-      showSuccessToast("Invalid pin format");
+      showSuccessToast("Invalid pin format", "error");
       return;
     }
     if (pinServiceMutationEnable.isLoading) return;
@@ -529,7 +522,7 @@ const PasswordCardComponent = ({ datas }) => {
         title="Enter your 4 digit OTP number to copy password"
         isModalOpen={showCopyModal}
         setIsModalOpen={setShowCopyModal}>
-        <div className="remove-password-container">
+        <div className="remove-password-containers">
           <div className="remove-password-input">
             <AddPasswordInput
               label="OTP *"
@@ -558,7 +551,7 @@ const PasswordCardComponent = ({ datas }) => {
         title="Enter your 4 digit OTP number to see password"
         isModalOpen={otpModal}
         setIsModalOpen={setOtpModal}>
-        <div className="remove-password-container">
+        <div className="remove-password-containers">
           <div className="remove-password-input">
             <AddPasswordInput
               label="OTP *"
@@ -673,7 +666,7 @@ const PasswordCardComponent = ({ datas }) => {
               </div>
             </div>
           ) : (
-            <div className="remove-password-container">
+            <div className="remove-password-containers">
               <div className="remove-password-input">
                 <AddPasswordInput
                   label="Enter OTP to enable password field"

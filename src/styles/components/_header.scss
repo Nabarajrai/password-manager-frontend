@@ -58,6 +58,7 @@
     .name p {
       color: $text-color;
       font-size: 0.9rem;
+      text-decoration: capitalize;
       span {
         color: $text-color;
       }
