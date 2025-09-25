@@ -1,0 +1,28 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+.session-component-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 4rem;
+  .session-component-text {
+    text-align: center;
+    //  margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: $text-color;
+  }
+  .session-component-btn {
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      font-size: 0.9rem;
+      color: $text-color;
+      text-decoration: underline;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      &:hover {
+        color: $icon-hover-color;
+      }
+    }
+  }
+}

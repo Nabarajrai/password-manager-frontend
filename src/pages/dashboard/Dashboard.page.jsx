@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useContext } from "react";
 import HeaderComponent from "../../components/header/Header.component";
 import CardComponent from "../../components/card/Card.component";
 import SearchInputComponent from "../../components/searchInput/SearchInput.component";
@@ -23,6 +23,7 @@ import RangeInput from "../../components/rangeInput/RangeInput";
 import AddPasswordInput from "../../components/addInput/AddPasswordInput";
 import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
 import Loading from "../../components/loading/Loading";
+import SessionComponent from "../../components/session/Session.component";
 //hooks
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useCategories } from "../../hooks/categories/useCategories";
@@ -36,6 +37,8 @@ import { useUser } from "../../hooks/user/useUser";
 
 //react query
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+//contexts
+import { SessionContext } from "../../context/sessionContext/Session.context";
 
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,7 +63,9 @@ const DashboardPage = () => {
   const { createPasswordEntry, getAllPasswords } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
-
+  //contexts
+  const { session } = useContext(SessionContext);
+  console.log("session in dash", session);
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
@@ -356,7 +361,7 @@ const DashboardPage = () => {
           </div>
           <div className="dashboard-add-section">
             <AddPasswordInput
-              label="URl *"
+              label="URL *"
               placeholder="E.g: www.salapbikasbank.com.np"
               type="text"
               onChange={handleChangeFormData}
@@ -493,7 +498,7 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
-
+            {session && <SessionComponent />}
             <div className="password-card-lists">
               {isPasswordPending ? (
                 <div className="dash-loader">
