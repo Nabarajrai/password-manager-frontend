@@ -165,10 +165,12 @@ const PasswordCardComponent = ({ datas }) => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
       showSuccessToast("Password shared removed successfully");
+      setRemoveSharedPasswordModal(false);
     },
     onError: (error) => {
       console.error("Error sharing password:", error);
       showSuccessToast(error || "Something went wrong", "error");
+      setRemoveSharedPasswordModal(false);
     },
   });
 
@@ -200,7 +202,6 @@ const PasswordCardComponent = ({ datas }) => {
   const getPasswordMutationCopy = useMutation({
     mutationFn: passwordEntry,
     onSuccess: async (data) => {
-      console.log("data", data?.decrypted_password);
       setCopyPassword(data?.decrypted_password);
       handleCopied(data?.decrypted_password, setCopyPassword);
       showSuccessToast("Password copied successfully");
@@ -293,7 +294,6 @@ const PasswordCardComponent = ({ datas }) => {
 
   const handleSharePassword = useCallback(() => {
     const { userId, permisson_level } = formData;
-    console.log("formdata", formData);
     if (!userId || !permisson_level) {
       showSuccessToast("All field are required", "error");
       return;
@@ -666,7 +666,7 @@ const PasswordCardComponent = ({ datas }) => {
               </div>
             </div>
           ) : (
-            <div className="remove-password-container">
+            <div className="remove-password-containers">
               <div className="remove-password-input">
                 <AddPasswordInput
                   label="Enter OTP to enable password field"
