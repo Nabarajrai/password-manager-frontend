@@ -64,6 +64,7 @@ const ResetPin = () => {
         setValidError("Pin must be 4 digits long and contain only numbers");
         return;
       }
+      if (mutation.isPending) return;
       mutation.mutate(payload);
       // Proceed with pin update logic here
     },
@@ -110,7 +111,9 @@ const ResetPin = () => {
             {validError && <p className="error-text">{validError}</p>}
           </div>
           <div className="password-button">
-            <ButtonComponent>Update Password</ButtonComponent>
+            <ButtonComponent disabled={mutation.isPending}>
+              Update Password
+            </ButtonComponent>
           </div>
         </form>
       </div>
