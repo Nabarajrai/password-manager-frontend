@@ -6,6 +6,7 @@ const ModalComponent = ({
   setIsModalOpen,
   modalFor,
   title,
+  size,
   children,
 }) => {
   const handleClose = useCallback(() => {
@@ -18,6 +19,13 @@ const ModalComponent = ({
     return classnames("modal-container", activeClass, modalClass);
   }, [isModalOpen, modalFor]);
 
+  const joinClassMain = useMemo(() => {
+    return classnames(
+      "modal-main-content",
+      size ? `modal-main-content-${size}` : ""
+    );
+  }, [size]);
+
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -28,10 +36,11 @@ const ModalComponent = ({
       document.body.style.overflow = "";
     };
   }, [isModalOpen]);
+
   return (
     <div className={joinClassName}>
       <div className="overlayout"></div>
-      <div className="modal-main-content">
+      <div className={joinClassMain}>
         <div className="modal-header">
           <div className="modal-header-title">{title}</div>
           <div className="close-modal" onClick={handleClose}>

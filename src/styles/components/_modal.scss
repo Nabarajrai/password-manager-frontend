@@ -53,17 +53,22 @@
   // padding: 1.5rem 1.4rem;
   opacity: 0;
   transform: scale(0.9);
-  height: 95dvh;
-  overflow: auto;
+
   transition: all 0.3s ease;
+  &.modal-main-content-lg {
+    height: 95dvh;
+    overflow: auto;
+    .modal-header {
+      position: sticky;
+      top: 0;
+      background: $category-bg-color;
+    }
+  }
   .modal-header {
     @include flex(flex-start);
     width: 100%;
     border-bottom: 1px solid rgba($text-color, 0.1);
     padding: 1.5rem 1.4rem;
-    position: sticky;
-    top: 0;
-    background: $category-bg-color;
     z-index: 5;
     .modal-header-title {
       font-size: 1.2rem;

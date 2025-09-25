@@ -317,6 +317,7 @@ const DashboardPage = () => {
       </ModalComponent>
       <ModalComponent
         title="Add New Password"
+        size="lg"
         isModalOpen={isAddModalOpen}
         setIsModalOpen={setIsAddModalOpen}>
         <div className="dashboard-add-password">

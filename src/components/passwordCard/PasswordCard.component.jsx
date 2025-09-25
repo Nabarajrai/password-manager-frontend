@@ -498,8 +498,6 @@ const PasswordCardComponent = ({ datas }) => {
     pinServiceMutationEnable.mutate(payload);
   }, [pinServiceMutationEnable, datas, otpEnableNumber, showSuccessToast]);
 
-  console.log("passwordFormData", passwordFormData);
-
   const cancelUpdatePasswordModal = useCallback(() => {
     setShowPin(false);
     setOtpEnableNumber("");
@@ -614,6 +612,7 @@ const PasswordCardComponent = ({ datas }) => {
       </ModalComponent>
       <ModalComponent
         title="Update Password"
+        size="lg"
         isModalOpen={editModal}
         setIsModalOpen={setEditModal}>
         <div className="dashboard-add-password">
