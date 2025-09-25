@@ -56,10 +56,7 @@ const PasswordCardComponent = ({ datas }) => {
     permisson_level: "",
   });
   const [serverPassword, setServerPassword] = useState(null);
-  const [deleteFormData, setDeleteFormData] = useState({
-    password_id: "",
-    user_id: "",
-  });
+
   const [passwordFormData, setPasswordFormData] = useState({
     title: "",
     email: "",
@@ -330,7 +327,6 @@ const PasswordCardComponent = ({ datas }) => {
     setEditModal(true);
   }, []);
 
-  // console.log("formdata", formData);
   const handleChangeInput = useCallback((e) => {
     const { name, value } = e.target;
     setPasswordFormData((prevData) => ({
@@ -415,16 +411,9 @@ const PasswordCardComponent = ({ datas }) => {
     showSuccessToast,
   ]);
 
-  const deletePasswordModal = useCallback(
-    (userInfo) => {
-      setDeleteModal(true);
-      setDeleteFormData({
-        password_id: userInfo?.password_id,
-        user_id: user?.owner_user_id,
-      });
-    },
-    [user]
-  );
+  const deletePasswordModal = useCallback(() => {
+    setDeleteModal(true);
+  }, []);
   const cancelDeletePasswordModal = useCallback(() => {
     setDeleteModal(false);
   }, []);

@@ -23,6 +23,7 @@ import ProgressBar from "../../components/progressbar/ProgressBar";
 import RangeInput from "../../components/rangeInput/RangeInput";
 import AddPasswordInput from "../../components/addInput/AddPasswordInput";
 import CheckboxInput from "../../components/checkboxInput/CheckboxInput";
+import Loading from "../../components/loading/Loading";
 //hooks
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useCategories } from "../../hooks/categories/useCategories";
@@ -219,7 +220,6 @@ const DashboardPage = () => {
     },
     [passwordFormData, mutation, user]
   );
-  // console.log("passwordFormData", passwordFormData);
   const handleLimitChange = useCallback(() => {
     setLimit((prev) => prev + 1);
   }, []);
@@ -231,7 +231,7 @@ const DashboardPage = () => {
   const handleCategoryChange = useCallback((e) => {
     setCategory(e.target.value);
   }, []);
-
+  console.log("isPasswordPending", isPasswordPending);
   return (
     <>
       <ModalComponent
@@ -498,7 +498,9 @@ const DashboardPage = () => {
 
             <div className="password-card-lists">
               {isPasswordPending ? (
-                <div className="loader">Loading...</div>
+                <div className="dash-loader">
+                  <Loading />
+                </div>
               ) : (
                 <div className="password-card-item">
                   {allPasswords?.data !== undefined &&
