@@ -291,7 +291,7 @@ const HeaderComponent = () => {
                   className={`admin-panel-card ${count.title}`}
                   key={count.label}>
                   <CardComponent
-                    title={`${count.title} Users`}
+                    title={`${count.title} `}
                     number={count.number}
                     icon={<PeopleIcon />}
                     iconColor={count.title}

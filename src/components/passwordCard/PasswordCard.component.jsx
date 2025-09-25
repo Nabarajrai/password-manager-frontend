@@ -522,7 +522,7 @@ const PasswordCardComponent = ({ datas }) => {
         title="Enter your 4 digit OTP number to copy password"
         isModalOpen={showCopyModal}
         setIsModalOpen={setShowCopyModal}>
-        <div className="remove-password-container">
+        <div className="remove-password-containers">
           <div className="remove-password-input">
             <AddPasswordInput
               label="OTP *"
@@ -551,7 +551,7 @@ const PasswordCardComponent = ({ datas }) => {
         title="Enter your 4 digit OTP number to see password"
         isModalOpen={otpModal}
         setIsModalOpen={setOtpModal}>
-        <div className="remove-password-container">
+        <div className="remove-password-containers">
           <div className="remove-password-input">
             <AddPasswordInput
               label="OTP *"
