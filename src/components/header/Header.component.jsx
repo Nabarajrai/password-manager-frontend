@@ -15,6 +15,8 @@ import {
   ResetPinIcon,
   DeleteIcon,
   EditIcon,
+  SaveIcon,
+  CancelIcon,
 } from "../../helpers/Icon.helper";
 //helpers
 import { useAuth } from "../../hooks/user/useAuth.js";
@@ -40,10 +42,17 @@ const HeaderComponent = () => {
     pin: "",
     role_id: 2,
   });
-
+  const [categoryEditForm, setCategoryEditForm] = useState({
+    category_name: "",
+    created_at: "",
+    category_id: null,
+  });
+  const [categoryTableForm, setCategoryTableForm] = useState({
+    categoryName: "",
+  });
   const queryClient = useQueryClient();
   const { showSuccessToast } = useToast();
-  const { fetchCategories } = useCategories();
+  const { fetchCategories, updateCategory } = useCategories();
   const { logout } = useAuth();
   const {
     createUser,
@@ -150,6 +159,19 @@ const HeaderComponent = () => {
     },
     onError: (error) => {
       console.error("Error sending reset pin link:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: updateCategory,
+    onSuccess: async () => {
+      showSuccessToast("Category updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (error) => {
+      console.error("Error updating category:", error);
       showSuccessToast(error?.message, "error");
       throw error;
     },
@@ -284,6 +306,49 @@ const HeaderComponent = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
+
+  const handleEditCategory = useCallback((data) => {
+    setCategoryEditForm({
+      category_name: data.name,
+      created_at: data.created_at,
+      category_id: data.category_id,
+    });
+  }, []);
+  const handleCategoryInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setCategoryTableForm((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
+
+  const handleUpdateCategory = useCallback(() => {
+    if (categoryTableForm.categoryName.trim() === "") {
+      showSuccessToast("Category name cannot be empty", "error");
+      return;
+    }
+    if (updateCategoryMutation.isLoading) return;
+    const payload = {
+      categoryId: categoryEditForm.category_id,
+      categoryName: categoryTableForm.categoryName,
+    };
+    updateCategoryMutation.mutate(payload);
+    categoryEditForm.category_id = null;
+  }, [
+    updateCategoryMutation,
+    categoryEditForm,
+    categoryTableForm,
+    showSuccessToast,
+  ]);
+
+  const handleCancelEdit = useCallback(() => {
+    console.log("handleCancelEdit called");
+    setCategoryEditForm({
+      category_name: "",
+      created_at: "",
+      category_id: null,
+    });
+  }, []);
   return (
     <>
       <ModalComponent
@@ -547,26 +612,68 @@ const HeaderComponent = () => {
                       </span>
                     ) : (
                       categoryDatas !== undefined &&
-                      categoryDatas.map((category, idx) => (
-                        <tr key={idx}>
-                          <td className="admin-user">
-                            <div className="admin-user__name">
-                              {category?.name}
-                            </div>
-                          </td>
-                          <td>{FormatDate(user?.created_at)}</td>
-                          <td className="action-btns">
-                            <button
-                              className="reset-key"
-                              title="Reset Password">
-                              <EditIcon />
-                            </button>
-                            <button className="delete-user" title="Delete User">
-                              <DeleteIcon />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
+                      categoryDatas.map((category, idx) =>
+                        categoryEditForm.category_id ===
+                        category.category_id ? (
+                          <tr key={idx}>
+                            <td className="admin-user">
+                              <div className="admin-user__name">
+                                <input
+                                  type="text"
+                                  name="categoryName"
+                                  className="edit-category-input"
+                                  defaultValue={category?.name}
+                                  onChange={handleCategoryInputChange}
+                                />
+                              </div>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="edit-category-input"
+                                readOnly
+                                defaultValue={FormatDate(category?.created_at)}
+                              />
+                            </td>
+                            <td className="action-btns">
+                              <button
+                                className="reset-key"
+                                title="Save Category"
+                                onClick={handleUpdateCategory}>
+                                <SaveIcon />
+                              </button>
+                              <button
+                                className="delete-user"
+                                onClick={handleCancelEdit}
+                                title="Cancel Edit">
+                                <CancelIcon />
+                              </button>
+                            </td>
+                          </tr>
+                        ) : (
+                          <tr key={idx}>
+                            <td className="admin-user">
+                              <div className="admin-user__name">
+                                {category?.name}
+                              </div>
+                            </td>
+                            <td>{FormatDate(user?.created_at)}</td>
+                            <td className="action-btns">
+                              <button
+                                className="reset-key"
+                                title="Edit Category"
+                                onClick={() => handleEditCategory(category)}>
+                                <EditIcon />
+                              </button>
+                              <button
+                                className="delete-user"
+                                title="Delete Category">
+                                <DeleteIcon />
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      )
                     )}
                   </tbody>
                 </table>

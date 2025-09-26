@@ -18,5 +18,23 @@ export const useCategories = () => {
     }
   };
 
-  return { fetchCategories };
+  const updateCategory = async (payload) => {
+    console.log("updateCategory payload", payload);
+    try {
+      const response = await api(
+        `${APIS_PAYLOAD.UPDATE_CATEGORY}/${Number(payload.categoryId)}`,
+        "PUT",
+        { name: payload.categoryName }
+      );
+      return response?.data;
+    } catch (error) {
+      if (error?.message === "Invalid or expired token") {
+        setSession(true);
+      }
+      console.error("Error updating category:", error);
+      throw error;
+    }
+  };
+
+  return { fetchCategories, updateCategory };
 };
