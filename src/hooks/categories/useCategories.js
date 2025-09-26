@@ -52,5 +52,18 @@ export const useCategories = () => {
     }
   };
 
-  return { fetchCategories, updateCategory, deleteCategory };
+  const createCategory = async (payload) => {
+    try {
+      const response = await api(APIS_PAYLOAD.CREATE_CATEGORY, "POST", payload);
+      return response?.data;
+    } catch (error) {
+      if (error?.message === "Invalid or expired token") {
+        setSession(true);
+      }
+      console.error("Error creating category:", error);
+      throw error;
+    }
+  };
+
+  return { fetchCategories, updateCategory, deleteCategory, createCategory };
 };

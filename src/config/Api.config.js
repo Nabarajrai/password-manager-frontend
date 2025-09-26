@@ -32,4 +32,5 @@ export const APIS_PAYLOAD = {
   GET_PASSWORD_BY_ID: "api/get-password-by-id",
   UPDATE_CATEGORY: "api/update-category",
   DELETE_CATEGORY: "api/delete-category",
+  CREATE_CATEGORY: "api/create-category",
 };

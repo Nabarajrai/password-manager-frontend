@@ -35,6 +35,7 @@ const HeaderComponent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addUserSection, setAddUserSection] = useState(false);
   const [error, setError] = useState("");
+  const [newCategory, setNewCategory] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -52,7 +53,9 @@ const HeaderComponent = () => {
   });
   const queryClient = useQueryClient();
   const { showSuccessToast } = useToast();
-  const { fetchCategories, updateCategory, deleteCategory } = useCategories();
+  const { user } = useUser();
+  const { fetchCategories, updateCategory, deleteCategory, createCategory } =
+    useCategories();
   const { logout } = useAuth();
   const {
     createUser,
@@ -65,7 +68,6 @@ const HeaderComponent = () => {
     countUsers,
   } = useUserCreate();
   const { fetchRoles } = useRole();
-  const { user } = useUser();
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
   }, []);
@@ -189,6 +191,42 @@ const HeaderComponent = () => {
       throw error;
     },
   });
+
+  const createCategoryMutation = useMutation({
+    mutationFn: createCategory,
+    onMutate: async (newCategory) => {
+      await queryClient.cancelQueries({ queryKey: ["categories"] });
+      const previousCategories = queryClient.getQueryData(["categories"]) ?? [];
+      queryClient.setQueryData(["categories"], (old) => {
+        const newData = [
+          ...old,
+          {
+            user_id: newCategory?.user_id,
+            name: newCategory.name,
+            category_id: crypto.randomUUID(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ];
+        return newData;
+      });
+      return { previousCategories };
+    },
+    onError: (error, _, context) => {
+      queryClient.setQueryData(["categories"], context?.previousCategories);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onSuccess: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      showSuccessToast("Category created successfully");
+    },
+  });
+
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
@@ -319,6 +357,8 @@ const HeaderComponent = () => {
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
+  console.log("categoryDatas", categoryDatas);
+
   const handleEditCategory = useCallback((data) => {
     setCategoryEditForm({
       category_name: data.name,
@@ -360,6 +400,21 @@ const HeaderComponent = () => {
       deleteCategoryMutation.mutate(categoryId);
     },
     [deleteCategoryMutation]
+  );
+
+  const createNewCategory = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (newCategory.trim() === "" || user?.user_id === undefined) {
+        showSuccessToast("Category name cannot be empty", "error");
+        return;
+      }
+      if (createCategoryMutation.isLoading) return;
+      const payload = { name: newCategory, userId: user.user_id };
+      createCategoryMutation.mutate(payload);
+      setNewCategory("");
+    },
+    [createCategoryMutation, newCategory, showSuccessToast, user]
   );
 
   const handleCancelEdit = useCallback(() => {
@@ -612,10 +667,24 @@ const HeaderComponent = () => {
             </div>
           </div>
           <div className="category-container">
-            <div className="category-container-action">
-              <ButtonComponent>Add New Category</ButtonComponent>
-            </div>
-            <div className="category-form">helow form</div>
+            <div className="category-container-title">Category Management</div>
+
+            <form className="category-form">
+              <div className="category-form-input-section">
+                <AddPasswordInput
+                  type="text"
+                  placeholder="Category Name"
+                  name="categoryName"
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  value={newCategory}
+                />
+              </div>
+              <div className="category-container-action">
+                <ButtonComponent onClick={createNewCategory}>
+                  Add New Category
+                </ButtonComponent>
+              </div>
+            </form>
             <div className="category-table">
               <div className="admin-panel-table" style={{ overflowX: "auto" }}>
                 <table>
