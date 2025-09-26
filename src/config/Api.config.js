@@ -31,4 +31,5 @@ export const APIS_PAYLOAD = {
   PIN_SERVICE: "api/auth/pin-service",
   GET_PASSWORD_BY_ID: "api/get-password-by-id",
   UPDATE_CATEGORY: "api/update-category",
+  DELETE_CATEGORY: "api/delete-category",
 };

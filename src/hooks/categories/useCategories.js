@@ -36,5 +36,21 @@ export const useCategories = () => {
     }
   };
 
-  return { fetchCategories, updateCategory };
+  const deleteCategory = async (categoryId) => {
+    try {
+      const response = await api(
+        `${APIS_PAYLOAD.DELETE_CATEGORY}/${Number(categoryId)}`,
+        "DELETE"
+      );
+      return response?.data;
+    } catch (error) {
+      if (error?.message === "Invalid or expired token") {
+        setSession(true);
+      }
+      console.error("Error deleting category:", error);
+      throw error;
+    }
+  };
+
+  return { fetchCategories, updateCategory, deleteCategory };
 };

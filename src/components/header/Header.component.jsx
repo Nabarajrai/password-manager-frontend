@@ -52,7 +52,7 @@ const HeaderComponent = () => {
   });
   const queryClient = useQueryClient();
   const { showSuccessToast } = useToast();
-  const { fetchCategories, updateCategory } = useCategories();
+  const { fetchCategories, updateCategory, deleteCategory } = useCategories();
   const { logout } = useAuth();
   const {
     createUser,
@@ -177,6 +177,18 @@ const HeaderComponent = () => {
     },
   });
 
+  const deleteCategoryMutation = useMutation({
+    mutationFn: deleteCategory,
+    onSuccess: async () => {
+      showSuccessToast("Category deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (error) => {
+      console.error("Error deleting category:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
@@ -341,6 +353,14 @@ const HeaderComponent = () => {
     categoryTableForm,
     showSuccessToast,
   ]);
+
+  const handleDeleteCategory = useCallback(
+    (categoryId) => {
+      if (deleteCategoryMutation.isLoading) return;
+      deleteCategoryMutation.mutate(categoryId);
+    },
+    [deleteCategoryMutation]
+  );
 
   const handleCancelEdit = useCallback(() => {
     console.log("handleCancelEdit called");
@@ -668,6 +688,9 @@ const HeaderComponent = () => {
                               </button>
                               <button
                                 className="delete-user"
+                                onClick={() =>
+                                  handleDeleteCategory(category.category_id)
+                                }
                                 title="Delete Category">
                                 <DeleteIcon />
                               </button>
