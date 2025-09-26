@@ -70,6 +70,7 @@ const UpdateCredentail = () => {
       new_password: updateForm.new_password,
       new_pin: updateForm.new_pin,
     };
+    if (updateCrendentMutate.mutate) return;
     updateCrendentMutate.mutate(payload);
   };
 
@@ -142,7 +143,9 @@ const UpdateCredentail = () => {
             {validError && <p className="error-text">{validError}</p>}
           </div>
           <div className="password-button">
-            <ButtonComponent>Update Password</ButtonComponent>
+            <ButtonComponent disabled={updateCrendentMutate.isPending}>
+              Update Password
+            </ButtonComponent>
           </div>
         </form>
       </div>

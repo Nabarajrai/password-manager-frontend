@@ -35,6 +35,7 @@ import {
   checkValidUrl,
   checkPinValid,
 } from "../../helpers/PasswordCheck.helper";
+import { FormatDate } from "../../helpers/DateFormat.helper";
 
 const PasswordCardComponent = ({ datas }) => {
   const [copyOpen, setCopyOpen] = useState(false);
@@ -498,8 +499,6 @@ const PasswordCardComponent = ({ datas }) => {
     pinServiceMutationEnable.mutate(payload);
   }, [pinServiceMutationEnable, datas, otpEnableNumber, showSuccessToast]);
 
-  console.log("passwordFormData", passwordFormData);
-
   const cancelUpdatePasswordModal = useCallback(() => {
     setShowPin(false);
     setOtpEnableNumber("");
@@ -614,6 +613,7 @@ const PasswordCardComponent = ({ datas }) => {
       </ModalComponent>
       <ModalComponent
         title="Update Password"
+        size="lg"
         isModalOpen={editModal}
         setIsModalOpen={setEditModal}>
         <div className="dashboard-add-password">
@@ -880,7 +880,7 @@ const PasswordCardComponent = ({ datas }) => {
           </div>
         </div>
         <div className="password-card-footer">
-          <div className="date">{datas?.created_at}</div>
+          <div className="date">{FormatDate(datas?.created_at)}</div>
           {datas?.shared_by_name && (
             <div className="shared-by">
               {` Shared By (${

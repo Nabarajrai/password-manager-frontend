@@ -83,7 +83,7 @@ const LoginPage = () => {
             {authError && <p className="error-text">{authError}</p>}
           </div>
           <div className="login-button">
-            <ButtonComponent>
+            <ButtonComponent disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </ButtonComponent>
           </div>

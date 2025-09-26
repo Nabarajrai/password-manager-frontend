@@ -14,14 +14,19 @@ import {
   ResetKeyIcon,
   ResetPinIcon,
   DeleteIcon,
+  EditIcon,
+  SaveIcon,
+  CancelIcon,
 } from "../../helpers/Icon.helper";
 //helpers
 import { useAuth } from "../../hooks/user/useAuth.js";
+import { FormatDate } from "../../helpers/DateFormat.helper.js";
 //hooks
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 import { useUser } from "../../hooks/user/useUser.jsx";
 import { useToast } from "../../hooks/toast/useToast.js";
+import { useCategories } from "../../hooks/categories/useCategories.js";
 
 //helpres
 import Loading from "../loading/Loading.jsx";
@@ -37,9 +42,17 @@ const HeaderComponent = () => {
     pin: "",
     role_id: 2,
   });
-
+  const [categoryEditForm, setCategoryEditForm] = useState({
+    category_name: "",
+    created_at: "",
+    category_id: null,
+  });
+  const [categoryTableForm, setCategoryTableForm] = useState({
+    categoryName: "",
+  });
   const queryClient = useQueryClient();
   const { showSuccessToast } = useToast();
+  const { fetchCategories, updateCategory, deleteCategory } = useCategories();
   const { logout } = useAuth();
   const {
     createUser,
@@ -151,6 +164,31 @@ const HeaderComponent = () => {
     },
   });
 
+  const updateCategoryMutation = useMutation({
+    mutationFn: updateCategory,
+    onSuccess: async () => {
+      showSuccessToast("Category updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (error) => {
+      console.error("Error updating category:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: deleteCategory,
+    onSuccess: async () => {
+      showSuccessToast("Category deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (error) => {
+      console.error("Error deleting category:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
   const mutation = useMutation({
     mutationFn: createUser,
     onMutate: async (newUser) => {
@@ -269,6 +307,69 @@ const HeaderComponent = () => {
     [sendResetPinLinkMutation]
   );
 
+  const {
+    data: categoryDatas,
+    isError: isCategoryError,
+    isPending: isCategoryPending,
+    error: categoryError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  const handleEditCategory = useCallback((data) => {
+    setCategoryEditForm({
+      category_name: data.name,
+      created_at: data.created_at,
+      category_id: data.category_id,
+    });
+    setCategoryTableForm({ categoryName: data.name });
+  }, []);
+  const handleCategoryInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setCategoryTableForm((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
+
+  const handleUpdateCategory = useCallback(() => {
+    if (categoryTableForm.categoryName.trim() === "") {
+      showSuccessToast("Category name cannot be empty", "error");
+      return;
+    }
+    if (updateCategoryMutation.isLoading) return;
+    const payload = {
+      categoryId: categoryEditForm.category_id,
+      categoryName: categoryTableForm.categoryName,
+    };
+    updateCategoryMutation.mutate(payload);
+    categoryEditForm.category_id = null;
+  }, [
+    updateCategoryMutation,
+    categoryEditForm,
+    categoryTableForm,
+    showSuccessToast,
+  ]);
+
+  const handleDeleteCategory = useCallback(
+    (categoryId) => {
+      if (deleteCategoryMutation.isLoading) return;
+      deleteCategoryMutation.mutate(categoryId);
+    },
+    [deleteCategoryMutation]
+  );
+
+  const handleCancelEdit = useCallback(() => {
+    console.log("handleCancelEdit called");
+    setCategoryEditForm({
+      category_name: "",
+      created_at: "",
+      category_id: null,
+    });
+  }, []);
   return (
     <>
       <ModalComponent
@@ -417,7 +518,7 @@ const HeaderComponent = () => {
                               {user?.role_name}
                             </span>
                           </td>
-                          <td>{user?.created_at}</td>
+                          <td>{FormatDate(user?.created_at)}</td>
                           <td className="action-btns">
                             <button
                               className="reset-key"
@@ -479,7 +580,7 @@ const HeaderComponent = () => {
                             {user?.role_name}
                           </span>
                         </td>
-                        <td>{user?.created_at}</td>
+                        <td>{FormatDate(user?.created_at)}</td>
                         <td className="action-btns">
                           <button
                             className="reset-key"
@@ -507,6 +608,107 @@ const HeaderComponent = () => {
               </table>
               <div className="table-error">
                 {isError && <p className="error-text">{userError?.message}</p>}
+              </div>
+            </div>
+          </div>
+          <div className="category-container">
+            <div className="category-container-action">
+              <ButtonComponent>Add New Category</ButtonComponent>
+            </div>
+            <div className="category-form">helow form</div>
+            <div className="category-table">
+              <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Category Name</th>
+                      <th>Created At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isCategoryPending ? (
+                      <span>
+                        <Loading />
+                      </span>
+                    ) : (
+                      categoryDatas !== undefined &&
+                      categoryDatas.map((category, idx) =>
+                        categoryEditForm.category_id ===
+                        category.category_id ? (
+                          <tr key={idx}>
+                            <td className="admin-user">
+                              <div className="admin-user__name">
+                                <input
+                                  type="text"
+                                  name="categoryName"
+                                  className="edit-category-input"
+                                  defaultValue={category?.name}
+                                  onChange={handleCategoryInputChange}
+                                />
+                              </div>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="edit-category-input"
+                                readOnly
+                                defaultValue={FormatDate(category?.created_at)}
+                              />
+                            </td>
+                            <td className="action-btns">
+                              <button
+                                className="reset-key"
+                                title="Save Category"
+                                onClick={handleUpdateCategory}>
+                                <SaveIcon />
+                              </button>
+                              <button
+                                className="delete-user"
+                                onClick={handleCancelEdit}
+                                title="Cancel Edit">
+                                <CancelIcon />
+                              </button>
+                            </td>
+                          </tr>
+                        ) : (
+                          <tr key={idx}>
+                            <td className="admin-user">
+                              <div className="admin-user__name">
+                                {category?.name}
+                              </div>
+                            </td>
+                            <td>{FormatDate(user?.created_at)}</td>
+                            <td className="action-btns">
+                              <button
+                                className="reset-key"
+                                title="Edit Category"
+                                onClick={() => handleEditCategory(category)}>
+                                <EditIcon />
+                              </button>
+                              <button
+                                className="delete-user"
+                                onClick={() =>
+                                  handleDeleteCategory(category.category_id)
+                                }
+                                title="Delete Category">
+                                <DeleteIcon />
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      )
+                    )}
+                  </tbody>
+                </table>
+                <div className="table-error">
+                  {isCategoryError && (
+                    <p className="error-text">{categoryError?.message}</p>
+                  )}
+                  {isError && (
+                    <p className="error-text">{userError?.message}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
