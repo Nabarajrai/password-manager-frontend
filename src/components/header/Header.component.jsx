@@ -313,6 +313,7 @@ const HeaderComponent = () => {
       created_at: data.created_at,
       category_id: data.category_id,
     });
+    setCategoryTableForm({ categoryName: data.name });
   }, []);
   const handleCategoryInputChange = useCallback((e) => {
     const { name, value } = e.target;
