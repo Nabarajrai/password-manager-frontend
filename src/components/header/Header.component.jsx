@@ -14,6 +14,7 @@ import {
   ResetKeyIcon,
   ResetPinIcon,
   DeleteIcon,
+  EditIcon,
 } from "../../helpers/Icon.helper";
 //helpers
 import { useAuth } from "../../hooks/user/useAuth.js";
@@ -23,6 +24,7 @@ import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 import { useUser } from "../../hooks/user/useUser.jsx";
 import { useToast } from "../../hooks/toast/useToast.js";
+import { useCategories } from "../../hooks/categories/useCategories.js";
 
 //helpres
 import Loading from "../loading/Loading.jsx";
@@ -41,6 +43,7 @@ const HeaderComponent = () => {
 
   const queryClient = useQueryClient();
   const { showSuccessToast } = useToast();
+  const { fetchCategories } = useCategories();
   const { logout } = useAuth();
   const {
     createUser,
@@ -270,6 +273,17 @@ const HeaderComponent = () => {
     [sendResetPinLinkMutation]
   );
 
+  const {
+    data: categoryDatas,
+    isError: isCategoryError,
+    isPending: isCategoryPending,
+    error: categoryError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
   return (
     <>
       <ModalComponent
@@ -508,6 +522,62 @@ const HeaderComponent = () => {
               </table>
               <div className="table-error">
                 {isError && <p className="error-text">{userError?.message}</p>}
+              </div>
+            </div>
+          </div>
+          <div className="category-container">
+            <div className="category-container-action">
+              <ButtonComponent>Add New Category</ButtonComponent>
+            </div>
+            <div className="category-form">helow form</div>
+            <div className="category-table">
+              <div className="admin-panel-table" style={{ overflowX: "auto" }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Category Name</th>
+                      <th>Created At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isCategoryPending ? (
+                      <span>
+                        <Loading />
+                      </span>
+                    ) : (
+                      categoryDatas !== undefined &&
+                      categoryDatas.map((category, idx) => (
+                        <tr key={idx}>
+                          <td className="admin-user">
+                            <div className="admin-user__name">
+                              {category?.name}
+                            </div>
+                          </td>
+                          <td>{FormatDate(user?.created_at)}</td>
+                          <td className="action-btns">
+                            <button
+                              className="reset-key"
+                              title="Reset Password">
+                              <EditIcon />
+                            </button>
+                            <button className="delete-user" title="Delete User">
+                              <DeleteIcon />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+                <div className="table-error">
+                  {isCategoryError && (
+                    <p className="error-text">{categoryError?.message}</p>
+                  )}
+                  {isError && (
+                    <p className="error-text">{userError?.message}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
