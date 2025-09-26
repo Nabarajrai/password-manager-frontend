@@ -364,3 +364,29 @@
     border-color: $primary-color;
   }
 }
+
+.category-form {
+  @include flex(flex-start);
+  gap: 1rem;
+  width: 50%;
+  padding: 0.9rem 0;
+  padding-bottom: 1.7rem;
+  .category-form-input-section {
+    flex: 1;
+  }
+  .category-container-action {
+    align-self: flex-end;
+  }
+}
+.category-container-title {
+  color: $text-color-secondary;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.category-container {
+  background-color: $header-background-color;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border-radius: 10px;
+  width: 100%;
+}

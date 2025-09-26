@@ -612,10 +612,20 @@ const HeaderComponent = () => {
             </div>
           </div>
           <div className="category-container">
-            <div className="category-container-action">
-              <ButtonComponent>Add New Category</ButtonComponent>
-            </div>
-            <div className="category-form">helow form</div>
+            <div className="category-container-title">Category Management</div>
+
+            <form className="category-form">
+              <div className="category-form-input-section">
+                <AddPasswordInput
+                  type="text"
+                  placeholder="Category Name"
+                  name="categoryName"
+                />
+              </div>
+              <div className="category-container-action">
+                <ButtonComponent>Add New Category</ButtonComponent>
+              </div>
+            </form>
             <div className="category-table">
               <div className="admin-panel-table" style={{ overflowX: "auto" }}>
                 <table>
