@@ -315,7 +315,7 @@
       transition: all 0.3s ease;
       svg {
         width: 1.05rem;
-        height: 1.05rem;
+        height: 2rem;
         transition: all 0.3s ease;
       }
       &.reset-key {
@@ -355,7 +355,7 @@
 .edit-category-input {
   border-bottom: 1px solid rgba($text-color, 0.1);
   padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: $text-color;
   background-color: $background-color;
 
