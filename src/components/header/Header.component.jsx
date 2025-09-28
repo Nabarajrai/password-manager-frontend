@@ -51,6 +51,17 @@ const HeaderComponent = () => {
   const [categoryTableForm, setCategoryTableForm] = useState({
     categoryName: "",
   });
+  const [userEditForm, setUserEditForm] = useState({
+    username: "",
+    email: "",
+    userId: null,
+  });
+
+  const [userSubmitData, setUserSubmitData] = useState({
+    username: "",
+    email: "",
+    userId: null,
+  });
   const queryClient = useQueryClient();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
@@ -66,6 +77,7 @@ const HeaderComponent = () => {
     passwordResetLink,
     sendResetPinLink,
     countUsers,
+    updateUser,
   } = useUserCreate();
   const { fetchRoles } = useRole();
   const handleOpenModal = useCallback(() => {
@@ -91,7 +103,6 @@ const HeaderComponent = () => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
-
   const { data: roles } = useQuery({
     queryKey: ["roles"],
     queryFn: fetchRoles,
@@ -187,6 +198,19 @@ const HeaderComponent = () => {
     },
     onError: (error) => {
       console.error("Error deleting category:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+
+  const updateUserMutate = useMutation({
+    mutationFn: updateUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      showSuccessToast("User successfully updated");
+    },
+    onError: (error) => {
+      console.error("Error updating  users", error);
       showSuccessToast(error?.message, "error");
       throw error;
     },
@@ -357,8 +381,6 @@ const HeaderComponent = () => {
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
-  console.log("categoryDatas", categoryDatas);
-
   const handleEditCategory = useCallback((data) => {
     setCategoryEditForm({
       category_name: data.name,
@@ -425,6 +447,55 @@ const HeaderComponent = () => {
       category_id: null,
     });
   }, []);
+
+  const handleEditUser = useCallback((userInfo) => {
+    console.log("handleEditUser called with userInfo:", userInfo);
+    setUserEditForm({
+      username: userInfo.username,
+      email: userInfo.email,
+      temp_id: userInfo.id,
+    });
+    setUserSubmitData({
+      username: userInfo.username,
+      email: userInfo.email,
+      userId: userInfo.id,
+    });
+  }, []);
+
+  const handleUserInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setUserSubmitData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
+
+  const cancelEditUser = useCallback(() => {
+    setUserEditForm({
+      username: "",
+      email: "",
+      userId: null,
+    });
+  }, []);
+
+  const updateEditUser = useCallback(() => {
+    if (
+      userSubmitData.username.trim() === "" ||
+      userSubmitData.email.trim() === ""
+    ) {
+      showSuccessToast("Username and email cannot be empty", "error");
+      return;
+    }
+    if (updateUserMutate.isLoading) return;
+    const payload = {
+      userId: userSubmitData.userId,
+      username: userSubmitData.username,
+      email: userSubmitData.email,
+    };
+    updateUserMutate.mutate(payload);
+    cancelEditUser();
+  }, [updateUserMutate, userSubmitData, showSuccessToast, cancelEditUser]);
+
   return (
     <>
       <ModalComponent
@@ -621,43 +692,97 @@ const HeaderComponent = () => {
                       <Loading />
                     </span>
                   ) : (
-                    data?.users?.map((user, idx) => (
-                      <tr key={idx}>
-                        <td className="admin-user">
-                          <div className="admin-user__name">
-                            {user?.username}
-                          </div>
-                          <div className="admin-user__email">{user?.email}</div>
-                        </td>
-                        <td>
-                          <span
-                            className={`admin-user-admin ${user?.role_name}`}>
-                            {user?.role_name}
-                          </span>
-                        </td>
-                        <td>{FormatDate(user?.created_at)}</td>
-                        <td className="action-btns">
-                          <button
-                            className="reset-key"
-                            title="Reset Password"
-                            onClick={() => sendResetLinkPassword(user)}>
-                            <ResetKeyIcon />
-                          </button>
-                          <button
-                            className="reset-pin"
-                            title="Reset Pin"
-                            onClick={() => sendResetPinLinks(user)}>
-                            <ResetPinIcon />
-                          </button>
-                          <button
-                            className="delete-user"
-                            title="Delete User"
-                            onClick={() => handleDeleteUser(user.id)}>
-                            <DeleteIcon />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                    data?.users?.map((user, idx) => {
+                      return userEditForm.temp_id === user.id ? (
+                        <tr key={idx}>
+                          <td className="admin-user">
+                            <div className="admin-user__name">
+                              <input
+                                type="text"
+                                defaultValue={user?.username}
+                                className="edit-category-input"
+                                name="username"
+                                onChange={handleUserInputChange}
+                              />
+                            </div>
+                            <div className="admin-user__email">
+                              <input
+                                type="text"
+                                defaultValue={user?.email}
+                                className="edit-category-input"
+                                name="email"
+                                onChange={handleUserInputChange}
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <span
+                              className={`admin-user-admin ${user?.role_name}`}>
+                              {user?.role_name}
+                            </span>
+                          </td>
+                          <td>{FormatDate(user?.created_at)}</td>
+                          <td className="action-btns">
+                            <button
+                              className="reset-pin"
+                              title="Reset Pin"
+                              onClick={updateEditUser}>
+                              <SaveIcon />
+                            </button>
+                            <button
+                              className="reset-key"
+                              onClick={cancelEditUser}
+                              title="Reset Password">
+                              <CancelIcon />
+                            </button>
+                          </td>
+                        </tr>
+                      ) : (
+                        <tr key={idx}>
+                          <td className="admin-user">
+                            <div className="admin-user__name">
+                              {user?.username}
+                            </div>
+                            <div className="admin-user__email">
+                              {user?.email}
+                            </div>
+                          </td>
+                          <td>
+                            <span
+                              className={`admin-user-admin ${user?.role_name}`}>
+                              {user?.role_name}
+                            </span>
+                          </td>
+                          <td>{FormatDate(user?.created_at)}</td>
+                          <td className="action-btns">
+                            <button
+                              className="reset-pin"
+                              title="Reset Pin"
+                              onClick={() => handleEditUser(user)}>
+                              <EditIcon />
+                            </button>
+                            <button
+                              className="reset-key"
+                              title="Reset Password"
+                              onClick={() => sendResetLinkPassword(user)}>
+                              <ResetKeyIcon />
+                            </button>
+                            <button
+                              className="reset-pin"
+                              title="Reset Pin"
+                              onClick={() => sendResetPinLinks(user)}>
+                              <ResetPinIcon />
+                            </button>
+                            <button
+                              className="delete-user"
+                              title="Delete User"
+                              onClick={() => handleDeleteUser(user.id)}>
+                              <DeleteIcon />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
