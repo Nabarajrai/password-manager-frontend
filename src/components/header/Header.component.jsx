@@ -77,6 +77,7 @@ const HeaderComponent = () => {
     passwordResetLink,
     sendResetPinLink,
     countUsers,
+    updateUser,
   } = useUserCreate();
   const { fetchRoles } = useRole();
   const handleOpenModal = useCallback(() => {
@@ -197,6 +198,19 @@ const HeaderComponent = () => {
     },
     onError: (error) => {
       console.error("Error deleting category:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+
+  const updateUserMutate = useMutation({
+    mutationFn: updateUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      showSuccessToast("User successfully updated");
+    },
+    onError: (error) => {
+      console.error("Error updating  users", error);
       showSuccessToast(error?.message, "error");
       throw error;
     },
@@ -464,7 +478,23 @@ const HeaderComponent = () => {
     });
   }, []);
 
-  console.log("userEditForm", userSubmitData);
+  const updateEditUser = useCallback(() => {
+    if (
+      userSubmitData.username.trim() === "" ||
+      userSubmitData.email.trim() === ""
+    ) {
+      showSuccessToast("Username and email cannot be empty", "error");
+      return;
+    }
+    if (updateUserMutate.isLoading) return;
+    const payload = {
+      userId: userSubmitData.userId,
+      username: userSubmitData.username,
+      email: userSubmitData.email,
+    };
+    updateUserMutate.mutate(payload);
+    cancelEditUser();
+  }, [updateUserMutate, userSubmitData, showSuccessToast, cancelEditUser]);
 
   return (
     <>
@@ -693,7 +723,10 @@ const HeaderComponent = () => {
                           </td>
                           <td>{FormatDate(user?.created_at)}</td>
                           <td className="action-btns">
-                            <button className="reset-pin" title="Reset Pin">
+                            <button
+                              className="reset-pin"
+                              title="Reset Pin"
+                              onClick={updateEditUser}>
                               <SaveIcon />
                             </button>
                             <button

@@ -33,4 +33,5 @@ export const APIS_PAYLOAD = {
   UPDATE_CATEGORY: "api/update-category",
   DELETE_CATEGORY: "api/delete-category",
   CREATE_CATEGORY: "api/create-category",
+  UPDATE_USER: "api/update-user",
 };

@@ -194,6 +194,29 @@ export const useUserCreate = () => {
     }
   }, [setSession]);
 
+  const updateUser = useCallback(
+    async (payload) => {
+      try {
+        const response = await api(
+          `${APIS_PAYLOAD.UPDATE_USER}/${payload.userId}`,
+          "PATCH",
+          {
+            username: payload.username,
+            email: payload.email,
+          }
+        );
+        return response;
+      } catch (error) {
+        if (error?.message === "Invalid or expired token") {
+          setSession(true);
+        }
+        console.error("Error updating user:", error);
+        throw error;
+      }
+    },
+    [setSession]
+  );
+
   return {
     createUser,
     fetchUsers,
@@ -206,5 +229,6 @@ export const useUserCreate = () => {
     sendResetPinLink,
     resetPin,
     countUsers,
+    updateUser,
   };
 };
