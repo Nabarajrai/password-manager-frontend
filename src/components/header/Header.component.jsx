@@ -517,10 +517,8 @@ const HeaderComponent = () => {
               <p className="error-text">{userCountsErrors?.message}</p>
             ) : null}
             {userCounts !== undefined &&
-              userCounts.map((count) => (
-                <div
-                  className={`admin-panel-card ${count.title}`}
-                  key={count.label}>
+              userCounts.map((count, idx) => (
+                <div className={`admin-panel-card ${count.title}`} key={idx}>
                   <CardComponent
                     title={`${count.title} `}
                     number={count.number}
