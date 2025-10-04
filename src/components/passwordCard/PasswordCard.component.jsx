@@ -861,6 +861,9 @@ const PasswordCardComponent = ({ datas }) => {
                     value={serverPassword}
                     type="card"
                     otherType="text"
+                    onCopy={(e) => e.preventDefault()} // blocks copy
+                    onSelect={(e) => e.preventDefault()} // blocks selection
+                    style={{ userSelect: "none" }} // blocks highlight
                   />
                 </span>
                 <span
