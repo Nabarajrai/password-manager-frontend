@@ -39,8 +39,8 @@ const HeaderComponent = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    password: "",
-    pin: "",
+    password: "Password@123",
+    pin: "1234",
     role_id: 2,
   });
   const [categoryEditForm, setCategoryEditForm] = useState({
@@ -496,6 +496,10 @@ const HeaderComponent = () => {
     cancelEditUser();
   }, [updateUserMutate, userSubmitData, showSuccessToast, cancelEditUser]);
 
+  const clearError = useCallback(() => {
+    setError("");
+  }, []);
+
   return (
     <>
       <ModalComponent
@@ -520,6 +524,7 @@ const HeaderComponent = () => {
                   <CardComponent
                     title={`${count.title} `}
                     number={count.number}
+                    type={`${count.title}`}
                     icon={<PeopleIcon />}
                     iconColor={count.title}
                   />
@@ -544,6 +549,7 @@ const HeaderComponent = () => {
                   onChange={handleInputChange}
                   name="fullName"
                   value={formData.fullName}
+                  onFocus={clearError}
                 />
               </div>
               <div className="useradd-form-input-section">
@@ -553,6 +559,7 @@ const HeaderComponent = () => {
                   onChange={handleInputChange}
                   name="email"
                   value={formData.email}
+                  onFocus={clearError}
                 />
               </div>
               <div className="useradd-form-input-section">
@@ -562,6 +569,7 @@ const HeaderComponent = () => {
                   onChange={handleInputChange}
                   name="password"
                   value={formData.password}
+                  onFocus={clearError}
                 />
               </div>
               <div className="useradd-form-input-section">
@@ -571,6 +579,7 @@ const HeaderComponent = () => {
                   onChange={handleInputChange}
                   name="pin"
                   value={formData.pin}
+                  onFocus={clearError}
                 />
               </div>
               <div className="useradd-form-input-section">
@@ -578,6 +587,7 @@ const HeaderComponent = () => {
                   type="forPass"
                   onChange={handleInputChange}
                   name="role_id"
+                  onFocus={clearError}
                   value={formData.role_id}>
                   {roles?.data !== undefined &&
                     roles?.data.map((val, idx) => (
@@ -624,9 +634,11 @@ const HeaderComponent = () => {
                       <p className="error-text">{tempError?.message}</p>
                     )}
                     {tempUsersPending ? (
-                      <span>
-                        <Loading />
-                      </span>
+                      <tr>
+                        <td>
+                          <Loading />
+                        </td>
+                      </tr>
                     ) : (
                       tempUsers.map((user, idx) => (
                         <tr key={idx}>
@@ -646,14 +658,6 @@ const HeaderComponent = () => {
                           </td>
                           <td>{FormatDate(user?.created_at)}</td>
                           <td className="action-btns">
-                            <button
-                              className="reset-key"
-                              title="Reset Password">
-                              <ResetKeyIcon />
-                            </button>
-                            <button className="reset-pin" title="Reset Pin">
-                              <ResetPinIcon />
-                            </button>
                             <button
                               className="delete-user"
                               title="Delete User"
@@ -688,9 +692,11 @@ const HeaderComponent = () => {
                 </thead>
                 <tbody>
                   {userPending ? (
-                    <span>
-                      <Loading />
-                    </span>
+                    <tr>
+                      <td>
+                        <Loading />
+                      </td>
+                    </tr>
                   ) : (
                     data?.users?.map((user, idx) => {
                       return userEditForm.temp_id === user.id ? (
@@ -761,6 +767,7 @@ const HeaderComponent = () => {
                               onClick={() => handleEditUser(user)}>
                               <EditIcon />
                             </button>
+
                             <button
                               className="reset-key"
                               title="Reset Password"
@@ -822,9 +829,11 @@ const HeaderComponent = () => {
                   </thead>
                   <tbody>
                     {isCategoryPending ? (
-                      <span>
-                        <Loading />
-                      </span>
+                      <tr>
+                        <td>
+                          <Loading />
+                        </td>
+                      </tr>
                     ) : (
                       categoryDatas !== undefined &&
                       categoryDatas.map((category, idx) =>

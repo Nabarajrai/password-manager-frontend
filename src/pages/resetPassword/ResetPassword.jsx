@@ -15,6 +15,7 @@ import { checkPasswordValid } from "../../helpers/PasswordCheck.helper";
 import { ParamQuery } from "../../helpers/ParamQuery.helper";
 //hooks
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate";
+import { useToast } from "../../hooks/toast/useToast";
 
 const ResetPassword = () => {
   const [validError, setValidError] = useState("");
@@ -27,6 +28,7 @@ const ResetPassword = () => {
   const { updatePassword } = useUserCreate();
   const params = ParamQuery();
   const navigate = useNavigate();
+  const { showSuccessToast } = useToast();
 
   const handleChangeValue = (e) => {
     const { name, value } = e.target;
@@ -45,9 +47,11 @@ const ResetPassword = () => {
         new_password: "",
         confirm_password: "",
       });
+      showSuccessToast("Password update successfully!");
     },
     onError: (error) => {
       console.error("Error updating password:", error);
+      showSuccessToast(error.message, "error");
       throw error;
     },
   });

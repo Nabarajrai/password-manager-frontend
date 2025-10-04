@@ -3,12 +3,26 @@
 
 .card-container {
   @include flex(flex-start);
-  max-width: 400px;
+  max-width: 452px;
   width: 100%;
   border-radius: 10px;
-  background: inherit;
   box-shadow: rgb(229 231 235) 0px 0px 0px 1px;
   padding: 1.3rem 1.5rem;
+  min-height: 105px;
+  min-width: 14rem;
+  width: 100%;
+  &.total {
+    background-color: rgba($primary-color, 0.1);
+    color: $primary-color;
+  }
+  &.ADMIN {
+    background-color: rgba($button-bg-color-primary, 0.1);
+    color: $button-bg-color-primary;
+  }
+  &.USER {
+    background-color: rgba($orange-primary, 0.1);
+    color: $orange-primary;
+  }
   .icon {
     @include flex(center);
     width: 40px;

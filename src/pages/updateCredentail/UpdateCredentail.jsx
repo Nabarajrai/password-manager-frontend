@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 //hooks
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
+import { useToast } from "../../hooks/toast/useToast.js";
 //helpers
 import { ParamQuery } from "../../helpers/ParamQuery.helper.js";
 import {
@@ -24,6 +25,7 @@ const UpdateCredentail = () => {
   const queryClient = useQueryClient();
   const { updateUserCredentials } = useUserCreate();
   const params = ParamQuery();
+  const { showSuccessToast } = useToast();
 
   const handleUpdateInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -37,9 +39,11 @@ const UpdateCredentail = () => {
     mutationFn: updateUserCredentials,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
+      showSuccessToast("Credentails updated successfully");
     },
     onError: (error) => {
       console.error("Error updating user credentials:", error);
+      showSuccessToast(error.message, "error");
       throw error;
     },
   });
@@ -70,7 +74,6 @@ const UpdateCredentail = () => {
       new_password: updateForm.new_password,
       new_pin: updateForm.new_pin,
     };
-    if (updateCrendentMutate.mutate) return;
     updateCrendentMutate.mutate(payload);
   };
 
@@ -117,13 +120,14 @@ const UpdateCredentail = () => {
             <div className="input-section">
               <CustomInput
                 placeholder="Enter your pin eg: 1345"
-                type="Pin"
+                type="password"
                 label="Password"
                 icon={<PasswordIcon />}
                 name="new_pin"
                 value={updateForm.new_pin}
                 onChange={handleUpdateInputChange}
                 onFocus={removeErrorMessage}
+                maxLength={4}
               />
             </div>
             <div className="input-section">
@@ -136,6 +140,7 @@ const UpdateCredentail = () => {
                 value={updateForm.confirm_pin}
                 onChange={handleUpdateInputChange}
                 onFocus={removeErrorMessage}
+                maxLength={4}
               />
             </div>
           </div>

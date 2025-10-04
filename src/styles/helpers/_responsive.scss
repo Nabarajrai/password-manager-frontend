@@ -1,0 +1,61 @@
+@use "./variables" as *;
+@use "./mixin" as *;
+
+@media (max-width: 1281px) {
+  .wrapper {
+    max-width: 1200px;
+  }
+}
+@media (max-width: 1025px) {
+  .wrapper {
+    max-width: 1100px;
+  }
+  .dashboard-actions {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 801px) {
+  .wrapper {
+    max-width: 1000px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    max-width: 800px;
+  }
+  .header-right {
+    display: none;
+  }
+  .header-left {
+    gap: 1.5rem;
+  }
+  .dashboard-actions {
+    flex-wrap: wrap;
+    .category-action {
+      flex: 1;
+    }
+    .modal-actions {
+      flex-basis: unset;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: 450px) {
+  .wrapper {
+    max-width: 100%;
+  }
+  .header-left {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .dashboard-actions {
+    .modal-actions {
+      justify-content: center;
+    }
+  }
+  .password-card-group {
+    max-width: 100%;
+  }
+}

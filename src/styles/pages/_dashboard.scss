@@ -11,7 +11,8 @@
 }
 .dashboard-display-card {
   @include flex(center);
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
   width: 100%;
   margin: 2rem 0px;
   .card-list-section {
@@ -19,18 +20,18 @@
   }
 }
 .dashboard-actions {
-  @include flex(center);
+  @include flex(space-between);
   gap: 1rem;
   margin-left: auto;
   .search-action {
-    flex-basis: 55%;
+    flex: 1;
   }
   .category-action {
     flex-basis: 20%;
   }
   .modal-actions {
-    @include flex(center);
-    flex-basis: 35%;
+    @include flex(flex-end);
+    // flex-wrap: wrap;
     gap: 1rem;
   }
 }

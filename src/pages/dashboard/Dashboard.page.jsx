@@ -201,14 +201,16 @@ const DashboardPage = () => {
       const { title, email, password, url, category_id } = passwordFormData;
       if (!title || !email || !password || !url || !category_id) {
         setPasswordAddError("All fields are required!", "error");
-        return null;
+        return;
       }
       if (!checkValidEmail(email)) {
         setPasswordAddError("Invalid email format!", "error");
+        return;
       }
 
       if (!checkValidUrl(url)) {
         setPasswordAddError("Invalid url format", "error");
+        return;
       }
       if (mutation.isLoading) return;
       const payload = {
@@ -428,8 +430,9 @@ const DashboardPage = () => {
                       allPasswords?.data?.length) ||
                     0
                   }
+                  type="total"
                   icon={<KeyIcon />}
-                  iconColor="purple"
+                  iconColor="total"
                 />
               </div>
               <div className="card-list-section">
@@ -437,7 +440,8 @@ const DashboardPage = () => {
                   title="Categories"
                   number={(data !== undefined && data?.length) || 0}
                   icon={<CategoryIcon />}
-                  iconColor="green"
+                  iconColor="USER"
+                  type="USER"
                 />
               </div>
               <div className="card-list-section">
@@ -445,7 +449,8 @@ const DashboardPage = () => {
                   title="Security Score"
                   number="Good"
                   icon={<SecureIcon />}
-                  iconColor="green"
+                  iconColor="ADMIN"
+                  type="ADMIN"
                 />
               </div>
             </div>
@@ -520,8 +525,12 @@ const DashboardPage = () => {
                     </div>
                   ) : (
                     allPasswords?.data !== undefined &&
-                    allPasswords?.data.map((data) => (
-                      <PasswordCardComponent datas={data} setLimit={setLimit} />
+                    allPasswords?.data.map((data, idx) => (
+                      <PasswordCardComponent
+                        key={idx}
+                        datas={data}
+                        setLimit={setLimit}
+                      />
                     ))
                   )}
                 </div>

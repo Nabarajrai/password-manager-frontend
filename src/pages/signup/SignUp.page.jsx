@@ -149,6 +149,7 @@ const SignUpPage = () => {
                   value={registerFormValues.pin}
                   onChange={handleInputChange}
                   onFocus={handleErrorClear}
+                  maxLength={4}
                 />
               </div>
             </div>
