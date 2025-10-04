@@ -1,6 +1,13 @@
 import { CopyIcon } from "../../helpers/Icon.helper";
 import { useMemo } from "react";
-const ReadOnlyInput = ({ value, handleCopied, copyOpen, type, otherType }) => {
+const ReadOnlyInput = ({
+  value,
+  handleCopied,
+  copyOpen,
+  type,
+  otherType,
+  ...rest
+}) => {
   const classNames = useMemo(() => {
     return type === "card"
       ? "input-section-readonly-card"
@@ -22,6 +29,7 @@ const ReadOnlyInput = ({ value, handleCopied, copyOpen, type, otherType }) => {
           readOnly
           value={value}
           placeholder={value}
+          {...rest}
         />
         {copyOpen ? (
           <span className="readonly-input-copy">Copied</span>

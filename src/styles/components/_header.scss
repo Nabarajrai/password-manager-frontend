@@ -14,9 +14,11 @@
 }
 .header-section {
   @include flex(flex-start);
+  gap: 1rem;
 }
 .header-right {
   @include flex(flex-start);
+  text-wrap: nowrap;
   gap: 0.7rem;
   .icon {
     @include flex(center);
@@ -45,6 +47,7 @@
   .user-profile {
     @include flex(flex-start);
     gap: 0.4rem;
+    text-wrap: nowrap;
     .icon {
       @include flex(center);
       width: 25px;
@@ -134,20 +137,9 @@
   .admin-panel-dash {
     @include flex(flex-start);
     gap: 1rem;
+    flex-wrap: wrap;
     .admin-panel-card {
       flex: 1;
-      &.total {
-        background-color: rgba($primary-color, 0.1);
-        color: $primary-color;
-      }
-      &.ADMIN {
-        background-color: rgba($button-bg-color-primary, 0.1);
-        color: $button-bg-color-primary;
-      }
-      &.USER {
-        background-color: rgba($orange-primary, 0.1);
-        color: $orange-primary;
-      }
     }
   }
   .admin-panel-action {
@@ -173,14 +165,18 @@
     font-weight: 500;
   }
   .useradd-form-group {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1rem;
+    @include flex(center);
+    flex-wrap: wrap;
+    .useradd-form-input-section {
+      width: 100%;
+      padding: 0.3rem 0px;
+    }
   }
   .useradd-form-action-section {
     @include flex(flex-start);
     align-items: flex-end;
     gap: 0.7rem;
+    padding: 0.9rem 0px;
     &__add {
       @include flex(flex-start);
     }
@@ -367,13 +363,12 @@
 
 .category-form {
   @include flex(flex-start);
+  flex-wrap: wrap;
   gap: 1rem;
   width: 50%;
   padding: 0.9rem 0;
   padding-bottom: 1.7rem;
-  .category-form-input-section {
-    flex: 1;
-  }
+
   .category-container-action {
     align-self: flex-end;
   }

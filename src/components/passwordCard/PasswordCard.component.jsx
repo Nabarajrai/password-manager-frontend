@@ -142,10 +142,12 @@ const PasswordCardComponent = ({ datas }) => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
       showSuccessToast("Password shared successfully");
+      setIsModalOpen(false);
     },
     onError: (error) => {
       console.error("Error sharing password:", error);
       showSuccessToast(error?.message || "Something went wrong", "error");
+      setIsModalOpen(false);
     },
   });
 
@@ -154,10 +156,14 @@ const PasswordCardComponent = ({ datas }) => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["all-passwords"] });
       showSuccessToast("Password shared successfully");
+      setEditModal(false);
+      passwordFormData.password = "";
     },
     onError: (error) => {
       console.error("Error sharing password:", error);
       showSuccessToast(error || "Something went wrong", "error");
+      setEditModal(false);
+      passwordFormData.password = "";
     },
   });
 
@@ -650,7 +656,10 @@ const PasswordCardComponent = ({ datas }) => {
                   onChange={handleChangeInput}
                   value={passwordFormData?.password}
                   icon={<EyeIcon />}
-                  disabled={passwordFormData?.password === ""}
+                  disabled={
+                    passwordFormData?.password === undefined ||
+                    passwordFormData?.password === ""
+                  }
                   required
                 />
               </div>
@@ -852,6 +861,9 @@ const PasswordCardComponent = ({ datas }) => {
                     value={serverPassword}
                     type="card"
                     otherType="text"
+                    onCopy={(e) => e.preventDefault()} // blocks copy
+                    onSelect={(e) => e.preventDefault()} // blocks selection
+                    style={{ userSelect: "none" }} // blocks highlight
                   />
                 </span>
                 <span
@@ -869,9 +881,12 @@ const PasswordCardComponent = ({ datas }) => {
               <span>Copied</span>
             ) : (
               <>
-                <div className="icon" onClick={copyToPasswordClipboard}>
-                  <EyeIcon />
-                </div>
+                {!serverPassword && (
+                  <div className="icon" onClick={copyToPasswordClipboard}>
+                    <EyeIcon />
+                  </div>
+                )}
+
                 <div className="icon" onClick={() => handleShowCopyModal()}>
                   <CopyIcon />
                 </div>

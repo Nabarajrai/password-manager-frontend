@@ -12,6 +12,7 @@ import { checkPinValid } from "../../helpers/PasswordCheck.helper";
 import { ParamQuery } from "../../helpers/ParamQuery.helper";
 //hooks
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate";
+import { useToast } from "../../hooks/toast/useToast";
 const ResetPin = () => {
   const [validError, setValidError] = useState("");
   const [formData, setFormData] = useState({
@@ -23,6 +24,7 @@ const ResetPin = () => {
   const queryClient = useQueryClient();
   const params = ParamQuery();
   const navigate = useNavigate();
+  const { showSuccessToast } = useToast();
 
   const handleChangeValue = (e) => {
     const { name, value } = e.target;
@@ -39,6 +41,7 @@ const ResetPin = () => {
     mutationFn: resetPin,
     onSuccess: () => {
       queryClient.invalidateQueries(["users"]);
+      showSuccessToast("Pin reset successfully");
       navigate("/login");
       setFormData({
         new_pin: "",
@@ -47,6 +50,7 @@ const ResetPin = () => {
     },
     onError: (error) => {
       console.error("Error updating pin:", error);
+      showSuccessToast(error.message, "error");
       throw error;
     },
   });
@@ -93,6 +97,7 @@ const ResetPin = () => {
               onChange={handleChangeValue}
               value={formData.new_password}
               onFocus={removeErrorMessage}
+              maxLength={4}
             />
           </div>
           <div className="input-section">
@@ -105,6 +110,7 @@ const ResetPin = () => {
               onChange={handleChangeValue}
               value={formData.confirm_pin}
               onFocus={removeErrorMessage}
+              maxLength={4}
             />
           </div>
           <div className="credentails-error">

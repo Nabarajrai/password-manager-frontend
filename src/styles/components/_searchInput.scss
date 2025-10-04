@@ -8,6 +8,8 @@
   background: $text-color-primary;
   box-shadow: rgb(229 231 235) 0px 0px 0px 1px;
   height: auto;
+  min-width: 15rem;
+  width: 100%;
   transition: all 0.3s ease-in-out;
   &:hover,
   &:focus-within {
