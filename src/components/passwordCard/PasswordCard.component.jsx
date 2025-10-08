@@ -196,7 +196,6 @@ const PasswordCardComponent = ({ datas }) => {
   const getPasswordMutation = useMutation({
     mutationFn: passwordEntry,
     onSuccess: async (data) => {
-      console.log("data", data?.decrypted_password);
       setServerPassword(data?.decrypted_password);
       showSuccessToast(data?.message || "Password fetched successfully");
     },
@@ -786,11 +785,13 @@ const PasswordCardComponent = ({ datas }) => {
                 <option value="">No Users Available</option>
               )}
               {data?.users !== undefined &&
-                data?.users.map((option) => (
-                  <option key={option?.id} value={option?.id}>
-                    {option.username}
-                  </option>
-                ))}
+                data?.users
+                  .filter((data) => data.id !== user.user_id)
+                  .map((option) => (
+                    <option key={option?.id} value={option?.id}>
+                      {option.username}
+                    </option>
+                  ))}
             </SelectOptionComponent>
           </div>
           <div className="share-with-permission">

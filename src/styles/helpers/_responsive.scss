@@ -40,6 +40,9 @@
       flex-wrap: wrap;
     }
   }
+  .password-card-group {
+    max-width: 400px;
+  }
 }
 
 @media (max-width: 450px) {

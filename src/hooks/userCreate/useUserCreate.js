@@ -34,7 +34,6 @@ export const useUserCreate = () => {
       const response = await api(APIS_PAYLOAD.TEMP_USER_ALL, "GET");
       return response?.users || [];
     } catch (e) {
-      console.log("Error object:", e);
       if (e?.message === "Invalid or expired token") {
         setSession(true);
       }
@@ -45,7 +44,6 @@ export const useUserCreate = () => {
 
   const updateUserCredentials = useCallback(
     async (payload) => {
-      console.log("Payload for updating credentials", payload);
       try {
         const response = await api(
           APIS_PAYLOAD.UPDATE_USER_CREDENTIALS,

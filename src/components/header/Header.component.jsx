@@ -440,7 +440,6 @@ const HeaderComponent = () => {
   );
 
   const handleCancelEdit = useCallback(() => {
-    console.log("handleCancelEdit called");
     setCategoryEditForm({
       category_name: "",
       created_at: "",
@@ -449,7 +448,6 @@ const HeaderComponent = () => {
   }, []);
 
   const handleEditUser = useCallback((userInfo) => {
-    console.log("handleEditUser called with userInfo:", userInfo);
     setUserEditForm({
       username: userInfo.username,
       email: userInfo.email,
@@ -686,6 +684,7 @@ const HeaderComponent = () => {
                     <th>Rol</th>
                     <th>Created At</th>
                     <th>Actions</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -785,6 +784,7 @@ const HeaderComponent = () => {
                               <DeleteIcon />
                             </button>
                           </td>
+                          <td>Pending</td>
                         </tr>
                       );
                     })

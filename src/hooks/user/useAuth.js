@@ -12,7 +12,6 @@ import { useToast } from "../toast/useToast.js";
 export const useAuth = () => {
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
   const { setUser } = useUser();
@@ -93,6 +92,15 @@ export const useAuth = () => {
     }
   }, []);
 
+  const verifyToken = useCallback(async () => {
+    try {
+      const response = await api(APIS_PAYLOAD.VERIFY_TOKEN);
+      return response;
+    } catch (error) {
+      throw error?.message;
+    }
+  }, []);
+
   return {
     login,
     authError,
@@ -101,5 +109,6 @@ export const useAuth = () => {
     signup,
     setAuthError,
     pinService,
+    verifyToken,
   };
 };

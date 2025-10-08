@@ -65,7 +65,6 @@ const DashboardPage = () => {
   const { user } = useUser();
   //contexts
   const { session } = useContext(SessionContext);
-  console.log("session in dash", session);
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
