@@ -81,6 +81,7 @@ const HeaderComponent = () => {
     sendResetPinLink,
     countUsers,
     updateUser,
+    getUserById,
   } = useUserCreate();
   const { fetchRoles } = useRole();
   const navigate = useNavigate();
@@ -132,6 +133,16 @@ const HeaderComponent = () => {
     queryFn: countUsers,
   });
 
+  const {
+    data: verifiedUserData,
+    isPending: verifiedUserPending,
+    isError: verifiedUserError,
+    error: verifiedUserErrors,
+  } = useQuery({
+    queryKey: ["user", verifiedUser?.user?.email],
+    queryFn: getUserById,
+  });
+  console.log("verifiedUserData", verifiedUser?.user?.email, verifiedUserData);
   const deleteMutate = useMutation({
     mutationFn: deleteUser,
     onSuccess: async () => {
@@ -959,17 +970,23 @@ const HeaderComponent = () => {
                   <UserIcon />
                 </div>
                 <div className="name">
-                  <p>
-                    {user?.username}
-                    {user?.role_name === "ADMIN" ? (
-                      <span>(Admin)</span>
-                    ) : (
-                      <span>(User)</span>
-                    )}
-                  </p>
+                  {verifiedUserPending ? (
+                    <p>Loading...</p>
+                  ) : verifiedUserError ? (
+                    <p className="error-text">{verifiedUserError?.message}</p>
+                  ) : (
+                    <p>
+                      {verifiedUserData?.username}
+                      {verifiedUserData?.role_name === "ADMIN" ? (
+                        <span>(Admin)</span>
+                      ) : (
+                        <span>(User)</span>
+                      )}
+                    </p>
+                  )}
                 </div>
               </div>
-              {user?.role_name === "ADMIN" && (
+              {verifiedUserData?.role_name === "ADMIN" && (
                 <div className="admin-profile" onClick={handleOpenModal}>
                   <div className="icon">
                     <AdminIcon />

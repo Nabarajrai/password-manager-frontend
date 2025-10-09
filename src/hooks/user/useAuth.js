@@ -11,7 +11,6 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { setUser } = useUser();
   const { showSuccessToast } = useToast();
 
   const login = useCallback(
@@ -21,8 +20,6 @@ export const useAuth = () => {
       try {
         const response = await api(APIS_PAYLOAD.LOGIN, "POST", credentials);
         if (response?.status === "success") {
-          // setLocalStorage("user", response?.data);
-          // setUser(response?.data);
           showSuccessToast(response?.message);
           navigate("/", { replace: true });
         } else {
