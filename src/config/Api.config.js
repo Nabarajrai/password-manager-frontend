@@ -34,5 +34,5 @@ export const APIS_PAYLOAD = {
   DELETE_CATEGORY: "api/delete-category",
   CREATE_CATEGORY: "api/create-category",
   UPDATE_USER: "api/update-user",
-  VERIFY_TOKEN: "api/verify-token",
+  VERIFY_TOKEN: "api/auth/verify-token",
 };

@@ -28,6 +28,7 @@ import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useCategories } from "../../hooks/categories/useCategories";
 import { useClipboard } from "../../hooks/clipboard/useClipboard";
 import { useAuth } from "../../hooks/user/useAuth";
+import { useVerifyToken } from "../../hooks/verifyToken/VerifyToken";
 
 //helpers
 import {
@@ -83,6 +84,7 @@ const PasswordCardComponent = ({ datas }) => {
   const { user } = useUser();
   const { fetchCategories } = useCategories();
   const { handleCopied } = useClipboard();
+  const { data: verifiedUser } = useVerifyToken();
 
   const queryClient = useQueryClient();
 
@@ -243,7 +245,7 @@ const PasswordCardComponent = ({ datas }) => {
     mutationFn: pinService,
     onSuccess: async () => {
       const payload = {
-        userId: datas?.owner_user_id,
+        userId: verifiedUser?.user?.userId,
         passwordId: datas?.password_id,
       };
       getPasswordMutation.mutate(payload);
@@ -261,7 +263,7 @@ const PasswordCardComponent = ({ datas }) => {
     mutationFn: pinService,
     onSuccess: async () => {
       const payload = {
-        userId: datas?.owner_user_id,
+        userId: verifiedUser?.user?.userId,
         passwordId: datas?.password_id,
       };
       getPasswordMutationCopy.mutate(payload);
@@ -280,7 +282,7 @@ const PasswordCardComponent = ({ datas }) => {
     mutationFn: pinService,
     onSuccess: async () => {
       const payload = {
-        userId: datas?.owner_user_id,
+        userId: verifiedUser?.user?.userId,
         passwordId: datas?.password_id,
       };
       getPasswordMutationEnable.mutate(payload);
@@ -305,13 +307,13 @@ const PasswordCardComponent = ({ datas }) => {
       return;
     }
     const payload = {
-      user_id: user?.user_id,
+      user_id: verifiedUser?.user?.userId,
       password_id: passId,
       shared_with_user_id: Number(formData?.userId),
       permission_level: formData?.permisson_level,
     };
     mutation.mutate(payload);
-  }, [formData, showSuccessToast, user, passId, mutation]);
+  }, [formData, showSuccessToast, passId, mutation, verifiedUser]);
 
   const handleInput = useCallback((e) => {
     const { name, value } = e.target;
@@ -361,7 +363,7 @@ const PasswordCardComponent = ({ datas }) => {
       }
       if (updateMutation.isLoading) return;
       const payload = {
-        user_id: user?.user_id,
+        user_id: verifiedUser?.user?.userId,
         password_id: passwordFormData?.password_id,
         title: passwordFormData?.title,
         username: passwordFormData?.email,
@@ -372,7 +374,7 @@ const PasswordCardComponent = ({ datas }) => {
       };
       updateMutation.mutate(payload);
     },
-    [updateMutation, passwordFormData, showSuccessToast, user]
+    [updateMutation, passwordFormData, showSuccessToast, verifiedUser]
   );
 
   const handlePasswordSharedModal = useCallback((userInfo) => {
@@ -519,7 +521,7 @@ const PasswordCardComponent = ({ datas }) => {
       return () => clearTimeout(timer); // cleanup if password changes or unmounts
     }
   }, [serverPassword]);
-
+  console.log("datas:", datas);
   return (
     <>
       <ModalComponent
@@ -786,7 +788,7 @@ const PasswordCardComponent = ({ datas }) => {
               )}
               {data?.users !== undefined &&
                 data?.users
-                  .filter((data) => data.id !== user.user_id)
+                  .filter((data) => data.id !== verifiedUser?.user?.userId)
                   .map((option) => (
                     <option key={option?.id} value={option?.id}>
                       {option.username}

@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router";
-//helpers
-import { useUser } from "../hooks/user/useUser.jsx";
+//hooks
+import { useVerifyToken } from "../hooks/verifyToken/VerifyToken";
 export const PublicRoute = () => {
-  const { user } = useUser();
+  const { data: user } = useVerifyToken();
+
   return user ? <Navigate to="/" replace /> : <Outlet />;
 };
