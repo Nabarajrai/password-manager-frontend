@@ -34,7 +34,6 @@ export const useUserCreate = () => {
       const response = await api(APIS_PAYLOAD.TEMP_USER_ALL, "GET");
       return response?.users || [];
     } catch (e) {
-      console.log("Error object:", e);
       if (e?.message === "Invalid or expired token") {
         setSession(true);
       }
@@ -45,7 +44,6 @@ export const useUserCreate = () => {
 
   const updateUserCredentials = useCallback(
     async (payload) => {
-      console.log("Payload for updating credentials", payload);
       try {
         const response = await api(
           APIS_PAYLOAD.UPDATE_USER_CREDENTIALS,
@@ -217,6 +215,26 @@ export const useUserCreate = () => {
     [setSession]
   );
 
+  const getUserById = useCallback(
+    async ({ queryKey }) => {
+      const [_, email] = queryKey;
+      try {
+        const response = await api(
+          `${APIS_PAYLOAD.GET_BY_USER_ID}?email=${email}`,
+          "GET"
+        );
+        return response;
+      } catch (error) {
+        if (error?.message === "Invalid or expired token") {
+          setSession(true);
+        }
+        console.error("Error fetching user by ID:", error);
+        throw error;
+      }
+    },
+    [setSession]
+  );
+
   return {
     createUser,
     fetchUsers,
@@ -230,5 +248,6 @@ export const useUserCreate = () => {
     resetPin,
     countUsers,
     updateUser,
+    getUserById,
   };
 };

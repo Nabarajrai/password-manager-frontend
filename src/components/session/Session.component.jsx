@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 //helpers
-import { clearLocalStorage } from "../../helpers/LocalStroage.helper";
+// import { clearLocalStorage } from "../../helpers/LocalStroage.helper";
 const SessionComponent = () => {
   const navigate = useNavigate();
   const handleReload = useCallback(() => {
-    clearLocalStorage();
+    // clearLocalStorage();
     navigate("/login");
     window.location.reload();
   }, [navigate]);

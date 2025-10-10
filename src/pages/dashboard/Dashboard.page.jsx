@@ -34,6 +34,7 @@ import {
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useToast } from "../../hooks/toast/useToast";
 import { useUser } from "../../hooks/user/useUser";
+import { useVerifyToken } from "../../hooks/verifyToken/VerifyToken";
 
 //react query
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -63,9 +64,10 @@ const DashboardPage = () => {
   const { createPasswordEntry, getAllPasswords } = useCrendentails();
   const { showSuccessToast } = useToast();
   const { user } = useUser();
+  const { data: verifiedUser } = useVerifyToken();
+  console.log("verifiedUser:", verifiedUser?.user?.userId);
   //contexts
   const { session } = useContext(SessionContext);
-  console.log("session in dash", session);
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
@@ -147,12 +149,18 @@ const DashboardPage = () => {
     isPending: isPasswordPending,
     error: passwordError,
   } = useQuery({
-    queryKey: ["all-passwords", user?.user_id, limit, search, category],
+    queryKey: [
+      "all-passwords",
+      verifiedUser?.user?.userId,
+      limit,
+      search,
+      category,
+    ],
     queryFn: getAllPasswords,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
-
+  console.log("allPasswords:", allPasswords);
   const removeErrorMessage = useCallback(() => {
     setPasswordAddError("");
   }, []);
@@ -214,7 +222,7 @@ const DashboardPage = () => {
       }
       if (mutation.isLoading) return;
       const payload = {
-        user_id: user?.user_id,
+        user_id: verifiedUser?.user?.userId,
         title: passwordFormData?.title,
         username: passwordFormData?.email,
         encrypted_password: passwordFormData?.password,
@@ -224,7 +232,7 @@ const DashboardPage = () => {
       };
       mutation.mutate(payload);
     },
-    [passwordFormData, mutation, user]
+    [passwordFormData, mutation, verifiedUser]
   );
   const handleLimitChange = useCallback(() => {
     setLimit((prev) => prev + 1);

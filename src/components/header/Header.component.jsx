@@ -7,6 +7,7 @@ import ButtonComponent from "../button/Button.component";
 import AddPasswordInput from "../addInput/AddPasswordInput";
 import SelectOptionComponent from "../selectOption/SelectOption.component";
 import classnames from "classnames";
+import { useNavigate } from "react-router";
 //react-query
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 //icons
@@ -27,6 +28,7 @@ import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 import { useUser } from "../../hooks/user/useUser.jsx";
 import { useToast } from "../../hooks/toast/useToast.js";
 import { useCategories } from "../../hooks/categories/useCategories.js";
+import { useVerifyToken } from "../../hooks/verifyToken/VerifyToken.js";
 
 //helpres
 import Loading from "../loading/Loading.jsx";
@@ -68,6 +70,7 @@ const HeaderComponent = () => {
   const { fetchCategories, updateCategory, deleteCategory, createCategory } =
     useCategories();
   const { logout } = useAuth();
+  const { data: verifiedUser } = useVerifyToken();
   const {
     createUser,
     fetchUsers,
@@ -78,8 +81,10 @@ const HeaderComponent = () => {
     sendResetPinLink,
     countUsers,
     updateUser,
+    getUserById,
   } = useUserCreate();
   const { fetchRoles } = useRole();
+  const navigate = useNavigate();
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
   }, []);
@@ -128,6 +133,16 @@ const HeaderComponent = () => {
     queryFn: countUsers,
   });
 
+  const {
+    data: verifiedUserData,
+    isPending: verifiedUserPending,
+    isError: verifiedUserError,
+    error: verifiedUserErrors,
+  } = useQuery({
+    queryKey: ["user", verifiedUser?.user?.email],
+    queryFn: getUserById,
+  });
+  console.log("verifiedUserData", verifiedUser?.user?.email, verifiedUserData);
   const deleteMutate = useMutation({
     mutationFn: deleteUser,
     onSuccess: async () => {
@@ -136,6 +151,19 @@ const HeaderComponent = () => {
     },
     onError: (error) => {
       console.error("Error deleting user:", error);
+      showSuccessToast(error?.message, "error");
+      throw error;
+    },
+  });
+  const logOutMutate = useMutation({
+    mutationFn: logout,
+    onSuccess: async () => {
+      await queryClient.removeQueries(); // 👈 clear auth cache
+      navigate("/login", { replace: true });
+      showSuccessToast("User logged out successfully");
+    },
+    onError: (error) => {
+      console.error("Error logging out user:", error);
       showSuccessToast(error?.message, "error");
       throw error;
     },
@@ -427,20 +455,22 @@ const HeaderComponent = () => {
   const createNewCategory = useCallback(
     (e) => {
       e.preventDefault();
-      if (newCategory.trim() === "" || user?.user_id === undefined) {
+      if (
+        newCategory.trim() === "" ||
+        verifiedUser?.user?.userId === undefined
+      ) {
         showSuccessToast("Category name cannot be empty", "error");
         return;
       }
       if (createCategoryMutation.isLoading) return;
-      const payload = { name: newCategory, userId: user.user_id };
+      const payload = { name: newCategory, userId: verifiedUser?.user?.userId };
       createCategoryMutation.mutate(payload);
       setNewCategory("");
     },
-    [createCategoryMutation, newCategory, showSuccessToast, user]
+    [createCategoryMutation, newCategory, showSuccessToast, verifiedUser]
   );
 
   const handleCancelEdit = useCallback(() => {
-    console.log("handleCancelEdit called");
     setCategoryEditForm({
       category_name: "",
       created_at: "",
@@ -449,7 +479,6 @@ const HeaderComponent = () => {
   }, []);
 
   const handleEditUser = useCallback((userInfo) => {
-    console.log("handleEditUser called with userInfo:", userInfo);
     setUserEditForm({
       username: userInfo.username,
       email: userInfo.email,
@@ -499,6 +528,12 @@ const HeaderComponent = () => {
   const clearError = useCallback(() => {
     setError("");
   }, []);
+
+  const logOut = useCallback(() => {
+    console.log("logout clicked");
+    if (logOutMutate.isLoading) return;
+    logOutMutate.mutate();
+  }, [logOutMutate]);
 
   return (
     <>
@@ -686,6 +721,7 @@ const HeaderComponent = () => {
                     <th>Rol</th>
                     <th>Created At</th>
                     <th>Actions</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -785,6 +821,7 @@ const HeaderComponent = () => {
                               <DeleteIcon />
                             </button>
                           </td>
+                          <td>Pending</td>
                         </tr>
                       );
                     })
@@ -933,17 +970,23 @@ const HeaderComponent = () => {
                   <UserIcon />
                 </div>
                 <div className="name">
-                  <p>
-                    {user?.username}
-                    {user?.role_name === "ADMIN" ? (
-                      <span>(Admin)</span>
-                    ) : (
-                      <span>(User)</span>
-                    )}
-                  </p>
+                  {verifiedUserPending ? (
+                    <p>Loading...</p>
+                  ) : verifiedUserError ? (
+                    <p className="error-text">{verifiedUserError?.message}</p>
+                  ) : (
+                    <p>
+                      {verifiedUserData?.username}
+                      {verifiedUserData?.role_name === "ADMIN" ? (
+                        <span>(Admin)</span>
+                      ) : (
+                        <span>(User)</span>
+                      )}
+                    </p>
+                  )}
                 </div>
               </div>
-              {user?.role_name === "ADMIN" && (
+              {verifiedUserData?.role_name === "ADMIN" && (
                 <div className="admin-profile" onClick={handleOpenModal}>
                   <div className="icon">
                     <AdminIcon />
@@ -952,7 +995,7 @@ const HeaderComponent = () => {
                 </div>
               )}
 
-              <div className="logout" onClick={logout}>
+              <div className="logout" onClick={logOut}>
                 <div className="icon">
                   <LogoutIcon />
                 </div>

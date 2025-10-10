@@ -19,7 +19,6 @@ export const useCategories = () => {
   };
 
   const updateCategory = async (payload) => {
-    console.log("updateCategory payload", payload);
     try {
       const response = await api(
         `${APIS_PAYLOAD.UPDATE_CATEGORY}/${Number(payload.categoryId)}`,
