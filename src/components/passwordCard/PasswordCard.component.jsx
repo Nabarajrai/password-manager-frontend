@@ -245,7 +245,7 @@ const PasswordCardComponent = ({ datas }) => {
     mutationFn: pinService,
     onSuccess: async () => {
       const payload = {
-        userId: verifiedUser?.user?.userId,
+        userId: datas?.owner_user_id,
         passwordId: datas?.password_id,
       };
       getPasswordMutation.mutate(payload);
@@ -263,7 +263,7 @@ const PasswordCardComponent = ({ datas }) => {
     mutationFn: pinService,
     onSuccess: async () => {
       const payload = {
-        userId: verifiedUser?.user?.userId,
+        userId: datas?.owner_user_id,
         passwordId: datas?.password_id,
       };
       getPasswordMutationCopy.mutate(payload);
@@ -282,7 +282,7 @@ const PasswordCardComponent = ({ datas }) => {
     mutationFn: pinService,
     onSuccess: async () => {
       const payload = {
-        userId: verifiedUser?.user?.userId,
+        userId: datas?.owner_user_id,
         passwordId: datas?.password_id,
       };
       getPasswordMutationEnable.mutate(payload);
@@ -404,7 +404,7 @@ const PasswordCardComponent = ({ datas }) => {
   const handleDeletePassword = useCallback(() => {
     const payload = {
       password_id: datas?.password_id,
-      user_id: user?.user_id,
+      user_id: verifiedUser?.user?.userId,
     };
     if (!payload.user_id || !payload.password_id) {
       showSuccessToast(
@@ -418,7 +418,7 @@ const PasswordCardComponent = ({ datas }) => {
     setDeleteModal(false);
   }, [
     datas?.password_id,
-    user?.user_id,
+    verifiedUser,
     removePasswordMutation,
     showSuccessToast,
   ]);
