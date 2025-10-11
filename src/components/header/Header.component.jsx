@@ -142,7 +142,6 @@ const HeaderComponent = () => {
     queryKey: ["user", verifiedUser?.user?.email],
     queryFn: getUserById,
   });
-  console.log("verifiedUserData", verifiedUser?.user?.email, verifiedUserData);
   const deleteMutate = useMutation({
     mutationFn: deleteUser,
     onSuccess: async () => {
@@ -375,6 +374,7 @@ const HeaderComponent = () => {
 
   const sendResetLinkPassword = useCallback(
     (userInfo) => {
+      showSuccessToast("Password reset link sending ...");
       const payload = {
         username: userInfo.username,
         email: userInfo.email,
@@ -382,7 +382,7 @@ const HeaderComponent = () => {
       if (passwordResetLinkMutation.isLoading) return;
       passwordResetLinkMutation.mutate(payload);
     },
-    [passwordResetLinkMutation]
+    [passwordResetLinkMutation, showSuccessToast]
   );
 
   const sendResetPinLinks = useCallback(
@@ -530,7 +530,6 @@ const HeaderComponent = () => {
   }, []);
 
   const logOut = useCallback(() => {
-    console.log("logout clicked");
     if (logOutMutate.isLoading) return;
     logOutMutate.mutate();
   }, [logOutMutate]);
@@ -659,6 +658,7 @@ const HeaderComponent = () => {
                       <th>User</th>
                       <th>Rol</th>
                       <th>Created At</th>
+                      <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -690,6 +690,12 @@ const HeaderComponent = () => {
                             </span>
                           </td>
                           <td>{FormatDate(user?.created_at)}</td>
+                          <td>
+                            {FormatDate(user?.token_expires_at) <
+                            FormatDate(new Date().toISOString())
+                              ? "Expired"
+                              : "Pending"}
+                          </td>
                           <td className="action-btns">
                             <button
                               className="delete-user"
@@ -794,6 +800,7 @@ const HeaderComponent = () => {
                             </span>
                           </td>
                           <td>{FormatDate(user?.created_at)}</td>
+                          <td>Pending</td>
                           <td className="action-btns">
                             <button
                               className="reset-pin"
@@ -821,7 +828,6 @@ const HeaderComponent = () => {
                               <DeleteIcon />
                             </button>
                           </td>
-                          <td>Pending</td>
                         </tr>
                       );
                     })
@@ -973,7 +979,7 @@ const HeaderComponent = () => {
                   {verifiedUserPending ? (
                     <p>Loading...</p>
                   ) : verifiedUserError ? (
-                    <p className="error-text">{verifiedUserError?.message}</p>
+                    <p className="error-text">{verifiedUserErrors?.message}</p>
                   ) : (
                     <p>
                       {verifiedUserData?.username}
