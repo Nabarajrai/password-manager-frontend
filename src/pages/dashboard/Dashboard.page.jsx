@@ -63,9 +63,7 @@ const DashboardPage = () => {
   const queryClient = useQueryClient();
   const { createPasswordEntry, getAllPasswords } = useCrendentails();
   const { showSuccessToast } = useToast();
-  const { user } = useUser();
   const { data: verifiedUser } = useVerifyToken();
-  console.log("verifiedUser:", verifiedUser?.user?.userId);
   //contexts
   const { session } = useContext(SessionContext);
   const handleOpenModal = useCallback(() => {
@@ -160,7 +158,6 @@ const DashboardPage = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
-  console.log("allPasswords:", allPasswords);
   const removeErrorMessage = useCallback(() => {
     setPasswordAddError("");
   }, []);

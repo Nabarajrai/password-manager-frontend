@@ -8,6 +8,7 @@ export const useVerifyToken = () => {
     queryFn: verifyToken,
     retry: false, // 👈 prevents infinite retry on 401
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,
   });

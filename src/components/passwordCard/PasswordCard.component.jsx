@@ -521,7 +521,6 @@ const PasswordCardComponent = ({ datas }) => {
       return () => clearTimeout(timer); // cleanup if password changes or unmounts
     }
   }, [serverPassword]);
-  console.log("datas:", datas);
   return (
     <>
       <ModalComponent
