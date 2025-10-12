@@ -41,7 +41,6 @@ export const ProtectedRoute = () => {
     const now = new Date();
     const diffMs = now - expiredDate;
     const daysPassed = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    console.log("Days since password set:", daysPassed);
     if (daysPassed > 90) {
       return <Navigate to="/update-credential" replace />;
     }

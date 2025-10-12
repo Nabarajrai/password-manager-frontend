@@ -81,7 +81,6 @@ const PasswordCardComponent = ({ datas }) => {
     passwordEntry,
   } = useCrendentails();
   const { showSuccessToast } = useToast();
-  const { user } = useUser();
   const { fetchCategories } = useCategories();
   const { handleCopied } = useClipboard();
   const { data: verifiedUser } = useVerifyToken();
@@ -520,7 +519,6 @@ const PasswordCardComponent = ({ datas }) => {
       return () => clearTimeout(timer); // cleanup if password changes or unmounts
     }
   }, [serverPassword]);
-  console.log("datas:", datas);
   return (
     <>
       <ModalComponent

@@ -46,10 +46,25 @@ export const useCrendentails = () => {
     [setSession]
   );
 
-  const shareWithPassword = useCallback(async (payload) => {
-    const response = await api(APIS_PAYLOAD.SHARE_PASSWORD, "POST", payload);
-    return response;
-  }, []);
+  const shareWithPassword = useCallback(
+    async (payload) => {
+      try {
+        const response = await api(
+          APIS_PAYLOAD.SHARE_PASSWORD,
+          "POST",
+          payload
+        );
+        return response;
+      } catch (error) {
+        if (error?.message === "Invalid or expired token") {
+          setSession(true);
+        }
+        console.error("Error sharing password:", error);
+        throw error;
+      }
+    },
+    [setSession]
+  );
 
   const updatePassword = useCallback(
     async (payload) => {
