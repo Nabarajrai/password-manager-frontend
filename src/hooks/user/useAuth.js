@@ -26,6 +26,15 @@ export const useAuth = () => {
           setAuthError(response?.message);
         }
       } catch (error) {
+        // if (error?.message === "expired") {
+        //   navigate("/update-credential", { replace: true });
+        //   showSuccessToast(
+        //     "Session expired. Please update your credentials.",
+        //     "error"
+        //   );
+        // } else {
+        //   setAuthError(error?.message);
+        // }
         setAuthError(error?.message);
       } finally {
         setLoading(false);
@@ -86,6 +95,19 @@ export const useAuth = () => {
     }
   }, []);
 
+  const updateCredentials = useCallback(async (payload) => {
+    try {
+      const response = await api(
+        APIS_PAYLOAD.UPDATE_CREDENTIALS,
+        "PATCH",
+        payload
+      );
+      return response;
+    } catch (error) {
+      throw error?.message;
+    }
+  }, []);
+
   return {
     login,
     authError,
@@ -95,5 +117,6 @@ export const useAuth = () => {
     setAuthError,
     pinService,
     verifyToken,
+    updateCredentials,
   };
 };

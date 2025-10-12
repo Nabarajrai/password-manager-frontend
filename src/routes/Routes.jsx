@@ -10,6 +10,7 @@ import SignUpPage from "../pages/signup/SignUp.page";
 import UpdateCredentail from "../pages/updateCredentail/UpdateCredentail";
 import ResetPassword from "../pages/resetPassword/ResetPassword";
 import ResetPin from "../pages/resetPin/ResetPin";
+import SetCrendentail from "../pages/setCrendentail/SetCrendentail";
 
 export const routes = createBrowserRouter([
   {
@@ -24,6 +25,9 @@ export const routes = createBrowserRouter([
   },
   {
     element: <ProtectedRoute />,
-    children: [{ path: "/", element: <DashboardPage /> }],
+    children: [
+      { path: "/", element: <DashboardPage /> },
+      { path: "/update-credential", element: <SetCrendentail /> }, // ✅ fixed
+    ],
   },
 ]);

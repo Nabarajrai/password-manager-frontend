@@ -81,7 +81,6 @@ const PasswordCardComponent = ({ datas }) => {
     passwordEntry,
   } = useCrendentails();
   const { showSuccessToast } = useToast();
-  const { user } = useUser();
   const { fetchCategories } = useCategories();
   const { handleCopied } = useClipboard();
   const { data: verifiedUser } = useVerifyToken();
@@ -448,50 +447,44 @@ const PasswordCardComponent = ({ datas }) => {
     setOtpModal(true);
   }, []);
 
-  const validPinSubmit = useCallback(
-    (datas) => {
-      const payload = {
-        email: datas?.username,
-        pin: otpNumber,
-      };
-      if (!otpNumber) {
-        showSuccessToast("OTP is required", "error");
-        return;
-      }
-      if (!checkPinValid(otpNumber)) {
-        showSuccessToast("Invalid pin format", "error");
-        return;
-      }
-      pinServiceMutation.mutate(payload);
-    },
-    [pinServiceMutation, otpNumber, showSuccessToast]
-  );
+  const validPinSubmit = useCallback(() => {
+    const payload = {
+      email: verifiedUser?.user?.email,
+      pin: otpNumber,
+    };
+    if (!otpNumber) {
+      showSuccessToast("OTP is required", "error");
+      return;
+    }
+    if (!checkPinValid(otpNumber)) {
+      showSuccessToast("Invalid pin format", "error");
+      return;
+    }
+    pinServiceMutation.mutate(payload);
+  }, [pinServiceMutation, otpNumber, showSuccessToast, verifiedUser]);
 
-  const validPinSubmitCopy = useCallback(
-    (datas) => {
-      const payload = {
-        email: datas?.username,
-        pin: copyPassword,
-      };
-      if (!copyPassword) {
-        showSuccessToast("OTP is required", "error");
-        return;
-      }
-      if (!checkPinValid(copyPassword)) {
-        showSuccessToast("Invalid pin format", "error");
-        return;
-      }
-      pinServiceMutationCopy.mutate(payload);
-    },
-    [pinServiceMutationCopy, showSuccessToast, copyPassword]
-  );
+  const validPinSubmitCopy = useCallback(() => {
+    const payload = {
+      email: verifiedUser?.user?.email,
+      pin: copyPassword,
+    };
+    if (!copyPassword) {
+      showSuccessToast("OTP is required", "error");
+      return;
+    }
+    if (!checkPinValid(copyPassword)) {
+      showSuccessToast("Invalid pin format", "error");
+      return;
+    }
+    pinServiceMutationCopy.mutate(payload);
+  }, [pinServiceMutationCopy, showSuccessToast, copyPassword, verifiedUser]);
   const handleShowCopyModal = useCallback(() => {
     setShowCopyModal(true);
   }, []);
 
   const enablePasswordHandle = useCallback(() => {
     const payload = {
-      email: datas?.username,
+      email: verifiedUser?.user?.email,
       pin: otpEnableNumber,
     };
     if (!otpEnableNumber) {
@@ -504,7 +497,12 @@ const PasswordCardComponent = ({ datas }) => {
     }
     if (pinServiceMutationEnable.isLoading) return;
     pinServiceMutationEnable.mutate(payload);
-  }, [pinServiceMutationEnable, datas, otpEnableNumber, showSuccessToast]);
+  }, [
+    pinServiceMutationEnable,
+    otpEnableNumber,
+    showSuccessToast,
+    verifiedUser,
+  ]);
 
   const cancelUpdatePasswordModal = useCallback(() => {
     setShowPin(false);

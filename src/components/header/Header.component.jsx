@@ -21,7 +21,10 @@ import {
 } from "../../helpers/Icon.helper";
 //helpers
 import { useAuth } from "../../hooks/user/useAuth.js";
-import { FormatDate } from "../../helpers/DateFormat.helper.js";
+import {
+  FormatDate,
+  getCredentialStatus,
+} from "../../helpers/DateFormat.helper.js";
 //hooks
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
@@ -534,6 +537,17 @@ const HeaderComponent = () => {
     logOutMutate.mutate();
   }, [logOutMutate]);
 
+  // const expiredAtRaw = user?.expiredAt;
+  // if (expiredAtRaw) {
+  //   const expiredDate = new Date(expiredAtRaw);
+  //   const now = new Date();
+  //   const diffMs = now - expiredDate;
+  //   const daysPassed = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  //   if (daysPassed > 90) {
+  //     return <Navigate to="/update-credential" replace />;
+  //   }
+  // }
+
   return (
     <>
       <ModalComponent
@@ -726,8 +740,8 @@ const HeaderComponent = () => {
                     <th>User</th>
                     <th>Rol</th>
                     <th>Created At</th>
-                    <th>Actions</th>
                     <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -768,6 +782,9 @@ const HeaderComponent = () => {
                             </span>
                           </td>
                           <td>{FormatDate(user?.created_at)}</td>
+                          <td>
+                            {getCredentialStatus(user?.last_password_change)}
+                          </td>
                           <td className="action-btns">
                             <button
                               className="reset-pin"
@@ -800,7 +817,10 @@ const HeaderComponent = () => {
                             </span>
                           </td>
                           <td>{FormatDate(user?.created_at)}</td>
-                          <td>Pending</td>
+                          <td>
+                            {getCredentialStatus(user?.last_password_change)}
+                          </td>
+
                           <td className="action-btns">
                             <button
                               className="reset-pin"
