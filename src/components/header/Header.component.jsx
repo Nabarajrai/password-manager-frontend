@@ -28,7 +28,6 @@ import {
 //hooks
 import { useRole } from "../../hooks/roles/useRole.js";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
-import { useUser } from "../../hooks/user/useUser.jsx";
 import { useToast } from "../../hooks/toast/useToast.js";
 import { useCategories } from "../../hooks/categories/useCategories.js";
 import { useVerifyToken } from "../../hooks/verifyToken/VerifyToken.js";
@@ -69,7 +68,6 @@ const HeaderComponent = () => {
   });
   const queryClient = useQueryClient();
   const { showSuccessToast } = useToast();
-  const { user } = useUser();
   const { fetchCategories, updateCategory, deleteCategory, createCategory } =
     useCategories();
   const { logout } = useAuth();
@@ -537,17 +535,6 @@ const HeaderComponent = () => {
     logOutMutate.mutate();
   }, [logOutMutate]);
 
-  // const expiredAtRaw = user?.expiredAt;
-  // if (expiredAtRaw) {
-  //   const expiredDate = new Date(expiredAtRaw);
-  //   const now = new Date();
-  //   const diffMs = now - expiredDate;
-  //   const daysPassed = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  //   if (daysPassed > 90) {
-  //     return <Navigate to="/update-credential" replace />;
-  //   }
-  // }
-
   return (
     <>
       <ModalComponent
@@ -942,7 +929,7 @@ const HeaderComponent = () => {
                                 {category?.name}
                               </div>
                             </td>
-                            <td>{FormatDate(user?.created_at)}</td>
+                            <td>{FormatDate(category?.created_at)}</td>
                             <td className="action-btns">
                               <button
                                 className="reset-key"

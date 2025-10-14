@@ -1,5 +1,5 @@
 import { CopyIcon } from "../../helpers/Icon.helper";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 const ReadOnlyInput = ({
   value,
   handleCopied,
@@ -45,4 +45,4 @@ const ReadOnlyInput = ({
   );
 };
 
-export default ReadOnlyInput;
+export default memo(ReadOnlyInput);

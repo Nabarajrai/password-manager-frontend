@@ -8,7 +8,6 @@ import { Link } from "react-router";
 //hooks
 import { useAuth } from "../../hooks/user/useAuth.js";
 //helpers
-//helpers
 import {
   checkPasswordValid,
   checkPinValid,
