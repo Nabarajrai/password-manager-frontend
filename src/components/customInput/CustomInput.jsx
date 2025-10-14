@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, memo } from "react";
 import { EyeIcon, EyeOffIcon } from "../../helpers/Icon.helper";
 //classnames
 import classnames from "classnames";
@@ -47,4 +47,4 @@ const CustomInput = ({
   );
 };
 
-export default CustomInput;
+export default memo(CustomInput);

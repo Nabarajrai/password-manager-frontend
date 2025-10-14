@@ -33,7 +33,6 @@ import {
 } from "../../helpers/PasswordCheck.helper";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useToast } from "../../hooks/toast/useToast";
-import { useUser } from "../../hooks/user/useUser";
 import { useVerifyToken } from "../../hooks/verifyToken/VerifyToken";
 
 //react query

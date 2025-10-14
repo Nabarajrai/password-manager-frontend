@@ -1,5 +1,4 @@
-import React from "react";
-
+import { memo } from "react";
 const SearchInputComponent = ({ placeholder, ...rest }) => {
   return (
     <div className="search-input-container">
@@ -13,4 +12,4 @@ const SearchInputComponent = ({ placeholder, ...rest }) => {
   );
 };
 
-export default SearchInputComponent;
+export default memo(SearchInputComponent);

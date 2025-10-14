@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import classnames from "classnames";
 const ButtonComponent = ({
   children,
@@ -32,4 +32,4 @@ const ButtonComponent = ({
   );
 };
 
-export default ButtonComponent;
+export default memo(ButtonComponent);

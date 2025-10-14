@@ -70,7 +70,6 @@ const ResetPin = () => {
       }
       if (mutation.isPending) return;
       mutation.mutate(payload);
-      // Proceed with pin update logic here
     },
     [formData, mutation, params]
   );

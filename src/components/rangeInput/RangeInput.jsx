@@ -1,5 +1,4 @@
-import React from "react";
-
+import { memo } from "react";
 const RangeInput = ({ value, ...rest }) => {
   return (
     <div className="range-input-group">
@@ -20,4 +19,4 @@ const RangeInput = ({ value, ...rest }) => {
   );
 };
 
-export default RangeInput;
+export default memo(RangeInput);

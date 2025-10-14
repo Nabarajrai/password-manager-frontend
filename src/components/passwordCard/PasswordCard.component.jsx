@@ -23,7 +23,6 @@ import AddPasswordInput from "../addInput/AddPasswordInput";
 import { usePasswordGenerator } from "../../hooks/passwordGenerator/usePasswordGenerator";
 import { useUserCreate } from "../../hooks/userCreate/useUserCreate";
 import { useToast } from "../../hooks/toast/useToast";
-import { useUser } from "../../hooks/user/useUser";
 import { useCrendentails } from "../../hooks/credentail/useCredentails";
 import { useCategories } from "../../hooks/categories/useCategories";
 import { useClipboard } from "../../hooks/clipboard/useClipboard";

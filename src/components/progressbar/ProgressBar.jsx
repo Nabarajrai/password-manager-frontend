@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import classnames from "classnames";
 
 const ProgressBar = ({ strength }) => {
@@ -47,4 +47,4 @@ const ProgressBar = ({ strength }) => {
   );
 };
 
-export default ProgressBar;
+export default memo(ProgressBar);

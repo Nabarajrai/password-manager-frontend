@@ -1,10 +1,7 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom"; //api
 import { api, APIS_PAYLOAD } from "../../config/api.config.js";
-//helpers
-// import { clearLocalStorage } from "../../helpers/LocalStroage.helper.js";
 //hooks
-import { useUser } from "../user/useUser.jsx";
 import { useToast } from "../toast/useToast.js";
 export const useAuth = () => {
   const [authError, setAuthError] = useState("");
@@ -26,15 +23,6 @@ export const useAuth = () => {
           setAuthError(response?.message);
         }
       } catch (error) {
-        // if (error?.message === "expired") {
-        //   navigate("/update-credential", { replace: true });
-        //   showSuccessToast(
-        //     "Session expired. Please update your credentials.",
-        //     "error"
-        //   );
-        // } else {
-        //   setAuthError(error?.message);
-        // }
         setAuthError(error?.message);
       } finally {
         setLoading(false);

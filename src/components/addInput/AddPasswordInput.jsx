@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, memo } from "react";
 //icons
 import { EyeOffIcon } from "../../helpers/Icon.helper";
 
@@ -44,4 +44,4 @@ const AddPasswordInput = ({
   );
 };
 
-export default AddPasswordInput;
+export default memo(AddPasswordInput);
