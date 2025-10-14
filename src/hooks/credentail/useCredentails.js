@@ -143,6 +143,26 @@ export const useCrendentails = () => {
     },
     [setSession]
   );
+
+  const getSecurityScore = useCallback(
+    async ({ queryKey }) => {
+      const [, userId] = queryKey;
+      try {
+        const response = await api(
+          `${APIS_PAYLOAD.GET_SECURITY_SCORE}?userId=${userId}`,
+          "GET"
+        );
+        return response;
+      } catch (error) {
+        if (error?.message === "Invalid or expired token") {
+          setSession(true);
+        }
+        console.error("Error fetching security score:", error);
+        throw error;
+      }
+    },
+    [setSession]
+  );
   return {
     createPasswordEntry,
     getAllPasswords,
@@ -151,5 +171,6 @@ export const useCrendentails = () => {
     removeSharedPassword,
     deletePassword,
     passwordEntry,
+    getSecurityScore,
   };
 };

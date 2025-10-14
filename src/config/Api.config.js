@@ -37,4 +37,5 @@ export const APIS_PAYLOAD = {
   VERIFY_TOKEN: "api/auth/verify-token",
   GET_BY_USER_ID: "api/get-user-by-id",
   UPDATE_CREDENTIALS: "api/auth/update-credentials",
+  GET_SECURITY_SCORE: "api/get-security-score",
 };

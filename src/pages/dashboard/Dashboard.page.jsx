@@ -61,7 +61,8 @@ const DashboardPage = () => {
 
   const { fetchCategories } = useCategories();
   const queryClient = useQueryClient();
-  const { createPasswordEntry, getAllPasswords } = useCrendentails();
+  const { createPasswordEntry, getAllPasswords, getSecurityScore } =
+    useCrendentails();
   const { showSuccessToast } = useToast();
   const { data: verifiedUser } = useVerifyToken();
   //contexts
@@ -155,6 +156,13 @@ const DashboardPage = () => {
       category,
     ],
     queryFn: getAllPasswords,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  const { data: securityScore } = useQuery({
+    queryKey: ["security-score", verifiedUser?.user?.userId],
+    queryFn: getSecurityScore,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
@@ -452,7 +460,7 @@ const DashboardPage = () => {
               <div className="card-list-section">
                 <CardComponent
                   title="Security Score"
-                  number="Good"
+                  number={securityScore?.strength_label}
                   icon={<SecureIcon />}
                   iconColor="ADMIN"
                   type="ADMIN"
