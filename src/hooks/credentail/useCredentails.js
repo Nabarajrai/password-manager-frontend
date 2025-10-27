@@ -163,6 +163,26 @@ export const useCrendentails = () => {
     },
     [setSession]
   );
+
+  const getAllPasswordsScore = useCallback(
+    async (userId) => {
+      try {
+        const response = await api(
+          `${APIS_PAYLOAD.GET_ALL_PASSWORDS_SCORE}?userId=${userId}`,
+          "GET"
+        );
+        return response;
+      } catch (error) {
+        if (error?.message === "Invalid or expired token") {
+          setSession(true);
+        }
+        console.error("Error fetching all passwords score:", error);
+        throw error;
+      }
+    },
+    [setSession]
+  );
+
   return {
     createPasswordEntry,
     getAllPasswords,
@@ -172,5 +192,6 @@ export const useCrendentails = () => {
     deletePassword,
     passwordEntry,
     getSecurityScore,
+    getAllPasswordsScore,
   };
 };

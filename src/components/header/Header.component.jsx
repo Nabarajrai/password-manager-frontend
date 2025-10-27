@@ -1,5 +1,10 @@
 import { useState, useCallback, useMemo } from "react";
-import { AddUserIcon, PeopleIcon, SecureIcon } from "../../helpers/Icon.helper";
+import {
+  AddUserIcon,
+  ExcelIconToExport,
+  PeopleIcon,
+  SecureIcon,
+} from "../../helpers/Icon.helper";
 import { UserIcon, AdminIcon, LogoutIcon } from "../../helpers/Icon.helper";
 import ModalComponent from "../modal/Modal.component";
 import CardComponent from "../card/Card.component";
@@ -8,6 +13,7 @@ import AddPasswordInput from "../addInput/AddPasswordInput";
 import SelectOptionComponent from "../selectOption/SelectOption.component";
 import classnames from "classnames";
 import { useNavigate } from "react-router";
+import ExcelJs from "exceljs";
 //react-query
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 //icons
@@ -31,7 +37,7 @@ import { useUserCreate } from "../../hooks/userCreate/useUserCreate.js";
 import { useToast } from "../../hooks/toast/useToast.js";
 import { useCategories } from "../../hooks/categories/useCategories.js";
 import { useVerifyToken } from "../../hooks/verifyToken/VerifyToken.js";
-
+import { useCrendentails } from "../../hooks/credentail/useCredentails.js";
 //helpres
 import Loading from "../loading/Loading.jsx";
 
@@ -100,6 +106,8 @@ const HeaderComponent = () => {
     return classnames("admin-panel-useradd-form", activeClass);
   }, [addUserSection]);
 
+  const { getAllPasswordsScore } = useCrendentails();
+
   const {
     data,
     isError,
@@ -143,6 +151,21 @@ const HeaderComponent = () => {
     queryKey: ["user", verifiedUser?.user?.email],
     queryFn: getUserById,
   });
+
+  const getReport = useCallback(
+    async (userId, userName) => {
+      if (!userId) return;
+
+      const data = await getAllPasswordsScore(userId);
+      if (data?.data === undefined || data?.data.length === 0) {
+        showSuccessToast("No data available for report", "error");
+      } else {
+        exportToExcel(data?.data, userName);
+      }
+    },
+    [getAllPasswordsScore, showSuccessToast]
+  );
+
   const deleteMutate = useMutation({
     mutationFn: deleteUser,
     onSuccess: async () => {
@@ -535,6 +558,118 @@ const HeaderComponent = () => {
     logOutMutate.mutate();
   }, [logOutMutate]);
 
+  const exportToExcel = (data, name) => {
+    let sheetName = `${name}_security_report.xlsx`;
+    let headerName = "RequestsList";
+
+    let workbook = new ExcelJs.Workbook();
+    let sheet = workbook.addWorksheet(sheetName, {
+      views: [{ showGridLines: false }],
+    });
+
+    let columnArr = [];
+    for (let i in data[0]) {
+      let tempObj = { name: "" };
+      tempObj.name = i;
+      columnArr.push(tempObj);
+    }
+
+    sheet.addTable({
+      name: `Header`,
+      ref: "A1",
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: "",
+        showRowStripes: false,
+        showFirstColumn: true,
+        width: 200,
+      },
+      columns: [
+        { name: "Total Security Details" },
+        {
+          name: 'It is only good to have Strength label "GOOD, STRONG, VERY_STRONG".If other labels are used, they will be ignored.',
+        },
+      ],
+      rows: [
+        [`Report of ${new Date().toLocaleDateString()}`],
+        [`Security Details`],
+      ],
+    });
+
+    sheet.addTable({
+      name: headerName,
+      ref: "A5",
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: "TableStyleMedium2",
+        showRowStripes: false,
+        width: 200,
+      },
+      columns: columnArr ? columnArr : [{ name: "" }],
+      rows: data.map((e) => {
+        let arr = [];
+        for (let i in e) {
+          arr.push(e[i]);
+        }
+        return arr;
+      }),
+    });
+
+    sheet.getCell("A1").font = { size: 20, bold: true };
+
+    sheet.columns = sheet.columns.map((e) => {
+      const expr = e.values[5];
+      switch (expr) {
+        case "Account":
+          return { width: 30 };
+        case "Username":
+          return { width: 50 };
+        case "Strength_Label":
+          return { width: 30 };
+        default:
+          return { width: 20 };
+      }
+    });
+
+    const table = sheet.getTable(headerName);
+    for (let i = 0; i < table.table.columns.length; i++) {
+      sheet.getCell(`${String.fromCharCode(65 + i)}5`).font = { size: 12 };
+      sheet.getCell(`${String.fromCharCode(65 + i)}5`).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "c5d9f1" },
+      };
+
+      for (let j = 0; j < table.table.rows.length; j++) {
+        let rowCell = sheet.getCell(`${String.fromCharCode(65 + i)}${j + 6}`);
+        rowCell.alignment = { wrapText: true };
+        rowCell.border = {
+          bottom: {
+            style: "thin",
+            color: { argb: "a6a6a6" },
+          },
+        };
+      }
+    }
+    table.commit();
+
+    const writeFile = (fileName, content) => {
+      const link = document.createElement("a");
+      const blob = new Blob([content], {
+        type: "application/vnd.ms-excel;charset=utf-8;",
+      });
+      link.download = fileName;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+    };
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      writeFile(sheetName, buffer);
+    });
+  };
+
   return (
     <>
       <ModalComponent
@@ -827,6 +962,12 @@ const HeaderComponent = () => {
                               title="Reset Pin"
                               onClick={() => sendResetPinLinks(user)}>
                               <ResetPinIcon />
+                            </button>
+                            <button
+                              className="reset-key"
+                              title="Delete User"
+                              onClick={() => getReport(user.id, user.username)}>
+                              <ExcelIconToExport />
                             </button>
                             <button
                               className="delete-user"

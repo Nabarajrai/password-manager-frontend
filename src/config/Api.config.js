@@ -38,4 +38,5 @@ export const APIS_PAYLOAD = {
   GET_BY_USER_ID: "api/get-user-by-id",
   UPDATE_CREDENTIALS: "api/auth/update-credentials",
   GET_SECURITY_SCORE: "api/get-security-score",
+  GET_ALL_PASSWORDS_SCORE: "api/get-all-password-scores",
 };
