@@ -11,6 +11,7 @@ import UpdateCredentail from "../pages/updateCredentail/UpdateCredentail";
 import ResetPassword from "../pages/resetPassword/ResetPassword";
 import ResetPin from "../pages/resetPin/ResetPin";
 import SetCrendentail from "../pages/setCrendentail/SetCrendentail";
+import BankProfilePage from "../pages/bankProfile/BankProfile.page";
 
 export const routes = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ export const routes = createBrowserRouter([
     children: [
       { path: "/", element: <DashboardPage /> },
       { path: "/update-credential", element: <SetCrendentail /> }, // ✅ fixed
+      { path: "/bank-profile", element: <BankProfilePage /> },
     ],
   },
 ]);

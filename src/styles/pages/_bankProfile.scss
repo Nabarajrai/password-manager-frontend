@@ -1,0 +1,122 @@
+@use "../helpers/variables" as *;
+@use "../helpers/mixin" as *;
+
+.bank-profile-page {
+  min-height: 100dvh;
+  background: linear-gradient(to bottom, #eef2ff, #fff);
+}
+
+.bank-profile-main {
+  padding: 6.5rem 0 2rem;
+}
+
+.bank-profile-hero {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    color: $text-color-secondary;
+    font-size: 1.7rem;
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    color: $text-color;
+    font-size: 0.95rem;
+  }
+}
+
+.bank-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.bank-profile-card {
+  background: $header-background-color;
+  border: 1px solid rgba($text-color, 0.14);
+  border-radius: 14px;
+  padding: 1.2rem;
+
+  h2 {
+    color: $text-color-secondary;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.bank-profile-account {
+  grid-column: span 2;
+
+  &__details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+
+    .label {
+      font-size: 0.8rem;
+      color: rgba($text-color, 0.8);
+    }
+
+    p {
+      color: $text-color-secondary;
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+      font-weight: 500;
+    }
+  }
+}
+
+.bank-profile-list {
+  list-style: none;
+
+  li {
+    @include flex(space-between);
+    gap: 1rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba($text-color, 0.15);
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    span {
+      color: $text-color;
+      font-size: 0.86rem;
+    }
+
+    strong {
+      color: $text-color-secondary;
+      font-size: 0.9rem;
+      text-align: right;
+    }
+  }
+}
+
+.bank-profile-activity-list {
+  list-style: none;
+
+  li {
+    position: relative;
+    color: $text-color;
+    font-size: 0.9rem;
+    padding: 0.5rem 0 0.5rem 1rem;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.95rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: $button-bg-color-primary-frist;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .bank-profile-account {
+    grid-column: span 1;
+  }
+}
